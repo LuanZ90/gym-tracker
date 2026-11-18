@@ -248,6 +248,11 @@ main section{scroll-margin-top:132px}
 .overview-pair>.card{margin-top:0;min-width:0;overflow-wrap:anywhere}
 .overview-pair .overview-macros-title{flex-wrap:wrap}
 @media(max-width:480px){.overview-pair{gap:6px}.overview-pair>.card{padding:7px}.overview-pair h3{font-size:.92rem}.overview-pair .past-exercise{padding:5px}.overview-pair .past-exercise li{gap:3px;flex-wrap:wrap}}
+
+.exercise-notes{display:grid;gap:9px;margin:10px 0;padding:9px;border:1px solid #584033;border-radius:8px;background:#1e1916}
+.exercise-notes p{margin:3px 0;color:#d0b9ad;font-size:.84rem}
+.exercise-notes textarea{width:100%;resize:vertical;padding:7px;border:1px solid #60483c;border-radius:5px;background:#171514;color:#fff;font:inherit}
+.exercise-notes small{color:#e9ad8f}
 </style>
 </head>
 <body>
@@ -1178,6 +1183,7 @@ async function writeLocalPhoto(id, photo) {
 
 function applyExtras() {
   syncCatalog();
+  refreshExerciseThoughts();
   profile = extras["tracker-profile"] || (extraAccount ? defaultProfile : readLocal(BODY_KEY, defaultProfile));
   renderStats();
   renderAnalytics();
@@ -1201,6 +1207,7 @@ function loadLocalPhotos() {
 }
 
 function changeExtraAccount(account) {
+  catalogSignature = undefined;
   extraAccount = account;
   extraSnapshotReady = !account;
   extras = account ? {} : readLocal(EXTRA_KEY, {});
@@ -1212,7 +1219,7 @@ function changeExtraAccount(account) {
 function acceptCloudExtras(documents) {
   const next = {}, nextPhotos = {};
   for (const item of documents) {
-    if (/^tracker-(profile|goals|body-|food-|meal-|supplement-|supp-product-|stock-|preset-|photo-|plan-|exercise-|recovery-|duration-)/.test(item.id)) {
+    if (/^tracker-(profile|goals|body-|food-|meal-|supplement-|supp-product-|stock-|preset-|photo-|plan-|exercise-|exercise-note-|recovery-|duration-)/.test(item.id)) {
       const payload = item.data().tracker;
       if (!payload) continue;
       if (item.id.startsWith("tracker-photo-")) nextPhotos[item.id] = payload;
@@ -1325,6 +1332,46 @@ function renderHeatmap() {
   }).join("");
 }
 
+const exerciseTips = [
+  [/reverse hack squat/i,"Áp ngực vào đệm, đặt cả bàn chân trên bàn đạp. Hạ chậm rồi đẩy lên bằng cả bàn chân.","Giữ đầu gối theo hướng mũi chân và chọn độ sâu anh kiểm soát được."],
+  [/romanian deadlift|\brdl\b/i,"Hơi chùng gối, đẩy hông ra sau và giữ tạ hoặc tay cầm gần chân. Đứng lên bằng cách đưa hông về vị trí ban đầu.","Dừng hạ khi không còn giữ được lưng ổn định. Tránh giật tạ khi đổi chiều."],
+  [/bench press/i,"Ổn định chân và thân người. Hạ tạ có kiểm soát rồi đẩy lên theo đường đi anh giữ ổn định được.","Khi tập tạ đòn nặng, dùng chốt an toàn hoặc người hỗ trợ."],
+  [/crossover|chest fly|pec deck|iron cross/i,"Hơi gập khuỷu tay, khép hai tay theo vòng cung rồi mở lại chậm.","Giữ góc khuỷu ổn định. Giảm biên độ nếu vai khó chịu."],
+  [/pulldown|pull-up/i,"Giữ thân ổn định và kéo khuỷu tay xuống. Trả tay về từ từ.","Tránh ngả người hoặc giật tay để hoàn thành reps."],
+  [/calf raise/i,"Nhún gót lên, giữ ngắn ở đỉnh rồi hạ có kiểm soát.","Tránh nảy gót ở đáy. Dùng điểm tựa ổn định nếu cần."],
+  [/plank/i,"Chống khuỷu dưới vai, giữ thân thành một đường và thở đều.","Kết thúc hiệp khi không còn giữ được vị trí thân và hông."]
+];
+const equipmentTips = {
+  "Máy":["Chỉnh ghế và đệm trước khi bắt đầu. Thử vài reps nhẹ để kiểm tra đường chuyển động.","Giữ điểm tựa ổn định và hạ tạ chậm."],
+  "Cáp":["Chỉnh độ cao ròng rọc, chọn tay cầm và thử đường kéo với mức nhẹ trước.","Giữ căng cáp và trả tải có kiểm soát."],
+  "Thanh đòn":["Bắt đầu với mức nhẹ. Ổn định tư thế và tập thử đường đi của thanh trước khi tăng tạ.","Giữ nhịp và biên độ mà anh kiểm soát được."],
+  "Tạ đơn":["Giữ hai bên ổn định và tập thử biên độ với tạ nhẹ.","Tránh dùng đà để hoàn thành reps."],
+  "Trọng lượng cơ thể":["Chọn điểm tựa vững và tập từng reps chậm.","Dừng hiệp khi không còn giữ được tư thế."]
+};
+const exerciseNoteKey = name => "tracker-exercise-note-" + encodeURIComponent(name);
+function refreshExerciseThoughts() {
+  $("libraryList").querySelectorAll("[data-save-thought]").forEach(button => {
+    const name = EXERCISES[Number(button.dataset.saveThought)];
+    if (!name) return;
+    const field = button.closest(".exercise-notes").querySelector("[data-thought]");
+    const next = extras[exerciseNoteKey(name)]?.thought || "";
+    if (field.value === field.defaultValue) field.value = next;
+    field.defaultValue = next;
+  });
+}
+
+function exerciseDetailNotes(item) {
+  const tip = exerciseTips.find(([pattern]) => pattern.test(item.en || item.name));
+  const [guide,caution] = tip ? tip.slice(1) : equipmentTips[item.equipment] ||
+    ["Xem video của bài và tập thử chậm với mức tải nhẹ.","Chọn biên độ anh kiểm soát được."];
+  return `<div class="exercise-notes">
+    <div><strong>Hướng dẫn</strong><p>${escapeHtml(guide)}</p></div>
+    <div><strong>Lưu ý</strong><p>${escapeHtml(caution)}</p></div>
+    <label>Suy nghĩ của tôi<textarea rows="3" maxlength="1000" data-thought placeholder="Ghi cảm nhận hoặc điều muốn chỉnh ở buổi sau…">${escapeHtml(extras[exerciseNoteKey(item.name)]?.thought || "")}</textarea></label>
+    <div class="actions"><button class="gray quick" type="button" data-save-thought="${EXERCISES.indexOf(item.name)}">Lưu suy nghĩ</button><small data-thought-status role="status"></small></div>
+  </div>`;
+}
+
 function renderLibrary() {
   const term = normalizeFood($("exerciseSearch").value);
   const muscle = $("muscleFilter").value;
@@ -1344,6 +1391,7 @@ function renderLibrary() {
       </div><a class="video-link" target="_blank" rel="noopener noreferrer" href="${videoURL}">${item.video ? "▣ ▶ YouTube" : "Tìm video"}</a></div>
       <details ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>Chi tiết</summary>
       <p class="muted">${escapeHtml(item.equipment)}${item.secondary.length ? " · Cơ phụ: " + item.secondary.map(key => MUSCLES[key]).join(", ") : ""}</p>
+      ${exerciseDetailNotes(item)}
       <div class="actions"><button class="gray quick" type="button" data-video-edit="${EXERCISES.indexOf(item.name)}">Sửa link video</button></div>
       </details></article>`;
   }).join("") || '<p class="muted">Không tìm thấy bài phù hợp.</p>';
@@ -2080,7 +2128,22 @@ function initV4() {
     exercise.secondary.add(new Option(label,key));
   }
   $("newExercise").onclick = () => openExercise();
-  $("libraryList").addEventListener("click",event => {
+  $("libraryList").addEventListener("click",async event => {
+    const save = event.target.closest("[data-save-thought]");
+    if (save) {
+      const name = EXERCISES[Number(save.dataset.saveThought)];
+      if (!name) return;
+      const box = save.closest(".exercise-notes");
+      const status = box.querySelector("[data-thought-status]");
+      const thought = box.querySelector("[data-thought]").value.trim().slice(0,1000);
+      save.disabled = true;
+      try {
+        await saveExtras({[exerciseNoteKey(name)]:{thought}});
+        status.textContent = thought ? "Đã lưu." : "Đã xóa nội dung ghi chú.";
+      } catch (error) { status.textContent = error.message; }
+      finally { save.disabled = false; }
+      return;
+    }
     const button = event.target.closest("[data-video-edit]");
     if (button) openExercise(libraryByName.get(EXERCISES[Number(button.dataset.videoEdit)]));
   });
