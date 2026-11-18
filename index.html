@@ -243,6 +243,11 @@ main section{scroll-margin-top:132px}
 @media(max-width:850px) and (min-width:581px){.hero-today{grid-template-columns:1fr}.banner-stats .value{font-size:19px}}
 @media(max-width:440px){.hero-today{grid-template-columns:1fr}.supplement-row{align-items:flex-start}.supp-actions{display:grid}}
 
+
+.overview-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+.overview-pair>.card{margin-top:0;min-width:0;overflow-wrap:anywhere}
+.overview-pair .overview-macros-title{flex-wrap:wrap}
+@media(max-width:480px){.overview-pair{gap:6px}.overview-pair>.card{padding:7px}.overview-pair h3{font-size:.92rem}.overview-pair .past-exercise{padding:5px}.overview-pair .past-exercise li{gap:3px;flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -276,11 +281,13 @@ main section{scroll-margin-top:132px}
     <div id="muscleAnatomy" class="anatomy-board"></div>
     <div id="muscleCounts" class="tactical-grid"></div>
   </article>
+  <div class="overview-pair spaced">
   <article class="card spaced">
     <div class="overview-macros-title"><h3>Supplement hôm nay</h3><a href="#supplements">Mở checklist ›</a></div>
     <div id="overviewSupplements"></div>
   </article>
   <article class="card spaced"><h3 id="lastWeekTitle">Buổi tập tuần trước</h3><p id="lastWeekDate" class="muted"></p><div id="lastWeekExercises"></div></article>
+  </div>
 </section>
 <section data-screen="schedule" hidden id="schedule" aria-labelledby="scheduleTitle"><div class="section-head"><h2 id="scheduleTitle">Lịch tập trong tuần</h2></div><div class="week" id="week"></div></section>
 <section data-screen="schedule" hidden id="training" aria-labelledby="trainingTitle">
@@ -1002,7 +1009,7 @@ const OWNER_EMAIL = "daeha19902021@gmail.com";
 const EXTRA_KEY = "gymTracker.tracking.v3";
 const MUSCLES = {
   chest:"Ngực", shoulders:"Vai", triceps:"Tay sau", back:"Lưng", biceps:"Tay trước",
-  quads:"Đùi trước", hamstrings:"Đùi sau", glutes:"Mông", calves:"Bắp chân", core:"Bụng", lowerBack:"Lưng dưới"
+  quads:"Đùi trước", hamstrings:"Đùi sau", glutes:"Mông", calves:"Bắp chân", core:"Bụng", lowerBack:"Lưng dưới", adductors:"Đùi trong"
 };
 const metadata = [
   ["Incline Machine", "Máy", "chest", "shoulders triceps", "ycJk61Olw1Q"],
@@ -1105,11 +1112,27 @@ const catalogAdditions = [
   ["Woodchopper Cable", "Xoay người kéo cáp đánh bụng chéo", "core", "Cáp", "", "GwxbI7hnnwI"],
   ["Russian Twist", "Xoay người vặn bụng", "core", "Trọng lượng cơ thể", "", "s0kT80JLCfA"],
   ["Plank", "Plank giữ cơ bụng", "core", "Trọng lượng cơ thể", "", "15io994OUtg"],
+  ["Low Cable Crossover", "Ép ngực cáp từ dưới lên", "chest", "Cáp", "shoulders", "2Tu5s-pl1bo", "Low Cable Chest Fly ("],
+  ["Cable Iron Cross", "Ép ngực cáp chéo tay qua tâm", "chest", "Cáp", "shoulders", ""],
+  ["Seated Cable Chest Press", "Đẩy ngực trên ghế với cáp", "chest", "Cáp", "shoulders triceps", "uuAi2G7vhps"],
+  ["Cable Front Raise", "Nâng tạ cáp ra phía trước", "shoulders", "Cáp", "", "ywJygbcu2fU"],
+  ["Low Cable Rear Delt Fly", "Kéo cáp chéo tay tập vai sau", "shoulders", "Cáp", "back", "ATSjVXoOgVg"],
+  ["Upright Cable Row", "Kéo cáp sát ngực đứng", "shoulders", "Cáp", "biceps", "F5Sj7waYrpg"],
+  ["Kneeling High-to-Low Cable Row", "Kéo cáp cao xuống thấp quỳ gối", "back", "Cáp", "biceps", "RwRZ_c8ljuw"],
+  ["Single-Arm Cable Pulldown", "Kéo xô đơn bằng cáp", "back", "Cáp", "biceps", "fHQ5Yrc5Sds"],
+  ["Straight-Arm Pulldown with Rope", "Ép cáp thẳng tay dùng dây thừng", "back", "Cáp", "", "iyJ15x6yMEw"],
+  ["Cable Preacher Curl", "Cuốn tay trước cáp ghế dốc", "biceps", "Cáp", "", "vruRZKgRzv0"],
+  ["Overhead Cable Triceps Extension with Rope", "Duỗi tay sau qua đầu bằng cáp dây", "triceps", "Cáp", "", "U_qMtEvHuQM", "Overhead Cable Triceps Extension ("],
+  ["Reverse Grip Cable Pushdown", "Kéo cáp tay sau cầm ngửa tay", "triceps", "Cáp", "", "573yzQkprl8"],
+  ["Cable Pull-Through", "Kéo cáp qua giữa chân", "glutes hamstrings", "Cáp", "", "_21QlT5eTW8"],
+  ["Cable Romanian Deadlift", "RDL với cáp", "hamstrings glutes", "Cáp", "lowerBack", "PkWZso097Lg"],
+  ["Standing Cable Abductor", "Đá chân ngang với cáp", "glutes", "Cáp", "", "bGlm-qTnfTI"],
+  ["Standing Cable Adductor", "Khép chân vào trong với cáp", "adductors", "Cáp", "", "QWKZHPZhUTs"],
 ];
 for (const [en,vi,primary,equipment,secondary,video,existingPrefix] of catalogAdditions) {
   const existing = existingPrefix && baseLibrary.find(item => item.name.startsWith(existingPrefix));
   const display = {en,vi,equipment,primary:primary.split(" "),secondary:secondary ? secondary.split(" ") : [],video};
-  if (existing) Object.assign(existing,display);
+  if (existing) Object.assign(existing,{aliases:[...(existing.aliases || []),existing.en,existing.vi].filter(Boolean),...display});
   else {
     const name = en + " (" + vi + ")";
     baseLibrary.push({name,...display});
@@ -1307,12 +1330,12 @@ function renderLibrary() {
   const muscle = $("muscleFilter").value;
   const role = $("roleFilter").value;
   const gear = $("equipmentFilter").value;
-  const muscleKeys = muscle === "legs" ? ["quads","hamstrings","glutes","calves"] : [muscle];
-  const matches = library.filter(item => (!term || normalizeFood([item.name,item.en,item.vi].filter(Boolean).join(" ")).includes(term)) &&
+  const muscleKeys = muscle === "legs" ? ["quads","hamstrings","glutes","calves","adductors"] : [muscle];
+  const matches = library.filter(item => (!term || normalizeFood([item.name,item.en,item.vi,...(item.aliases || [])].filter(Boolean).join(" ")).includes(term)) &&
     (!gear || item.equipment === gear) &&
     (!muscle || (role ? item[role] : [...item.primary, ...item.secondary]).some(key => muscleKeys.includes(key))));
   $("libraryList").innerHTML = matches.map(item => {
-    const videoURL = item.video ? "https://www.youtube.com/watch?v=" + item.video : "https://www.youtube.com/results?search_query=" + encodeURIComponent(item.name.split(" (")[0] + " exercise proper form");
+    const videoURL = item.video ? "https://www.youtube.com/watch?v=" + item.video : "https://www.youtube.com/results?search_query=" + encodeURIComponent((item.en || item.name.split(" (")[0]) + " exercise proper form");
     const bilingual = item.name.match(/^(.+?) \((.+)\)$/);
     return `<article class="library-row">
       <div class="exercise-heading"><div><strong class="exercise-en">${escapeHtml(item.en || bilingual?.[1] || item.name)}</strong>
