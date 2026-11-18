@@ -181,6 +181,26 @@ main section{scroll-margin-top:132px}
 .supplement-row.is-taken{background:#3b2118;border-color:#ff7136}.supplement-row.is-taken label strong{color:#ffb18a}
 .stock-button{font-size:12px;min-height:36px;padding:6px 8px;text-align:left}.stock-low{color:#ff9b95;border-color:#88423d;background:#371b1b}
 @media(max-width:420px){.macro-donut{gap:5px;font-size:12px}.macro-donut .ring{width:46px;height:46px}}
+
+#overview> .section-head{margin-top:4px}
+#quickWeight{margin-top:5px;font-size:11px;min-height:36px}#quickWeight[hidden]{display:none}
+.pending-supplements{padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.pending-supplements li{font-size:.82rem;color:#ffc4a9;background:#332119;border:1px solid #6a3f2d;padding:3px 8px;border-radius:6px}
+.pr-empty{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px}.pr-empty .cta{min-height:34px;padding:4px 8px;font-size:.8rem}
+.tactical-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:9px;margin-top:12px}
+.tactical-card{--tier:#8e8986;--frame:#373332;display:grid;gap:5px;min-width:0;background:linear-gradient(135deg,var(--frame),var(--tier));padding:11px;position:relative;isolation:isolate;clip-path:polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,11px 100%,0 calc(100% - 11px));transition:transform .12s,filter .12s}
+.tactical-card::before{content:"";position:absolute;inset:1px;clip-path:inherit;background:#171515;z-index:-1}
+.tactical-card[data-level=mid]{--tier:#ffbd66;--frame:#986032}
+.tactical-card[data-level=high]{--tier:#ff5722;--frame:#a03c20;animation:tactical-pulse 2.4s ease-in-out infinite}
+@keyframes tactical-pulse{50%{background:#ff5722}}
+.tactical-card:active{transform:translateY(2px) scale(.98)}.tactical-card:hover{filter:brightness(1.2)}
+.tactical-name{display:flex;justify-content:space-between;gap:4px;font-size:.82rem}.tactical-name span,.tactical-card strong{color:var(--tier)}
+.tactical-card strong{font-size:1.35rem}.tactical-card small{font-size:.72rem}
+.power-bar{height:5px;background:#34302d;overflow:hidden}.power-bar>span{display:block;height:100%;background:linear-gradient(90deg,#a14a28,#ff863f);transition:width .25s}.tactical-card[data-level=low] .power-bar>span{opacity:.55}
+.heat-legend{display:flex;flex-wrap:wrap;gap:5px 12px;font-size:.75rem;color:#aaa19b;margin-top:6px}.heat-legend span:nth-child(2){color:#ffbd66}.heat-legend span:nth-child(3){color:#ff875e}
+#checklistPanel{scroll-margin-top:105px}
+@media(max-width:420px){.tactical-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.tactical-card[data-level=high]{animation:none}.power-bar>span{transition:none}}
 </style>
 </head>
 <body>
@@ -203,7 +223,7 @@ main section{scroll-margin-top:132px}
   <div class="section-head"><h2 id="overviewTitle">Tổng quan</h2><button class="gray" id="editBody">Sửa chỉ số</button></div>
   <div class="stats">
     <div class="metric"><p class="muted">Tuần này</p><div class="value" id="weekPercent">0%</div><progress id="weekProgress" max="5" value="0" aria-label="Buổi tập đã hoàn thành"></progress><p class="muted" id="weekCount">0 / 5 buổi đã hoàn thành</p></div>
-    <div class="metric"><p class="muted">Cân nặng</p><div class="value" id="bodyWeight">68,5 kg</div></div>
+    <div class="metric"><p class="muted">Cân nặng</p><div class="value" id="bodyWeight">68,5 kg</div><button class="gray quick" id="quickWeight" type="button">+ Cập nhật cân nặng hôm nay</button></div>
     <div class="metric"><p class="muted">Chiều cao</p><div class="value" id="bodyHeight">175 cm</div></div>
     <div class="metric"><p class="muted">Mục tiêu</p><div class="value" id="bodyGoal">72 kg</div></div>
   </div>
@@ -211,12 +231,17 @@ main section{scroll-margin-top:132px}
     <div class="overview-macros-title"><h3>Dinh dưỡng hôm nay</h3><a href="#nutrition">Nhập món ›</a></div>
     <div id="overviewNutritionBars"></div>
   </article>
-  <div class="split spaced">
-    <article class="card"><h3>Volume Load theo tuần</h3><p class="muted">Tổng kg × reps trong 8 tuần, từ thứ Hai đến Chủ nhật.</p><label>Bài tập<select id="volumeFilter"><option value="">Tất cả bài tập</option></select></label><div id="volumeChart"></div></article>
-    <article class="card"><h3>Cân nặng &amp; Body fat</h3><p class="muted" id="bodyReference"></p><div id="bodyChart"></div><div id="fatChart"></div></article>
-  </div>
+  <article class="card spaced">
+    <div class="overview-macros-title"><h3>Supplement hôm nay</h3><a href="#nutrition?checklist=1">Mở checklist ›</a></div>
+    <div id="overviewSupplements"></div>
+  </article>
+  <article class="card spaced muscle-panel">
+    <h3>Bản đồ cơ trong tuần này</h3>
+    <p class="muted">Hiệp quy đổi trong tuần · Cơ phụ tính nửa hiệp. Chạm thẻ để xem bài tập.</p>
+    <div class="heat-legend"><span>Dưới 12 hiệp</span><span>12–20 hiệp</span><span>Trên 20 hiệp</span></div>
+    <div id="muscleCounts" class="tactical-grid"></div>
+  </article>
   <article class="card spaced"><h3>Kỷ lục cá nhân gần đây</h3><div id="recentPR"></div></article>
-  <article class="card spaced"><h3>Bản đồ cơ trong tuần này</h3><p class="muted">Màu đậm hơn khi nhóm cơ có nhiều hiệp được ghi. Cơ phụ tính nửa hiệp quy đổi.</p><div class="muscle-layout"><div id="muscleMap"></div><div id="muscleCounts"></div></div></article>
 </section>
 <section data-screen="schedule" hidden id="schedule" aria-labelledby="scheduleTitle"><div class="section-head"><h2 id="scheduleTitle">Lịch tập trong tuần</h2></div><div class="week" id="week"></div></section>
 <section data-screen="schedule" hidden id="training" aria-labelledby="trainingTitle">
@@ -280,7 +305,7 @@ main section{scroll-margin-top:132px}
       <div class="entry"><span class="muted">Sau tập</span><span>Sữa và whey thực vật</span></div>
       <div class="entry"><time>20:00</time><span>Cơm tối</span></div>
     </div>
-    <div class="card"><div class="overview-macros-title"><h3>Checklist Supplement</h3><small id="supplementCount" class="muted"></small></div>
+    <div class="card" id="checklistPanel"><div class="overview-macros-title"><h3>Checklist Supplement</h3><small id="supplementCount" class="muted"></small></div>
       <p class="muted">Theo ngày đang chọn ở trên. Mỗi lần tích tính 1 phần. Cảnh báo khi còn 5 phần hoặc ít hơn.</p>
       <div id="supplementList"></div><p id="supplementStatus" role="status" class="muted"></p>
     </div>
@@ -1074,71 +1099,10 @@ async function saveExtras(entries, account = uid) {
   if (!uid) applyExtras();
 }
 
-function volume(sets) {
-  return Array.isArray(sets) ? sets.reduce((sum, set) => complete(set) ? sum + set.w * set.r : sum, 0) : 0;
-}
-
-function chart(container, lines, unit) {
-  const points = lines.flatMap(line => line.points);
-  if (!points.length) {
-    container.innerHTML = '<p class="chart-empty">Chưa có số liệu ' + unit + ' để vẽ biểu đồ.</p>';
-    return;
-  }
-  const dates = [...new Set(points.map(([date]) => date))].sort();
-  const values = points.map(([, value]) => value);
-  const bottom = Math.min(...values);
-  const top = Math.max(...values);
-  const padding = Math.max(1, (top - bottom) * .12);
-  const min = Math.max(0, bottom - padding);
-  const max = top + padding;
-  const x = date => dates.length === 1 ? 218 : 56 + dates.indexOf(date) * 324 / (dates.length - 1);
-  const y = value => 139 - (value - min) * 116 / (max - min || 1);
-  const labels = [...new Set([0, Math.floor((dates.length - 1) / 2), dates.length - 1])];
-  const grid = [0, .5, 1].map(step => {
-    const value = min + (max - min) * step;
-    const lineY = y(value);
-    return `<path d="M55 ${lineY}H382" stroke="#414141"/><text x="51" y="${lineY + 4}" text-anchor="end">${format.format(value)}</text>`;
-  }).join("");
-  const paths = lines.map(({ name, color, points: linePoints, dashed }) => {
-    const path = linePoints.map(([date, value], index) => {
-      const nextX = x(date), nextY = y(value);
-      if (!index) return "M " + nextX + " " + nextY;
-      const [beforeDate, beforeValue] = linePoints[index - 1];
-      const middle = (x(beforeDate) + nextX) / 2;
-      return `C ${middle} ${y(beforeValue)}, ${middle} ${nextY}, ${nextX} ${nextY}`;
-    }).join(" ");
-    const circles = linePoints.map(([date, value]) =>
-      `<circle cx="${x(date)}" cy="${y(value)}" r="3.4" fill="${color}"><title>${name} · ${date} · ${format.format(value)} ${unit}</title></circle>`
-    ).join("");
-    return `<path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" ${dashed ? 'stroke-dasharray="4 4"' : ""}/>${circles}`;
-  }).join("");
-  const legend = lines.map(({ name, color, points: line }) => {
-    const latest = line.at(-1);
-    return `<span><i class="swatch" style="background:${color}"></i>${name}${latest ? " · " + format.format(latest[1]) + " " + unit : " · chưa ghi"}</span>`;
-  }).join("");
-  container.innerHTML = `<svg class="chart" viewBox="0 0 400 167" role="img" aria-label="Biểu đồ ${unit}">
-    ${grid}${paths}${labels.map(i => {
-      const date = dates[i];
-      return `<text x="${x(date)}" y="158" text-anchor="middle">${date.slice(8)}/${date.slice(5,7)}</text>`;
-    }).join("")}</svg><div class="legend">${legend}</div>`;
-}
-
 function renderAnalytics() {
-  renderWeeklyVolume();
   renderRecentPR();
-  const measurements = Object.entries(extras).filter(([id]) => id.startsWith("tracker-body-"))
-    .map(([id, data]) => [id.slice("tracker-body-".length), data])
-    .filter(([date]) => isDateKey(date)).sort(([a], [b]) => a.localeCompare(b)).slice(-30);
-  const weight = measurements.filter(([, data]) => validNumber(data.weight)).map(([date, data]) => [date, data.weight]);
-  const fat = measurements.filter(([, data]) => validNumber(data.fat)).map(([date, data]) => [date, data.fat]);
-  $("bodyReference").textContent = "Mốc ban đầu 67 kg · Mục tiêu " + format.format(profile.goal) + " kg";
-  const referenceDates = [...new Set(weight.map(([date]) => date))];
-  chart($("bodyChart"), [
-    { name:"Cân nặng", color:"#ff7136", points:weight },
-    { name:"Mục tiêu", color:"#5de1c0", dashed:true, points:referenceDates.map(date => [date, profile.goal]) }
-  ], "kg");
-  chart($("fatChart"), [{ name:"Body fat", color:"#b8a1ff", points:fat }], "%");
   renderHeatmap();
+  $("quickWeight").hidden = validNumber(extras["tracker-body-" + todayKey()]?.weight);
 }
 
 function renderHeatmap() {
@@ -1154,29 +1118,15 @@ function renderHeatmap() {
     }
   });
 
-  const colors = ["#303030","#7e3924","#cf582c","#ff8c54"];
-  const color = key => colors[totals[key] === 0 ? 0 : totals[key] < 5 ? 1 : totals[key] < 10 ? 2 : 3];
-  const shape = (key, path) => `<path d="${path}" fill="${color(key)}"><title>${MUSCLES[key]} · ${format.format(totals[key])} hiệp quy đổi</title></path>`;
-  function figure(back) {
-    return `<circle cx="60" cy="22" r="14" fill="#454545"/>
-      <path d="M52 36h16l5 9H47z" fill="#454545"/>
-      ${shape("shoulders","M46 44 31 47 22 71 34 75 45 59z M74 44 89 47 98 71 86 75 75 59z")}
-      ${shape(back ? "triceps" : "biceps","M23 73 35 77 28 103 14 101z M97 73 85 77 92 103 106 101z")}
-      <path d="M14 104 27 106 20 133 10 134z M106 104 93 106 100 133 110 134z" fill="#454545"/>
-      ${shape(back ? "back" : "chest","M49 44h22l12 15-8 27H45l-8-27z")}
-      ${shape(back ? "lowerBack" : "core","M45 89h30l5 28-20 9-20-9z")}
-      ${shape(back ? "glutes" : "core","M39 119 59 127 81 119 83 138 60 144 37 138z")}
-      ${shape(back ? "hamstrings" : "quads","M37 141 58 146 54 188 51 195H37l-4-25z M83 141 62 146 66 188 69 195h14l4-25z")}
-      ${shape("calves","M37 198h14l-2 34-9 3-6-22z M83 198H69l2 34 9 3 6-22z")}
-      <path d="M40 237h9l2 6H33z M80 237h-9l-2 6h18z" fill="#454545"/> `;
-  }
-  $("muscleMap").innerHTML = `<svg viewBox="0 0 260 270" role="img" aria-label="Bản đồ cơ mặt trước và sau">
-    <g>${figure(false)}</g><g transform="translate(140 0)">${figure(true)}</g>
-    <text x="60" y="263" fill="#b5b1ad" text-anchor="middle" font-size="12">Mặt trước</text>
-    <text x="200" y="263" fill="#b5b1ad" text-anchor="middle" font-size="12">Mặt sau</text></svg>`;
-  $("muscleCounts").innerHTML = Object.entries(totals).sort((a,b) => b[1]-a[1]).map(([key, count]) =>
-    `<a class="muscle-item" href="#library?muscle=${key}"><span><i class="swatch" style="background:${color(key)}"></i>${MUSCLES[key]}</span><strong>${format.format(count)} hiệp ›</strong></a>`
-  ).join("");
+  $("muscleCounts").innerHTML = Object.entries(totals).map(([key,count]) => {
+    const level = count > 20 ? "high" : count >= 12 ? "mid" : "low";
+    const fill = Math.min(100,count / 20 * 100);
+    return `<a class="tactical-card" data-level="${level}" href="#library?muscle=${key}">
+      <span class="tactical-name">${MUSCLES[key]} <span aria-hidden="true">↗</span></span>
+      <strong>${format.format(count)} <small>hiệp</small></strong>
+      <span class="power-bar" aria-hidden="true"><span style="width:${fill}%"></span></span>
+    </a>`;
+  }).join("");
 }
 
 function renderLibrary() {
@@ -1389,6 +1339,11 @@ function renderNutrition(updateInputs = true) {
 
 function renderOverviewNutrition() {
   const targets = extras["tracker-goals"] || {};
+  const remaining = supplements.filter(([id]) => !extras[supplementEntry(todayKey(),id)]?.taken);
+  $("overviewSupplements").innerHTML = remaining.length
+    ? '<p class="muted">' + remaining.length + ' mục chưa tích hôm nay</p><ul class="pending-supplements">' +
+      remaining.map(([,name]) => '<li>' + escapeHtml(name) + '</li>').join("") + '</ul>'
+    : '<p class="muted">Đã tích đủ supplement hôm nay.</p>';
   $("overviewNutritionBars").innerHTML = macroBars(nutritionTotals(todayKey()),
     targets.calorieGoal > 0 ? targets.calorieGoal : 2200,
     targets.proteinGoal > 0 ? targets.proteinGoal : 120);
@@ -1503,7 +1458,7 @@ function initFeatures() {
     row.append(frame);
   }, true);
 
-  $("editBody").onclick = () => {
+  $("quickWeight").onclick = $("editBody").onclick = () => {
     const date = todayKey();
     const fields = $("bodyForm").elements;
     fields.date.value = date;
@@ -1689,37 +1644,7 @@ function renderRecentPR() {
   }
   $("recentPR").innerHTML = latest.reverse().map(({name,date,records}) =>
     `<div class="pr-entry"><span><strong class="pr-name">${escapeHtml(name)}</strong><br><span class="muted">🏆 PR · ${records.join(" · ")}</span></span><time datetime="${date}">${date.slice(8)}/${date.slice(5,7)}</time></div>`
-  ).join("") || '<p class="muted">Kỷ lục xuất hiện khi anh vượt mức tạ hoặc reps đã từng ghi của một bài.</p>';
-}
-
-function renderWeeklyVolume() {
-  const exercise = $("volumeFilter").value;
-  const monday = startOfWeek(new Date());
-  monday.setDate(monday.getDate() - 49);
-  const weeks = Array.from({length:8}, (_,index) => {
-    const start = weekDate(monday,index * 7);
-    const end = weekDate(monday,index * 7 + 6);
-    let total = 0;
-    for (let day = 0; day < 7; day++) {
-      const entries = logs[weekDate(monday,index * 7 + day)] || {};
-      total += exercise ? volume(entries[exercise]) : Object.values(entries).reduce((sum,sets) => sum + volume(sets),0);
-    }
-    return {start,end,total};
-  });
-  const maximum = Math.max(1,...weeks.map(week => week.total));
-  const bars = weeks.map(({start,end,total},index) => {
-    const x = 32 + index * 45;
-    const height = total ? Math.max(3,total / maximum * 94) : 2;
-    const label = start.slice(8) + "/" + start.slice(5,7);
-    const description = `Tuần ${label} đến ${end.slice(8)}/${end.slice(5,7)} · ${format.format(total)} kg × reps`;
-    return `<rect tabindex="0" role="button" data-volume-bar aria-label="${description}" class="volume-bar${index === 7 ? " is-current" : ""}" x="${x}" y="${115-height}" width="29" height="${height}" rx="3"><title>${description}</title></rect>
-      <text x="${x+14.5}" y="135" text-anchor="middle">${label}</text>`;
-  }).join("");
-  const current = weeks[7].total, previous = weeks[6].total;
-  $("volumeChart").innerHTML = `<svg class="chart" viewBox="0 0 394 144" role="img" aria-label="Volume Load 8 tuần">
-    <path d="M25 115H392" stroke="#414141"/>${bars}</svg>
-    <p id="volumeDetail" class="muted" aria-live="polite">Chạm vào cột để xem tổng tải của tuần.</p>
-    <div class="legend"><span>Tuần này đang diễn ra · <strong>${format.format(current)}</strong></span><span>Tuần trước · <strong>${format.format(previous)}</strong> kg × reps</span></div>`;
+  ).join("") || '<div class="pr-empty"><p class="muted">Chưa ghi được kỷ lục mới.</p><a class="cta" href="#training">+ Ghi hiệp tập</a></div>';
 }
 
 function syncDock(row) {
@@ -1818,13 +1743,10 @@ function syncCatalog() {
   library = [...items.values()];
   libraryByName = items;
   EXERCISES.splice(0,EXERCISES.length,...library.map(item => item.name));
-  for (const id of ["progressSelect","volumeFilter"]) {
-    const select = $(id);
-    const previous = select.value;
-    select.replaceChildren(...(id === "volumeFilter" ? [new Option("Tất cả bài tập","")] : []),
-      ...EXERCISES.map(name => new Option(name,name)));
-    if (EXERCISES.includes(previous) || id === "volumeFilter") select.value = EXERCISES.includes(previous) ? previous : "";
-  }
+  const select = $("progressSelect");
+  const previous = select.value;
+  select.replaceChildren(...EXERCISES.map(name => new Option(name,name)));
+  if (EXERCISES.includes(previous)) select.value = previous;
   renderLibrary();
 }
 
@@ -1882,16 +1804,6 @@ function initV4() {
     if (row) syncDock(row);
   });
   $("dockCopy").onclick = () => dockRow?.querySelector("[data-copy]")?.click();
-  $("volumeFilter").onchange = renderWeeklyVolume;
-  const showVolume = event => {
-    if (event.type === "keydown" && ![" ","Enter"].includes(event.key)) return;
-    const bar = event.target.closest("[data-volume-bar]");
-    if (!bar) return;
-    event.preventDefault();
-    $("volumeDetail").textContent = bar.getAttribute("aria-label");
-  };
-  $("volumeChart").addEventListener("click",showVolume);
-  $("volumeChart").addEventListener("keydown",showVolume);
   $("durationAction").onclick = () => void changeDuration(true);
   $("durationStop").onclick = () => void changeDuration(false);
   setInterval(() => { if (activeDurationDate) updateDuration(); }, 500);
@@ -2081,7 +1993,8 @@ initFeatures();
 initSupplements();
 function showGymScreen() {
   const [target,query] = location.hash.slice(1).split("?");
-  const muscle = new URLSearchParams(query).get("muscle");
+  const params = new URLSearchParams(query);
+  const muscle = params.get("muscle");
   if (target === "library" && Object.hasOwn(MUSCLES,muscle)) {
     $("muscleFilter").value = muscle;
     $("roleFilter").value = "";
@@ -2099,7 +2012,11 @@ function showGymScreen() {
   syncDock();
   if (screen === "overview") renderOverviewNutrition();
   if (target === "training") $("training").scrollIntoView({block:"start"});
-  else window.scrollTo({top:0,behavior:"instant"});
+  else if (target === "nutrition" && params.get("checklist") === "1") {
+    $("nutritionDate").value = todayKey();
+    renderNutrition();
+    $("checklistPanel").scrollIntoView({block:"start"});
+  } else window.scrollTo({top:0,behavior:"instant"});
 }
 document.querySelectorAll("[data-tab]").forEach(tab => {
   tab.addEventListener("click",event => {
