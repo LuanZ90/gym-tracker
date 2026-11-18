@@ -219,6 +219,12 @@ main section{scroll-margin-top:132px}
 .history-detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;padding:0 10px 10px}
 .history-detail>div{border-top:1px solid #513d32;padding-top:6px}.history-detail h4{margin:0 0 5px}
 .history-detail p,.history-detail ul{margin:0 0 4px}.history-detail ul{padding-left:16px}.history-detail li small{display:block;color:#c8aca0}
+
+#lastWeekExercises{display:grid;gap:7px;margin-top:8px}
+.past-exercise{background:#191615;border:1px solid #54362a;border-radius:9px;padding:8px}
+.past-exercise h4{margin:0 0 6px;font-size:.9rem}.past-exercise ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:5px}
+.past-exercise li{display:flex;align-items:baseline;gap:5px;padding:4px 7px;background:#2f211b;border:1px solid #74442c;border-radius:5px;font-size:.75rem}
+.past-exercise li strong{color:#ffad84}.past-exercise li small{color:#cbb1a3}
 </style>
 </head>
 <body>
@@ -260,7 +266,7 @@ main section{scroll-margin-top:132px}
     <div id="muscleAnatomy" class="anatomy-board"></div>
     <div id="muscleCounts" class="tactical-grid"></div>
   </article>
-  <article class="card spaced"><h3>Kỷ lục cá nhân gần đây</h3><div id="recentPR"></div></article>
+  <article class="card spaced"><h3 id="lastWeekTitle">Buổi tập tuần trước</h3><p id="lastWeekDate" class="muted"></p><div id="lastWeekExercises"></div></article>
 </section>
 <section data-screen="schedule" hidden id="schedule" aria-labelledby="scheduleTitle"><div class="section-head"><h2 id="scheduleTitle">Lịch tập trong tuần</h2></div><div class="week" id="week"></div></section>
 <section data-screen="schedule" hidden id="training" aria-labelledby="trainingTitle">
@@ -1016,6 +1022,65 @@ const suggestedExercises = [
 }));
 baseLibrary.push(...suggestedExercises);
 EXERCISES.push(...suggestedExercises.map(item => item.name));
+const catalogAdditions = [
+  ["Decline Barbell Bench Press", "Đẩy tạ đòn ghế dốc xuống", "chest", "Thanh đòn", "shoulders triceps", "OR6WM5Z2Hqs"],
+  ["Incline Dumbbell Fly", "Banh ngực ghế dốc trên", "chest", "Tạ đơn", "shoulders", "ajdFwa-qM98"],
+  ["Cable Crossover", "Ép ngực cáp ngang", "chest", "Cáp", "shoulders", "tlEi0HGnDuw"],
+  ["Seated Chest Press Machine", "Đẩy ngực máy ngồi", "chest", "Máy", "shoulders triceps", "GuF3K9ucHwI", "Chest Press Machine ("],
+  ["Pec Deck Machine", "Máy ép ngực", "chest", "Máy", "shoulders", "3jYo5cMU3d4"],
+  ["Low Cable Chest Fly", "Ép ngực cáp từ dưới lên", "chest", "Cáp", "shoulders", "2Tu5s-pl1bo"],
+  ["Dumbbell Pullover", "Vớt tạ đơn mở rộng ngực", "chest", "Tạ đơn", "back triceps", "Q8l6ykgnmPM"],
+  ["T-Bar Row", "Kéo tạ chữ T", "back", "Thanh đòn", "biceps lowerBack", "8c23NBbwLBc"],
+  ["Underhand Barbell Row", "Kéo tạ đòn cầm ngửa tay", "back", "Thanh đòn", "biceps lowerBack", "YQtBGqN7-9c"],
+  ["Straight-Arm Pulldown", "Ép cáp thẳng tay", "back", "Cáp", "", "zECTZHrvuMg"],
+  ["Seated Cable Row Narrow Grip", "Kéo cáp ngồi hẹp tay", "back", "Cáp", "biceps", "XaHV_8Nbyug"],
+  ["High Row Machine", "Kéo máy lưng cao", "back", "Máy", "biceps shoulders", "VCaw_epfCaU"],
+  ["Pendlay Row", "Kéo tạ đòn bùng nổ từ sàn", "back", "Thanh đòn", "lowerBack biceps", "h4nkoayPFWw"],
+  ["Lat Pulldown Close Grip", "Kéo xô hẹp tay", "back", "Cáp", "biceps", "Gspnzli9v2Y"],
+  ["Barbell Pullover", "Vớt tạ đòn", "back", "Thanh đòn", "chest", "Zpvcng22AAs"],
+  ["Standing Barbell Overhead Press", "Đẩy vai đứng tạ đòn", "shoulders", "Thanh đòn", "triceps core", "nNMR9fRGRjQ"],
+  ["Arnold Dumbbell Press", "Đẩy vai tạ đơn xoay Arnold", "shoulders", "Tạ đơn", "triceps", "ris9tKqMwgU"],
+  ["Machine Lateral Raise", "Nâng vai ngang bằng máy", "shoulders", "Máy", "", "IropE3iOk2c"],
+  ["Upright Row", "Kéo tạ đòn sát ngực", "shoulders", "Thanh đòn", "biceps", "v7nsz05s9oM"],
+  ["Seated Cable Lateral Raise", "Kéo cáp một tay sang bên", "shoulders", "Cáp", "", "eozOiJMU2f8"],
+  ["Rear Delt Fly Machine", "Máy tập vai sau", "shoulders", "Máy", "back", "Z84HkxGCBqQ", "Reverse Pec Deck ("],
+  ["Dumbbell Rear Delt Raise", "Gập người nâng tạ đơn vai sau", "shoulders", "Tạ đơn", "back", "DzV12VU3ASc"],
+  ["Barbell Front Squat", "Gánh tạ đòn trước", "quads", "Thanh đòn", "core glutes", "0ect9ETE6t0"],
+  ["Leg Press High Feet", "Đạp đùi máy đặt chân cao", "glutes hamstrings", "Máy", "quads", "2gzrkUb-E6Y"],
+  ["Bulgarian Split Squat", "Squat một chân kê ghế", "quads glutes", "Tạ đơn", "hamstrings", "0644tPueakM", "Dumbbell Bulgarian Split Squat ("],
+  ["Seated Leg Extension", "Đá đùi trước ngồi", "quads", "Máy", "", "3pOsjZGe10k", "Leg Extension ("],
+  ["Standing Leg Curl", "Cuốn đùi sau một chân đứng", "hamstrings", "Máy", "", "2DCrKY8ov_k"],
+  ["Lying Leg Curl", "Móc đùi sau nằm sấp", "hamstrings", "Máy", "", "JQcnzrhpNvI", "Lying Leg Curl ("],
+  ["Romanian Deadlift (RDL)", "Kéo tạ đòn chân thẳng", "hamstrings glutes", "Thanh đòn", "lowerBack", "_oyxCn2iSjU", "Romanian Deadlift –"],
+  ["Goblet Squat", "Squat ôm tạ đơn", "quads glutes", "Tạ đơn", "core", "JO7D6GJ98wY"],
+  ["Barbell Hip Thrust", "Đẩy hông với tạ đòn", "glutes", "Thanh đòn", "hamstrings", "Gz74laKkzGU", "Hip Thrust ("],
+  ["Bulgarian Split Squat Machine", "Squat một chân máy", "quads glutes", "Máy", "", "EZLqsUvVhQc"],
+  ["Barbell Curl", "Cuốn tay trước tạ đòn", "biceps", "Thanh đòn", "", "pQfJR-sSIvA"],
+  ["Hammer Curl", "Cuốn tạ đơn búa", "biceps", "Tạ đơn", "", "CFBZ4jN1CMI"],
+  ["Cable Biceps Curl", "Cuốn tay trước với cáp", "biceps", "Cáp", "", "t572HRLDG2E"],
+  ["Concentration Curl", "Cuốn tay trước tập trung", "biceps", "Tạ đơn", "", "IX3d5lTPais"],
+  ["Overhead Dumbbell Extension", "Duỗi tay sau qua đầu tạ đơn", "triceps", "Tạ đơn", "", "OZubslGVgKk"],
+  ["Close Grip Bench Press", "Đẩy ngực hẹp tay ăn tay sau", "triceps", "Thanh đòn", "chest shoulders", "LJeqLAmJLfs"],
+  ["Cable Overhead Triceps Extension", "Duỗi tay sau qua đầu bằng cáp", "triceps", "Cáp", "", "U_qMtEvHuQM", "Overhead Cable Triceps Extension ("],
+  ["Bench Dips", "Chống đẩy tay sau với ghế", "triceps", "Trọng lượng cơ thể", "chest shoulders", "WVeZDBhZwLA"],
+  ["Triceps Dumbbell Kickback", "Đẩy tạ đơn sau tay", "triceps", "Tạ đơn", "", "Up5e_-g2FbY"],
+  ["Standing Calf Raise", "Nhún bắp chân đứng", "calves", "Máy", "", "95itLfMBG40", "Standing Calf Raise ("],
+  ["Seated Calf Raise", "Nhún bắp chân ngồi", "calves", "Máy", "", "Bx6elAOgxMI", "Seated Calf Raise ("],
+  ["Decline Crunch", "Gập bụng ghế dốc xuống", "core", "Trọng lượng cơ thể", "", "FRzQXeN1hro"],
+  ["Woodchopper Cable", "Xoay người kéo cáp đánh bụng chéo", "core", "Cáp", "", "GwxbI7hnnwI"],
+  ["Russian Twist", "Xoay người vặn bụng", "core", "Trọng lượng cơ thể", "", "s0kT80JLCfA"],
+  ["Plank", "Plank giữ cơ bụng", "core", "Trọng lượng cơ thể", "", "15io994OUtg"],
+];
+for (const [en,vi,primary,equipment,secondary,video,existingPrefix] of catalogAdditions) {
+  const existing = existingPrefix && baseLibrary.find(item => item.name.startsWith(existingPrefix));
+  const display = {en,vi,equipment,primary:primary.split(" "),secondary:secondary ? secondary.split(" ") : [],video};
+  if (existing) Object.assign(existing,display);
+  else {
+    const name = en + " (" + vi + ")";
+    baseLibrary.push({name,...display});
+    EXERCISES.push(name);
+  }
+}
 let library = baseLibrary;
 let libraryByName = new Map(library.map(item => [item.name,item]));
 const defaultProfile = { weight: 68.5, height: 175, goal: 75 };
@@ -1134,7 +1199,7 @@ async function saveExtras(entries, account = uid) {
 }
 
 function renderAnalytics() {
-  renderRecentPR();
+  renderLastWeekWorkout();
   renderHeatmap();
   $("quickWeight").hidden = validNumber(extras["tracker-body-" + todayKey()]?.weight);
 }
@@ -1208,15 +1273,15 @@ function renderLibrary() {
   const role = $("roleFilter").value;
   const gear = $("equipmentFilter").value;
   const muscleKeys = muscle === "legs" ? ["quads","hamstrings","glutes","calves"] : [muscle];
-  const matches = library.filter(item => (!term || normalizeFood(item.name).includes(term)) &&
+  const matches = library.filter(item => (!term || normalizeFood([item.name,item.en,item.vi].filter(Boolean).join(" ")).includes(term)) &&
     (!gear || item.equipment === gear) &&
     (!muscle || (role ? item[role] : [...item.primary, ...item.secondary]).some(key => muscleKeys.includes(key))));
   $("libraryList").innerHTML = matches.map(item => {
     const videoURL = item.video ? "https://www.youtube.com/watch?v=" + item.video : "https://www.youtube.com/results?search_query=" + encodeURIComponent(item.name.split(" (")[0] + " exercise proper form");
     const bilingual = item.name.match(/^(.+?) \((.+)\)$/);
     return `<article class="library-row">
-      <div class="exercise-heading"><div><strong class="exercise-en">${escapeHtml(bilingual?.[1] || item.name)}</strong>
-        ${bilingual ? `<span class="exercise-vn">${escapeHtml(bilingual[2])}</span>` : ""}
+      <div class="exercise-heading"><div><strong class="exercise-en">${escapeHtml(item.en || bilingual?.[1] || item.name)}</strong>
+        ${(item.vi || bilingual) ? `<span class="exercise-vn">${escapeHtml(item.vi || bilingual[2])}</span>` : ""}
         <div class="muscle-tags">${item.primary.map(key => `<span data-muscle="${key}">${escapeHtml(MUSCLES[key])}</span>`).join("")}</div>
       </div><a class="video-link" target="_blank" rel="noopener noreferrer" href="${videoURL}">${item.video ? "▣ ▶ YouTube" : "Tìm video"}</a></div>
       <details ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>Chi tiết</summary>
@@ -1696,29 +1761,32 @@ function epleyLabel(sets) {
   return value ? "1RM ước tính · " + format.format(Math.round(value * 10) / 10) + " kg" : "";
 }
 
-function renderRecentPR() {
-  const latest = [];
-  const history = new Map();
-  const dates = Object.keys(logs).filter(isDateKey).sort();
-  for (const date of dates) {
-    for (const [name,sets] of Object.entries(logs[date] || {})) {
-      const current = bestSetStats(sets);
-      if (!current.r) continue;
-      const previous = history.get(name);
-      const records = previous ? [
-        ...(current.w > previous.w ? [format.format(current.w) + " kg"] : []),
-        ...(current.r > previous.r ? [current.r + " reps"] : [])
-      ] : [];
-      if (records.length) {
-        latest.push({name,date,records});
-        if (latest.length > 6) latest.shift();
-      }
-      history.set(name,{w:Math.max(current.w,previous?.w ?? -1),r:Math.max(current.r,previous?.r ?? 0)});
-    }
+function lastWeekSession(today) {
+  const day = localDate(today).getDay();
+  if (!planFor(day,today).length) return null;
+  const type = templateDay(day,today);
+  const monday = startOfWeek(localDate(today));
+  const dates = DAYS.map((weekday,index) => ({weekday,date:weekDate(monday,index-7)}));
+  const match = dates.find(({weekday,date}) => templateDay(weekday,date) === type);
+  if (!match) return null;
+  const exercises = Object.entries(logs[match.date] || {}).filter(([,sets]) =>
+    Array.isArray(sets) && sets.some(complete));
+  return {date:match.date,title:WORKOUTS[day] ? TITLES[type] : "Training Day",exercises};
+}
+
+function renderLastWeekWorkout() {
+  const session = lastWeekSession(todayKey());
+  $("lastWeekTitle").textContent = session ? session.title + " · Tuần trước" : "Buổi tập tuần trước";
+  $("lastWeekDate").textContent = session ? session.date.split("-").reverse().join("/") : "";
+  if (!session) {
+    $("lastWeekExercises").innerHTML = '<p class="muted">Hôm nay là ngày nghỉ.</p>';
+    return;
   }
-  $("recentPR").innerHTML = latest.reverse().map(({name,date,records}) =>
-    `<div class="pr-entry"><span><strong class="pr-name">${escapeHtml(name)}</strong><br><span class="muted">🏆 PR · ${records.join(" · ")}</span></span><time datetime="${date}">${date.slice(8)}/${date.slice(5,7)}</time></div>`
-  ).join("") || '<div class="pr-empty"><p class="muted">Chưa ghi được kỷ lục mới.</p><a class="cta" href="#training">+ Ghi hiệp tập</a></div>';
+  $("lastWeekExercises").innerHTML = session.exercises.map(([name,sets]) => {
+    const recorded = sets.map((set,index) => complete(set)
+      ? `<li><small>Hiệp ${index+1}</small><strong>${format.format(set.w)} kg</strong><span>× ${format.format(set.r)} reps</span></li>` : "").join("");
+    return `<article class="past-exercise"><h4>${escapeHtml(name)}</h4><ul>${recorded}</ul></article>`;
+  }).join("") || '<p class="muted">Chưa có hiệp được ghi cho buổi này tuần trước.</p>';
 }
 
 function syncDock(row) {
