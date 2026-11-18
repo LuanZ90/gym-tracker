@@ -154,6 +154,22 @@ main section{scroll-margin-top:132px}
 @media(max-width:580px){.hero{grid-template-columns:1fr}.hero .intro{padding:9px}.hero-today{padding:15px}.hero-today h2{font-size:34px}.battle-badge{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.session-badge,#week .day-active,.motivation-ticker span{animation:none}.hero-today::after,.plasma-meter span{transition:none}}
 
+.overview-macros-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.overview-macros-title a{color:#ffad84;font-size:.85rem;white-space:nowrap}
+.overview-macros .energy-bars{grid-template-columns:repeat(2,minmax(0,1fr))}
+.overview-macros .energy-core{padding:8px}.overview-macros .plasma-meter{height:8px}
+.day-cell{min-width:0;display:grid;grid-template-rows:1fr auto;gap:4px}.day-cell .day{width:100%;min-width:0}
+.day-edit{min-height:36px;padding:4px;font-size:11px;justify-content:center}
+.master-controls button,.dock-buttons button,.meal-box button[type=submit],#editPlan{border-radius:0;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
+.dock-buttons button:active,.master-controls button:active{transform:translateY(2px);filter:brightness(1.26) drop-shadow(0 0 7px #ff572299);box-shadow:inset 0 0 15px #ff572299;border-color:#ff5722}
+#workout .ex{border-color:#3a3533;background:#151414}
+#workout .ex:focus-within{border-color:#ff5722;animation:gym-glow 1.65s ease-in-out infinite}
+.set-cell input{border:1px solid #333;background:#100f0f;border-radius:4px;color:#fff}
+.set-cell input:focus{border-color:#ff5722;background:#0b0a0a;outline:1px solid #ff5722;outline-offset:0}
+#mobileDock{background:rgba(13,12,12,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:#8d8985;box-shadow:0 -4px 16px #0006}
+@media(max-width:380px){.overview-macros .energy-label{flex-direction:column;gap:0}}
+@media(prefers-reduced-motion:reduce){#workout .ex:focus-within{animation:none}.dock-buttons button:active{transform:none}}
+
 </style>
 </head>
 <body>
@@ -180,6 +196,10 @@ main section{scroll-margin-top:132px}
     <div class="metric"><p class="muted">Chiều cao</p><div class="value" id="bodyHeight">175 cm</div></div>
     <div class="metric"><p class="muted">Mục tiêu</p><div class="value" id="bodyGoal">72 kg</div></div>
   </div>
+  <article class="card spaced overview-macros">
+    <div class="overview-macros-title"><h3>Dinh dưỡng hôm nay</h3><a href="#nutrition">Nhập món ›</a></div>
+    <div id="overviewNutritionBars"></div>
+  </article>
   <div class="split spaced">
     <article class="card"><h3>Volume Load theo tuần</h3><p class="muted">Tổng kg × reps trong 8 tuần, từ thứ Hai đến Chủ nhật.</p><label>Bài tập<select id="volumeFilter"><option value="">Tất cả bài tập</option></select></label><div id="volumeChart"></div></article>
     <article class="card"><h3>Cân nặng &amp; Body fat</h3><p class="muted" id="bodyReference"></p><div id="bodyChart"></div><div id="fatChart"></div></article>
@@ -371,6 +391,11 @@ const $ = id => document.getElementById(id);
 const DAY_NAMES = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 const DAYS = [1, 2, 3, 4, 5, 6, 0];
 const TITLES = ["Nghỉ", "Push Day", "Pull Day", "Legs Day", "Nghỉ", "Upper Day", "Lower Day"];
+// Keep earlier workout dates paired with the original weekday templates.
+const PULL_FIRST_FROM = "2026-11-18";
+function templateDay(day,date) {
+  return date >= PULL_FIRST_FROM && (day === 1 || day === 2) ? 3 - day : day;
+}
 const GROUPS = ["Phục hồi", "Ngực · Vai · Tay sau", "Lưng · Vai sau · Tay trước", "Đùi · Mông", "Phục hồi", "Thân trên", "Thân dưới"];
 const BENCH = "Barbell Bench Press (Đẩy ngực ngang thanh đòn)";
 const EXTRA_BENCH = [BENCH, 3, "8–12"];
@@ -448,6 +473,10 @@ function renderStats() {
 function selectDate(key) {
   selectedDate = key;
   $("dateInput").value = key;
+  for (const option of $("daySelect").options) {
+    const day = Number(option.value);
+    option.textContent = DAY_NAMES[day] + " · " + TITLES[templateDay(day,key)];
+  }
   $("daySelect").value = localDate(key).getDay();
   renderWeek();
   renderWorkout();
@@ -471,14 +500,23 @@ function renderWeek() {
     button.className = "day" + (hasPlan ? "" : " rest") + (done ? " day-completed" : active ? " day-active" : "");
     button.setAttribute("aria-pressed", String(selectedDate === key));
     if (key === todayKey()) button.setAttribute("aria-current", "date");
-    button.innerHTML = `<small>${DAY_NAMES[day]} · ${key.slice(8)}/${key.slice(5, 7)}</small><strong>${hasPlan ? (WORKOUTS[day] ? TITLES[day] : "Training Day") : "Nghỉ"}</strong><small>${hasPlan ? (WORKOUTS[day] ? GROUPS[day] : "Giáo án riêng") : "Phục hồi"}</small>${done ? '<span class="battle-badge">✓ COMPLETED</span>' : active ? '<span class="battle-badge">ACTIVE BATTLE</span>' : ""}`;
+    button.innerHTML = `<small>${DAY_NAMES[day]} · ${key.slice(8)}/${key.slice(5, 7)}</small><strong>${hasPlan ? (WORKOUTS[day] ? TITLES[templateDay(day,key)] : "Training Day") : "Nghỉ"}</strong><small>${hasPlan ? (WORKOUTS[day] ? GROUPS[templateDay(day,key)] : "Giáo án riêng") : "Phục hồi"}</small>${done ? '<span class="battle-badge">✓ COMPLETED</span>' : active ? '<span class="battle-badge">ACTIVE BATTLE</span>' : ""}`;
     button.onclick = () => {
       selectDate(key);
-      $("week").children[index].focus({ preventScroll: true });
+
       if (location.hash === "#training") $("training").scrollIntoView({block:"start"});
       else location.hash = "training";
     };
-    return button;
+    const cell = document.createElement("div");
+    cell.className = "day-cell";
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "gray day-edit";
+    edit.textContent = "Sửa giáo án";
+    edit.setAttribute("aria-label","Sửa giáo án " + DAY_NAMES[day] + " " + key.split("-").reverse().join("/"));
+    edit.onclick = () => openPlanEditor(day,key);
+    cell.append(button,edit);
+    return cell;
   }));
 }
 
@@ -1281,11 +1319,23 @@ function renderNutrition(updateInputs = true) {
   }
   const combined = nutritionTotals($("nutritionDate").value);
   renderFoodLog();
+  $("nutritionBars").innerHTML = macroBars(combined,calorieGoal,proteinGoal);
+  renderOverviewNutrition();
+}
+
+function renderOverviewNutrition() {
+  const targets = extras["tracker-goals"] || {};
+  $("overviewNutritionBars").innerHTML = macroBars(nutritionTotals(todayKey()),
+    targets.calorieGoal > 0 ? targets.calorieGoal : 2200,
+    targets.proteinGoal > 0 ? targets.proteinGoal : 120);
+}
+
+function macroBars(combined,calorieGoal,proteinGoal) {
   const macros = [
     ["Calories",combined.calories,calorieGoal,"kcal","calories"],
     ["Protein",combined.protein,proteinGoal,"g","protein"]
   ];
-  $("nutritionBars").innerHTML = '<div class="energy-bars">' + macros.map(([label,current,goal,unit,key]) => {
+  return '<div class="energy-bars">' + macros.map(([label,current,goal,unit,key]) => {
     const percent = Math.round(current / goal * 100);
     const reached = key === "protein" && current >= goal;
     return `<div class="energy-core ${reached ? "energy-ready" : ""}"><div class="energy-label"><strong>${label}</strong>
@@ -1481,15 +1531,15 @@ function planFor(day, date) {
   return extras[revision]?.rows?.map(row => Array.isArray(row) ? row : [row.name,row.sets,row.reps]).filter(row =>
     Array.isArray(row) && typeof row[0] === "string" && Number.isInteger(row[1]) && row[1] >= 1 && row[1] <= 6 &&
     typeof row[2] === "string"
-  ) ?? WORKOUTS[day]?.exercises ?? [];
+  ) ?? WORKOUTS[templateDay(day,date)]?.exercises ?? [];
 }
 
 function updateTodayPlan() {
   const date = todayKey(), day = localDate(date).getDay();
   const plan = planFor(day,date);
-  $("todayWorkout").textContent = plan.length ? (WORKOUTS[day] ? TITLES[day] : "Training Day") : "Nghỉ";
+  $("todayWorkout").textContent = plan.length ? (WORKOUTS[day] ? TITLES[templateDay(day,date)] : "Training Day") : "Nghỉ";
   $("todayDetail").textContent = plan.length
-    ? (WORKOUTS[day] ? GROUPS[day] : "Giáo án riêng") + " · " + plan.length + " bài"
+    ? (WORKOUTS[day] ? GROUPS[templateDay(day,date)] : "Giáo án riêng") + " · " + plan.length + " bài"
     : "Ngày phục hồi theo lịch tuần";
 }
 
@@ -1737,6 +1787,14 @@ function stashPlanFields() {
   }
 }
 
+function openPlanEditor(day,from) {
+    planTarget = {day,date:from};
+    planDraft = planFor(day,from).map(row => [...row]);
+    $("planDateLabel").textContent = DAY_NAMES[day] + " · áp dụng từ " + from.split("-").reverse().join("/") + " cho các tuần sau";
+    renderPlanEditor();
+    $("planDialog").showModal();
+}
+
 function renderPlanEditor() {
   $("planRows").innerHTML = planDraft.map(([name,count,reps],index) => `<div class="plan-row">
     <strong>${escapeHtml(name)}</strong>
@@ -1785,15 +1843,7 @@ function initV4() {
     if (date === selectedDate) $("recoveryDetails").open = false;
   });
 
-  $("editPlan").onclick = () => {
-    const day = Number($("daySelect").value);
-    const from = selectedDate;
-    planTarget = {day,date:from};
-    planDraft = planFor(day,from).map(row => [...row]);
-    $("planDateLabel").textContent = DAY_NAMES[day] + " · áp dụng từ " + from.split("-").reverse().join("/") + " cho các tuần sau";
-    renderPlanEditor();
-    $("planDialog").showModal();
-  };
+  $("editPlan").onclick = () => openPlanEditor(Number($("daySelect").value),selectedDate);
   $("planAdd").onchange = () => {
     const name = $("planAdd").value;
     if (!name) return;
@@ -1859,7 +1909,7 @@ const todayPlan = WORKOUTS[today.getDay()];
 $("todayDetail").textContent = todayPlan
   ? GROUPS[today.getDay()] + " · " + todayPlan.exercises.length + " bài"
   : "Ngày phục hồi theo lịch tuần";
-for (const day of DAYS) $("daySelect").add(new Option(DAY_NAMES[day] + " · " + TITLES[day], day));
+for (const day of DAYS) $("daySelect").add(new Option(DAY_NAMES[day],day));
 for (const name of EXERCISES) $("progressSelect").add(new Option(name, name));
 initV4();
 initFeatures();
@@ -1881,6 +1931,7 @@ function showGymScreen() {
     else tab.removeAttribute("aria-current");
   });
   syncDock();
+  if (screen === "overview") renderOverviewNutrition();
   if (target === "training") $("training").scrollIntoView({block:"start"});
   else window.scrollTo({top:0,behavior:"instant"});
 }
