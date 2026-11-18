@@ -119,6 +119,41 @@ main section{scroll-margin-top:132px}
 .library-row .video-link{flex:none;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
 #mealPreview{color:#ffb08a;font-weight:650}
 [data-screen][hidden],#mobileDock[hidden]{display:none!important}
+.hero{grid-template-columns:repeat(2,minmax(0,1fr));padding:clamp(12px,3vw,30px);gap:14px;position:relative;border:1px solid #ff5722;box-shadow:0 0 18px #ff572244,inset 0 0 15px #ff572222;
+  background:radial-gradient(ellipse at right top,#b73f2526,transparent 65%),repeating-conic-gradient(#151414 0 25%,#1b1919 0 50%) 0 0/7px 7px}
+.hero .intro{padding:clamp(8px,2vw,24px);min-width:0}.hero h1{font-family:Impact,"Arial Black",system-ui,sans-serif;font-weight:950;line-height:1.02;letter-spacing:-.035em;font-size:clamp(36px,6.7vw,84px);text-transform:uppercase;color:#f7f1eb}
+@supports (-webkit-text-stroke:1px white){.hero h1{color:transparent;-webkit-text-stroke:1.5px #f7f1eb}.hero h1 span{color:#ff702e;-webkit-text-stroke:0}}
+.hero h1 span{font-size:.52em;line-height:1.06;letter-spacing:-.014em}
+.hero-today{position:relative;overflow:hidden;border-radius:20px;border:1px solid #f7916866;background:rgba(255,116,64,.15);color:#fff0e8;backdrop-filter:blur(8px);isolation:isolate}
+.hero-today .eyebrow{color:#ffb298}.hero-today h2{overflow-wrap:anywhere}
+.hero-today::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 28%,#ffd5bf35 49%,transparent 70%);transform:translateX(-110%);transition:transform .8s;z-index:-1}
+.hero-today:hover::after{transform:translateX(110%)}
+.motivation-ticker{overflow:hidden;white-space:nowrap;max-width:100%;margin:-8px 0 13px;color:#ff9d76;font-size:10px;font-weight:850;letter-spacing:.1em}
+.motivation-ticker span{display:inline-block;animation:gym-ticker 22s linear infinite alternate}
+.session-badge,.battle-badge{display:inline-block;align-self:start;border:1px solid #a84622;border-radius:5px;background:#371c13;color:#ffb294;font-size:9px;line-height:1.2;padding:4px 5px;letter-spacing:.04em;font-weight:850}
+.session-badge{margin-top:6px;animation:gym-glow 2.6s ease-in-out infinite}.session-badge[hidden]{display:none}
+@keyframes gym-ticker{to{transform:translateX(-42%)}}
+@keyframes gym-glow{50%{box-shadow:0 0 12px #ff572277}}
+#week .day{background:repeating-linear-gradient(175deg,#151515 0 2px,#171616 2px 4px);border-color:#5b5350}
+#week .day-active{border-color:#ff5722;animation:gym-glow 2.6s ease-in-out infinite}
+#week .day-completed{border-color:#66716c;background:#202823}
+.day-completed .battle-badge{background:#26332d;color:#aee8c9;border-color:#4d7964}
+.muscle-item:hover{color:#ffa884;background:#271b17}
+.energy-bars{display:grid;gap:10px}.energy-core{background:#171313;border:1px solid #50332a;border-radius:10px;padding:10px}
+.energy-label{display:flex;justify-content:space-between;gap:8px}.energy-core small{color:#ff9d76}
+.plasma-meter{height:12px;background:#31231e;border:1px solid #684035;overflow:hidden;margin:8px 0 3px;transform:skewX(-10deg)}
+.plasma-meter span{display:block;height:100%;background:repeating-linear-gradient(118deg,#ff5722 0 9px,#ff854f 9px 13px);box-shadow:0 0 12px #ff5722;transition:width .25s}
+.energy-ready .plasma-meter span{background:repeating-linear-gradient(118deg,#36f195 0 9px,#b4ffc3 9px 13px);box-shadow:0 0 12px #36f195}
+.energy-ready small{color:#8cffba}.meal-box button[type=submit]{border-radius:4px 13px 4px 13px}.meal-box button[type=submit]:active{transform:scale(.97)}
+.exercise-en{text-transform:uppercase;display:block;font-family:"Arial Black",system-ui,sans-serif;font-weight:900;font-size:clamp(14px,2vw,19px)}
+.muscle-tags [data-muscle=quads],.muscle-tags [data-muscle=hamstrings],.muscle-tags [data-muscle=calves]{background:#482014;border-color:#954526;color:#ffb085}
+.muscle-tags [data-muscle=back],.muscle-tags [data-muscle=lowerBack]{background:#411a2a;border-color:#874659;color:#ffaebf}
+.muscle-tags [data-muscle=shoulders]{background:#382a14;border-color:#8c6734;color:#ffce77}
+.muscle-tags [data-muscle=chest],.muscle-tags [data-muscle=core]{background:#253144;border-color:#426083;color:#b7d9ff}
+.muscle-tags [data-muscle=biceps],.muscle-tags [data-muscle=triceps],.muscle-tags [data-muscle=glutes]{background:#312345;border-color:#725185;color:#dfbafa}
+@media(max-width:580px){.hero{grid-template-columns:1fr}.hero .intro{padding:9px}.hero-today{padding:15px}.hero-today h2{font-size:34px}.battle-badge{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.session-badge,#week .day-active,.motivation-ticker span{animation:none}.hero-today::after,.plasma-meter span{transition:none}}
+
 </style>
 </head>
 <body>
@@ -133,7 +168,8 @@ main section{scroll-margin-top:132px}
 </header>
 <main class="wrap">
 <div class="hero" id="homeHero" data-screen="overview">
-  <div class="intro"><div class="eyebrow">Chào Luân</div><h1>Never Give Up<span>One More...One More</span></h1><a id="startWorkoutLink" class="cta" href="#training">Mở nhật ký tập →</a></div>
+  <div class="intro"><div class="eyebrow">Chào Luân</div><span id="sessionBadge" class="session-badge" hidden>SESSION IN PROGRESS</span><h1>Never Give Up<span>One More...One More</span></h1>
+  <div class="motivation-ticker" aria-hidden="true"><span>NEVER GIVE UP &nbsp; ◆ &nbsp; ONE MORE...ONE MORE &nbsp; ◆ &nbsp; NEVER GIVE UP</span></div><a id="startWorkoutLink" class="cta" href="#training">Mở nhật ký tập →</a></div>
   <div class="hero-today"><div class="eyebrow" id="todayLabel">Hôm nay</div><h2 id="todayWorkout">Lịch tập</h2><p id="todayDetail"></p></div>
 </div>
 <section data-screen="overview" id="overview" aria-labelledby="overviewTitle">
@@ -334,7 +370,7 @@ main section{scroll-margin-top:132px}
 const $ = id => document.getElementById(id);
 const DAY_NAMES = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 const DAYS = [1, 2, 3, 4, 5, 6, 0];
-const TITLES = ["Nghỉ", "Push", "Pull", "Legs", "Nghỉ", "Upper", "Lower"];
+const TITLES = ["Nghỉ", "Push Day", "Pull Day", "Legs Day", "Nghỉ", "Upper Day", "Lower Day"];
 const GROUPS = ["Phục hồi", "Ngực · Vai · Tay sau", "Lưng · Vai sau · Tay trước", "Đùi · Mông", "Phục hồi", "Thân trên", "Thân dưới"];
 const BENCH = "Barbell Bench Press (Đẩy ngực ngang thanh đòn)";
 const EXTRA_BENCH = [BENCH, 3, "8–12"];
@@ -385,20 +421,24 @@ function maxWeight(sets) {
   return Math.max(0, ...(Array.isArray(sets) ? sets.map(s => validNumber(s?.w) ? s.w : 0) : []));
 }
 
+function isDayComplete(plan,date) {
+  const entries = logs[date] || {};
+  return plan.length > 0 && plan.every(([name,slots]) =>
+    Array.from({length:slots},(_,slot) => complete(entries[name]?.[slot])).every(Boolean)
+  );
+}
+
 function renderStats() {
   const monday = startOfWeek(new Date());
   const plans = DAYS.map((day,index) => planFor(day,weekDate(monday,index)));
   const count = DAYS.filter((day, index) => {
-    const plan = plans[index];
-    const entries = logs[weekDate(monday, index)] || {};
-    return plan.length > 0 && plan.every(([name, slots]) =>
-      Array.from({ length: slots }, (_, slot) => complete(entries[name]?.[slot])).every(Boolean)
-    );
+    return isDayComplete(plans[index],weekDate(monday,index));
   }).length;
   const planned = plans.filter(plan => plan.length).length;
   $("weekPercent").textContent = Math.round(planned ? count / planned * 100 : 0) + "%";
   $("weekProgress").max = Math.max(1, planned);
   $("weekProgress").value = count;
+  renderWeek();
   $("weekCount").textContent = count + " / " + planned + " buổi đã hoàn thành đủ hiệp";
   $("bodyWeight").textContent = format.format(profile.weight) + " kg";
   $("bodyHeight").textContent = format.format(profile.height) + " cm";
@@ -424,11 +464,14 @@ function renderWeek() {
   $("week").replaceChildren(...DAYS.map((day, index) => {
     const key = weekDate(monday, index);
     const button = document.createElement("button");
-    const hasPlan = planFor(day,key).length;
-    button.className = hasPlan ? "day" : "day rest";
+    const plan = planFor(day,key);
+    const hasPlan = plan.length > 0;
+    const done = isDayComplete(plan,key);
+    const active = hasPlan && key === todayKey() && !done;
+    button.className = "day" + (hasPlan ? "" : " rest") + (done ? " day-completed" : active ? " day-active" : "");
     button.setAttribute("aria-pressed", String(selectedDate === key));
     if (key === todayKey()) button.setAttribute("aria-current", "date");
-    button.innerHTML = `<small>${DAY_NAMES[day]} · ${key.slice(8)}/${key.slice(5, 7)}</small><strong>${hasPlan ? (WORKOUTS[day] ? TITLES[day] : "Buổi tập") : "Nghỉ"}</strong><small>${hasPlan ? (WORKOUTS[day] ? GROUPS[day] : "Giáo án riêng") : "Phục hồi"}</small>`;
+    button.innerHTML = `<small>${DAY_NAMES[day]} · ${key.slice(8)}/${key.slice(5, 7)}</small><strong>${hasPlan ? (WORKOUTS[day] ? TITLES[day] : "Training Day") : "Nghỉ"}</strong><small>${hasPlan ? (WORKOUTS[day] ? GROUPS[day] : "Giáo án riêng") : "Phục hồi"}</small>${done ? '<span class="battle-badge">✓ COMPLETED</span>' : active ? '<span class="battle-badge">ACTIVE BATTLE</span>' : ""}`;
     button.onclick = () => {
       selectDate(key);
       $("week").children[index].focus({ preventScroll: true });
@@ -1075,7 +1118,7 @@ function renderHeatmap() {
     <text x="60" y="263" fill="#b5b1ad" text-anchor="middle" font-size="12">Mặt trước</text>
     <text x="200" y="263" fill="#b5b1ad" text-anchor="middle" font-size="12">Mặt sau</text></svg>`;
   $("muscleCounts").innerHTML = Object.entries(totals).sort((a,b) => b[1]-a[1]).map(([key, count]) =>
-    `<div class="muscle-item"><span><i class="swatch" style="background:${color(key)}"></i>${MUSCLES[key]}</span><strong>${format.format(count)} hiệp</strong></div>`
+    `<a class="muscle-item" href="#library?muscle=${key}"><span><i class="swatch" style="background:${color(key)}"></i>${MUSCLES[key]}</span><strong>${format.format(count)} hiệp ›</strong></a>`
   ).join("");
 }
 
@@ -1092,10 +1135,10 @@ function renderLibrary() {
     const videoURL = item.video ? "https://www.youtube.com/watch?v=" + item.video : "https://www.youtube.com/results?search_query=" + encodeURIComponent(item.name.split(" (")[0] + " exercise proper form");
     const bilingual = item.name.match(/^(.+?) \((.+)\)$/);
     return `<article class="library-row">
-      <div class="exercise-heading"><div><strong>${escapeHtml(bilingual?.[1] || item.name)}</strong>
+      <div class="exercise-heading"><div><strong class="exercise-en">${escapeHtml(bilingual?.[1] || item.name)}</strong>
         ${bilingual ? `<span class="exercise-vn">${escapeHtml(bilingual[2])}</span>` : ""}
-        <div class="muscle-tags">${item.primary.map(key => `<span>${escapeHtml(MUSCLES[key])}</span>`).join("")}</div>
-      </div><a class="video-link" target="_blank" rel="noopener noreferrer" href="${videoURL}">${item.video ? "▶ YouTube" : "Tìm video"}</a></div>
+        <div class="muscle-tags">${item.primary.map(key => `<span data-muscle="${key}">${escapeHtml(MUSCLES[key])}</span>`).join("")}</div>
+      </div><a class="video-link" target="_blank" rel="noopener noreferrer" href="${videoURL}">${item.video ? "▣ ▶ YouTube" : "Tìm video"}</a></div>
       <details ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>Chi tiết</summary>
       <p class="muted">${escapeHtml(item.equipment)}${item.secondary.length ? " · Cơ phụ: " + item.secondary.map(key => MUSCLES[key]).join(", ") : ""}</p>
       <div class="actions"><button class="gray quick" type="button" data-video-edit="${EXERCISES.indexOf(item.name)}">Sửa link video</button></div>
@@ -1178,6 +1221,15 @@ function initFoodEstimator() {
 
   let pending;
   form.addEventListener("input", () => { pending = null; });
+  form.addEventListener("submit",() => {
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (Audio) {
+      try {
+        sound ??= new Audio();
+        void sound.resume().catch(() => {});
+      } catch {}
+    }
+  });
   bindForm("mealForm", async data => {
     const date = $("nutritionDate").value;
     const name = String(data.get("name")).trim();
@@ -1195,8 +1247,25 @@ function initFoodEstimator() {
     form.reset();
     pending = null;
     preview(true);
+    playMealFeedback();
     $("mealStatus").textContent = "Đã cộng " + name + " vào ngày " + date.split("-").reverse().join("/") + ".";
   });
+}
+
+function playMealFeedback() {
+  navigator.vibrate?.(24);
+  if (sound?.state !== "running") return;
+  const tone = sound.createOscillator();
+  const gain = sound.createGain();
+  const now = sound.currentTime;
+  tone.type = "triangle";
+  tone.frequency.setValueAtTime(460,now);
+  tone.frequency.exponentialRampToValueAtTime(210,now + .08);
+  gain.gain.setValueAtTime(.06,now);
+  gain.gain.exponentialRampToValueAtTime(.001,now + .09);
+  tone.connect(gain).connect(sound.destination);
+  tone.start(now);
+  tone.stop(now + .1);
 }
 
 function renderNutrition(updateInputs = true) {
@@ -1212,14 +1281,17 @@ function renderNutrition(updateInputs = true) {
   }
   const combined = nutritionTotals($("nutritionDate").value);
   renderFoodLog();
-  const rings = [
-    ["Calories", combined.calories, calorieGoal, "kcal", "#ff7136"],
-    ["Protein", combined.protein, proteinGoal, "g", "#5de1c0"]
+  const macros = [
+    ["Calories",combined.calories,calorieGoal,"kcal","calories"],
+    ["Protein",combined.protein,proteinGoal,"g","protein"]
   ];
-  $("nutritionBars").innerHTML = '<div class="nutrition-rings">' + rings.map(([label,current,goal,unit,color]) => {
+  $("nutritionBars").innerHTML = '<div class="energy-bars">' + macros.map(([label,current,goal,unit,key]) => {
     const percent = Math.round(current / goal * 100);
-    return `<div class="nutri-ring"><div class="ring" style="--fill:${Math.min(100,percent)};--ring-color:${color}" role="img" aria-label="${label} ${percent}% mục tiêu"><strong aria-hidden="true">${percent}%</strong></div>
-      <strong>${label}</strong><small class="muted">${format.format(current)} / ${format.format(goal)} ${unit}</small></div>`;
+    const reached = key === "protein" && current >= goal;
+    return `<div class="energy-core ${reached ? "energy-ready" : ""}"><div class="energy-label"><strong>${label}</strong>
+      <span>${format.format(current)} / ${format.format(goal)} ${unit}</span></div>
+      <div class="plasma-meter" role="progressbar" aria-label="${label}" aria-valuenow="${Math.min(current,goal)}" aria-valuemax="${goal}" aria-valuetext="${percent}%"><span style="width:${Math.min(100,percent)}%"></span></div>
+      <small>${percent}%${reached ? " · PROTEIN GOAL REACHED" : ""}</small></div>`;
   }).join("") + '</div>';
 }
 
@@ -1415,7 +1487,7 @@ function planFor(day, date) {
 function updateTodayPlan() {
   const date = todayKey(), day = localDate(date).getDay();
   const plan = planFor(day,date);
-  $("todayWorkout").textContent = plan.length ? (WORKOUTS[day] ? TITLES[day] : "Buổi tập") : "Nghỉ";
+  $("todayWorkout").textContent = plan.length ? (WORKOUTS[day] ? TITLES[day] : "Training Day") : "Nghỉ";
   $("todayDetail").textContent = plan.length
     ? (WORKOUTS[day] ? GROUPS[day] : "Giáo án riêng") + " · " + plan.length + " bài"
     : "Ngày phục hồi theo lịch tuần";
@@ -1570,6 +1642,7 @@ function updateDuration() {
   const item = extras["tracker-duration-" + date];
   const seconds = item?.started ? Math.max(0,Math.floor(((item.ended || Date.now()) - item.started) / 1000)) : 0;
   $("durationTime").textContent = durationLabel(seconds);
+  $("sessionBadge").hidden = !active;
   $("durationAction").disabled = durationSaving || Boolean(active);
   $("durationStop").disabled = durationSaving || !active;
   syncDock();
@@ -1791,7 +1864,15 @@ for (const name of EXERCISES) $("progressSelect").add(new Option(name, name));
 initV4();
 initFeatures();
 function showGymScreen() {
-  const target = location.hash.slice(1);
+  const [target,query] = location.hash.slice(1).split("?");
+  const muscle = new URLSearchParams(query).get("muscle");
+  if (target === "library" && Object.hasOwn(MUSCLES,muscle)) {
+    $("muscleFilter").value = muscle;
+    $("roleFilter").value = "";
+    $("equipmentFilter").value = "";
+    $("exerciseSearch").value = "";
+    renderLibrary();
+  }
   const routes = {overview:"overview",schedule:"schedule",training:"schedule",nutrition:"nutrition",library:"library",photos:"photos"};
   const screen = Object.hasOwn(routes,target) ? routes[target] : "overview";
   document.querySelectorAll("[data-screen]").forEach(panel => { panel.hidden = panel.dataset.screen !== screen; });
