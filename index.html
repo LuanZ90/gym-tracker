@@ -1,85 +1,300 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gym Tracker của Luân</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #111; color: #eee; margin: 0; padding: 16px; }
-    h1 { color: #f5a623; text-align: center; }
-    .card { background: #1e1e1e; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-    select, input, button { font-size: 16px; padding: 10px; margin: 4px 0; width: 100%; box-sizing: border-box; border-radius: 8px; border: none; }
-    button { background: #f5a623; font-weight: bold; cursor: pointer; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border-bottom: 1px solid #333; padding: 8px; text-align: left; font-size: 14px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gym Tracker của Luân</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #111; color: #eee; margin: 0; padding: 12px; max-width: 700px; margin-left: auto; margin-right: auto; }
+  h1 { color: #f5a623; text-align: center; font-size: 22px; }
+  h2 { color: #f5a623; font-size: 18px; margin: 4px 0 10px; }
+  .card { background: #1e1e1e; border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+  .ex { border-bottom: 1px solid #333; padding: 10px 0; border-radius: 8px; }
+  .ex:last-child { border-bottom: none; }
+  .ex.done { background: #2e4d2e; padding: 10px; }
+  .ex-name { font-weight: bold; font-size: 15px; }
+  .ex-info { font-size: 13px; color: #aaa; margin: 4px 0 6px; }
+  .last { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .set { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+  .set span { width: 52px; font-size: 14px; }
+  .set input { flex: 1; padding: 8px; font-size: 16px; border-radius: 8px; border: none; background: #2b2b2b; color: #fff; min-width: 0; }
+  select, button { font-size: 16px; padding: 10px; border-radius: 8px; border: none; width: 100%; }
+  select { background: #2b2b2b; color: #fff; margin-bottom: 8px; }
+  button { background: #f5a623; font-weight: bold; cursor: pointer; margin-top: 6px; }
+  button.gray { background: #333; color: #eee; }
+  #timer { font-size: 34px; text-align: center; color: #f5a623; font-weight: bold; margin: 6px 0; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; }
+  .bar-label { width: 50px; color: #aaa; }
+  .bar { height: 16px; background: #f5a623; border-radius: 4px; }
+  .bar-val { white-space: nowrap; }
+</style>
 </head>
 <body>
-  <h1>🏋️ Gym Tracker</h1>
+  <h1>🏋️ Gym Tracker của Luân</h1>
 
   <div class="card">
-    <h3>Ghi buổi tập hôm nay</h3>
-    <select id="exercise"></select>
-    <input type="number" id="weight" placeholder="Tạ (kg)" step="0.5">
-    <input type="number" id="reps" placeholder="Số reps">
-    <button onclick="addLog()">Lưu</button>
+    <h2 id="todayTitle"></h2>
+    <select id="daySelect" onchange="renderWorkout()"></select>
+    <div id="workout"></div>
   </div>
 
   <div class="card">
-    <h3>Lịch sử (30 lần gần nhất)</h3>
-    <table id="logTable"></table>
+    <h2>⏱️ Đồng hồ nghỉ</h2>
+    <div id="timer">--</div>
+    <button onclick="startRest(90)">Nghỉ 90 giây</button>
+    <button class="gray" onclick="startRest(60)">Nghỉ 60 giây</button>
+  </div>
+
+  <div class="card">
+    <h2>📈 Tiến độ theo bài</h2>
+    <select id="progressSelect" onchange="renderProgress()"></select>
+    <div id="progress"></div>
+  </div>
+
+  <div class="card">
+    <h2>💾 Sao lưu dữ liệu</h2>
+    <button onclick="exportData()">Xuất ra file</button>
+    <button class="gray" onclick="document.getElementById('importFile').click()">Nhập từ file</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
 
   <script>
-    const exercises = [
-      "Bench Press (Đẩy ngực)",
-      "Hack Squat (Squat máy)",
-      "Leg Extension (Duỗi chân)",
-      "Leg Curl (Gập chân)",
-      "Lat Pulldown (Kéo xà)",
-      "Hip Abduction (Dạng hông)"
-    ];
+    const DAY_NAMES = { 1: "Thứ 2", 2: "Thứ 3", 3: "Thứ 4", 4: "Thứ 5", 5: "Thứ 6", 6: "Thứ 7", 0: "Chủ nhật" };
 
-    const select = document.getElementById("exercise");
-    exercises.forEach(name => {
-      const opt = document.createElement("option");
-      opt.textContent = name;
-      select.appendChild(opt);
-    });
+    // Mỗi bài: [tên, số set, số reps]
+    const WORKOUTS = {
+      1: { name: "Buổi 1 – PUSH (Đẩy: Ngực, Vai, Tay sau)", exercises: [
+        ["Incline Machine Chest Press (Đẩy ngực máy nghiêng 30 độ)", 4, "8–10"],
+        ["Chest Press Machine (Đẩy ngực máy ngang)", 3, "8–10"],
+        ["Seated Dumbbell Press (Đẩy vai tạ đơn ngồi)", 3, "8–12"],
+        ["Cable Lateral Raise (Nâng vai ngang cáp)", 4, "12–15"],
+        ["Skull Crusher (Duỗi tay nằm thanh EZ)", 3, "10–12"],
+        ["Overhead Cable Triceps Extension (Duỗi tay sau qua đầu bằng cáp)", 3, "12–15"]
+      ]},
+      2: { name: "Buổi 2 – PULL (Kéo: Lưng, Vai sau, Tay trước)", exercises: [
+        ["Pull-up Neutral Grip (Hít xà tay cầm song song)", 4, "8–10"],
+        ["Chest-Supported Row (Kéo lưng có tựa ngực)", 4, "10–12"],
+        ["Lat Pulldown Wide Grip (Kéo xô tay cầm rộng)", 3, "10–12"],
+        ["Reverse Pec Deck (Máy ép ngực ngược)", 3, "12–15"],
+        ["Face Pull (Kéo cáp về mặt)", 3, "12–15"],
+        ["Incline Dumbbell Curl (Cuốn tạ đơn ghế dốc)", 3, "12–15"],
+        ["Preacher Curl (Cuốn bắp tay trước ghế dốc)", 3, "12–15"]
+      ]},
+      3: { name: "Buổi 3 – LEGS (Chân: Đùi trước, Đùi sau, Mông)", exercises: [
+        ["Reverse Hack Squat (Hack Squat úp ngược)", 4, "8–10"],
+        ["Hip Thrust (Đẩy hông)", 4, "10–12"],
+        ["Leg Press mid foot (Đạp đùi máy, đặt chân giữa)", 3, "10–12"],
+        ["Romanian Deadlift – RDL (Kéo tạ đòn chân thẳng)", 3, "8–10"],
+        ["Leg Extension (Đá đùi trước)", 3, "12–15"],
+        ["Seated Leg Curl (Móc đùi sau ngồi)", 3, "12–15"],
+        ["Standing Calf Raise (Nhún bắp chân đứng)", 3, "12–15"]
+      ]},
+      5: { name: "Buổi 4 – UPPER (Thân trên, tập nhẹ hơn)", exercises: [
+        ["Incline Dumbbell Press (Đẩy tạ đơn ghế dốc)", 3, "8–12"],
+        ["Single-Arm Dumbbell Row (Kéo tạ đơn 1 tay)", 3, "10–12"],
+        ["Cable Crossover high-to-low (Ép ngực cáp từ cao xuống thấp)", 3, "12–15"],
+        ["Dumbbell Lateral Raise (Nâng vai ngang tạ đơn)", 3, "12–15"],
+        ["Cable Hammer Curl (Cuốn búa cáp)", 3, "12–15"],
+        ["Triceps Cable Rope Pushdown (Kéo cáp tay sau)", 3, "12–15"],
+        ["Hanging Knee Raise (Gập bụng treo người)", 3, "12–15"]
+      ]},
+      6: { name: "Buổi 5 – LOWER (Thân dưới, bổ trợ)", exercises: [
+        ["Leg Press mid foot (Đạp đùi máy, đặt chân giữa)", 3, "10–12"],
+        ["Lying Leg Curl (Móc đùi sau nằm)", 3, "10–12"],
+        ["Leg Extension (Đá đùi trước)", 3, "12–15"],
+        ["45° Back Extension (Gập lưng 45°)", 3, "12–15"],
+        ["Seated Calf Raise (Nhún bắp chân ngồi)", 4, "15–20"],
+        ["Cable Crunch (Gập bụng cáp)", 3, "12–15"]
+      ]}
+    };
 
-    let logs = JSON.parse(localStorage.getItem("gymLogs") || "[]");
+    // Dữ liệu ghi: key = "yyyy-mm-dd|tên bài", value = mảng các set {w, r}
+    let logs = JSON.parse(localStorage.getItem("gymLogsV2") || "{}");
 
-    function addLog() {
-      const weight = parseFloat(document.getElementById("weight").value);
-      const reps = parseInt(document.getElementById("reps").value);
+    function saveLogs() {
+      localStorage.setItem("gymLogsV2", JSON.stringify(logs));
+    }
 
-      if (isNaN(weight) || isNaN(reps)) {
-        alert("Nhập đủ tạ và số reps nha 2!");
+    function todayKey() {
+      const d = new Date();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return d.getFullYear() + "-" + mm + "-" + dd;
+    }
+
+    function maxWeight(sets) {
+      let m = 0;
+      (sets || []).forEach(s => { if (s && s.w && s.w > m) m = s.w; });
+      return m;
+    }
+
+    // Lấy các set của lần tập gần nhất trước hôm nay
+    function getLastSets(name) {
+      const today = todayKey();
+      const keys = Object.keys(logs)
+        .filter(k => k.endsWith("|" + name) && k.split("|")[0] < today)
+        .sort();
+      return keys.length ? logs[keys[keys.length - 1]] : null;
+    }
+
+    function renderWorkout() {
+      const day = Number(document.getElementById("daySelect").value);
+      const w = WORKOUTS[day];
+      const box = document.getElementById("workout");
+
+      if (!w) {
+        box.innerHTML = "<p>Hôm nay nghỉ ngơi nhé 2. Nghỉ cũng là một phần của tập luyện 😄</p>";
         return;
       }
 
-      logs.unshift({
-        date: new Date().toLocaleDateString("vi-VN"),
-        exercise: select.value,
-        weight: weight,
-        reps: reps
+      let html = `<p class="ex-info"><b>${w.name}</b></p>`;
+
+      w.exercises.forEach(([name, sets, reps], i) => {
+        const key = todayKey() + "|" + name;
+        const cur = logs[key] || [];
+
+        let done = true;
+        for (let s = 0; s < sets; s++) {
+          if (!cur[s] || !cur[s].w || !cur[s].r) { done = false; break; }
+        }
+
+        const last = getLastSets(name);
+        const lastText = last ? `<div class="last">Lần trước: tạ cao nhất ${maxWeight(last)}kg</div>` : "";
+
+        let rows = "";
+        for (let s = 0; s < sets; s++) {
+          const c = cur[s] || {};
+          rows += `
+            <div class="set">
+              <span>Set ${s + 1}</span>
+              <input type="number" inputmode="decimal" step="0.5" placeholder="kg"
+                value="${c.w ?? ""}" onchange="updateSet(${day}, ${i}, ${s}, 'w', this.value)">
+              <input type="number" inputmode="numeric" placeholder="reps"
+                value="${c.r ?? ""}" onchange="updateSet(${day}, ${i}, ${s}, 'r', this.value)">
+            </div>`;
+        }
+
+        html += `
+          <div class="ex ${done ? "done" : ""}">
+            <div class="ex-name">${i + 1}. ${name} ${done ? "✅" : ""}</div>
+            <div class="ex-info">${sets} set × ${reps} reps</div>
+            ${lastText}
+            ${rows}
+          </div>`;
       });
 
-      localStorage.setItem("gymLogs", JSON.stringify(logs));
-      document.getElementById("weight").value = "";
-      document.getElementById("reps").value = "";
-      render();
+      box.innerHTML = html;
     }
 
-    function render() {
-      const table = document.getElementById("logTable");
-      table.innerHTML = "<tr><th>Ngày</th><th>Bài tập</th><th>Tạ</th><th>Reps</th></tr>";
-      logs.slice(0, 30).forEach(l => {
-        table.innerHTML += `<tr><td>${l.date}</td><td>${l.exercise}</td><td>${l.weight}kg</td><td>${l.reps}</td></tr>`;
+    function updateSet(day, i, s, field, value) {
+      const name = WORKOUTS[day].exercises[i][0];
+      const key = todayKey() + "|" + name;
+      if (!logs[key]) logs[key] = [];
+      if (!logs[key][s]) logs[key][s] = { w: null, r: null };
+      logs[key][s][field] = value === "" ? null : Number(value);
+      saveLogs();
+      renderWorkout();
+      renderProgress();
+    }
+
+    let timerId = null;
+    function startRest(sec) {
+      clearInterval(timerId);
+      let left = sec;
+      const el = document.getElementById("timer");
+      el.textContent = left + "s";
+      timerId = setInterval(() => {
+        left--;
+        el.textContent = left + "s";
+        if (left <= 0) {
+          clearInterval(timerId);
+          el.textContent = "Hết giờ! 💪";
+          if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
+        }
+      }, 1000);
+    }
+
+    function renderProgress() {
+      const name = document.getElementById("progressSelect").value;
+      const box = document.getElementById("progress");
+      const keys = Object.keys(logs).filter(k => k.endsWith("|" + name)).sort();
+
+      if (!keys.length) {
+        box.innerHTML = "<p>Chưa có dữ liệu cho bài này.</p>";
+        return;
+      }
+
+      const values = keys.map(k => maxWeight(logs[k]));
+      const max = Math.max(...values) || 1;
+
+      box.innerHTML = keys.map((k, idx) => {
+        const [date] = k.split("|");
+        const [y, m, d] = date.split("-");
+        const width = (values[idx] / max) * 100;
+        return `
+          <div class="bar-row">
+            <span class="bar-label">${d}/${m}</span>
+            <div class="bar" style="width:${width}%"></div>
+            <span class="bar-val">${values[idx]}kg</span>
+          </div>`;
+      }).join("");
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(logs, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "gym-backup-" + todayKey() + ".json";
+      a.click();
+    }
+
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          logs = { ...logs, ...data };
+          saveLogs();
+          renderWorkout();
+          renderProgress();
+          alert("Nhập dữ liệu thành công!");
+        } catch (err) {
+          alert("File không hợp lệ 2 ơi.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function init() {
+      const daySel = document.getElementById("daySelect");
+      [1, 2, 3, 4, 5, 6, 0].forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = DAY_NAMES[d] + (WORKOUTS[d] ? "" : " (nghỉ)");
+        daySel.appendChild(opt);
       });
+
+      const today = new Date().getDay();
+      daySel.value = today;
+      document.getElementById("todayTitle").textContent = "Hôm nay: " + DAY_NAMES[today];
+
+      const names = [...new Set(Object.values(WORKOUTS).flatMap(w => w.exercises.map(e => e[0])))];
+      const ps = document.getElementById("progressSelect");
+      names.forEach(n => {
+        const opt = document.createElement("option");
+        opt.value = n;
+        opt.textContent = n;
+        ps.appendChild(opt);
+      });
+
+      renderWorkout();
+      renderProgress();
     }
 
-    render();
+    init();
   </script>
 </body>
 </html>
