@@ -43,13 +43,46 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
 .set-cell input::-webkit-inner-spin-button,.set-cell input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .set-cell input[type=number]{appearance:textfield}
 
+.intro h1{font-size:clamp(34px,5.7vw,75px);margin-bottom:24px}.intro h1 span{margin-top:5px}
+#volumeFilter{margin-top:4px}.volume-bar{fill:#754431}.volume-bar.is-current{fill:#ff7136}.volume-bar:focus{stroke:#fff;stroke-width:2px}
+.pr-label,.pr-name{color:#ffce72;font-weight:700}.pr-label{margin-left:6px;font-size:.86rem}
+.pr-entry{display:flex;justify-content:space-between;gap:10px;padding-block:7px;border-bottom:1px solid var(--line)}
+.set-cell input.suggested{color:#ffae86;border-style:dashed}.set-history{font-size:11px;line-height:1.2;min-height:24px;display:grid;place-items:center}
+.epley{color:#f0a784;font-size:13px;margin-bottom:7px}
+.session-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #4c352a;background:#1c1816;border-radius:12px;padding:10px 12px}
+#durationTime{font-size:24px;font-variant-numeric:tabular-nums}#durationStatus.overtime{color:#ff9a75}
+.recovery summary{cursor:pointer}.recovery summary small{color:var(--muted);margin-left:6px}
+.mobile-dock{display:none}
+.nutrition-rings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nutri-ring{display:grid;justify-items:center;text-align:center;gap:4px;background:#141414;border:1px solid var(--line);border-radius:12px;padding:10px 5px}
+.ring{width:86px;height:86px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ring-color) calc(var(--fill) * 1%),#343030 0);position:relative}
+.ring::before{content:"";position:absolute;inset:8px;background:#141414;border-radius:50%}.ring strong{position:relative;font-variant-numeric:tabular-nums;font-size:18px}
+#planDialog{width:min(590px,calc(100% - 26px));max-height:85dvh;overflow:auto}#exerciseDialog{max-height:85dvh;overflow:auto}
+.plan-row{display:grid;grid-template-columns:1fr minmax(48px,70px) minmax(60px,95px) auto;gap:6px;align-items:end;padding:9px 0;border-bottom:1px solid var(--line)}
+.plan-row strong{grid-column:1/-1;overflow-wrap:anywhere}.plan-move{display:flex;gap:4px}.plan-row button{min-height:40px}
+#restAlert .fire-logo{font-size:clamp(52px,14vw,78px);filter:drop-shadow(0 0 12px #ff7136)}
+#restTitle{font-size:clamp(29px,8vw,47px)}
+@media(max-width:800px){
+  body:has(.mobile-dock:not([hidden])){padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  .mobile-dock{display:grid;gap:5px;position:fixed;z-index:8;bottom:0;left:0;right:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:#1a1716f5;border-top:1px solid #663926}
+  .mobile-dock strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dock-buttons{display:grid;grid-template-columns:1.65fr repeat(3,1fr);gap:6px}.dock-buttons button{justify-content:center;padding-inline:4px;font-size:13px}
+  body:has(.mobile-dock:not([hidden])) .rest-dock{bottom:calc(91px + env(safe-area-inset-bottom));z-index:9}
+}
+@media(max-width:580px){
+  .intro h1{line-height:1.12;letter-spacing:-.055em}.nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.nav a{padding-block:4px}
+  .section-head h2{line-height:1.14}.sets-grid input{min-height:42px}.week{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .plan-row{grid-template-columns:56px 70px minmax(0,1fr)}.plan-row .plan-move{grid-column:1/-1}.plan-row button{padding-inline:8px}
+}
+@media(max-width:640px){.ex[data-slots="5"] .sets-grid,.ex[data-slots="6"] .sets-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
-<header><div class="wrap top"><a class="brand" href="#"><b>GT</b> GYM TRACKER</a><nav class="nav" aria-label="Điều hướng"><a href="#overview">Tổng quan</a><a href="#schedule">Lịch tập</a><a href="#nutrition">Dinh dưỡng</a><a href="#library">Thư viện</a></nav></div></header>
+<header><div class="wrap top"><a class="brand" href="#"><b>GT</b> GYM TRACKER</a><nav class="nav" aria-label="Điều hướng"><a href="#overview">Tổng quan</a><a href="#schedule">Lịch tập</a><a href="#nutrition">Dinh dưỡng</a><a href="#library">Danh mục bài tập</a></nav></div></header>
 <main class="wrap">
 <div class="hero">
-  <div class="intro"><div class="eyebrow">Chào Luân</div><h1>Vào guồng.<span>Tập tới cùng.</span></h1><p>Không có lý do - Chỉ có kết quả</p><a class="cta" href="#training">Mở nhật ký tập →</a></div>
+  <div class="intro"><div class="eyebrow">Chào Luân</div><h1>Never Give Up<span>One More...One More</span></h1><a id="startWorkoutLink" class="cta" href="#training">Mở nhật ký tập →</a></div>
   <div class="hero-today"><div class="eyebrow" id="todayLabel">Hôm nay</div><h2 id="todayWorkout">Lịch tập</h2><p id="todayDetail"></p></div>
 </div>
 <section id="overview" aria-labelledby="overviewTitle">
@@ -61,9 +94,10 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
     <div class="metric"><p class="muted">Mục tiêu</p><div class="value" id="bodyGoal">72 kg</div></div>
   </div>
   <div class="split spaced">
-    <article class="card"><h3>Khối lượng tập · kg × reps</h3><p class="muted">Tổng các hiệp hợp lệ của từng bài theo ngày.</p><div id="volumeChart"></div></article>
+    <article class="card"><h3>Volume Load theo tuần</h3><p class="muted">Tổng kg × reps trong 8 tuần, từ thứ Hai đến Chủ nhật.</p><label>Bài tập<select id="volumeFilter"><option value="">Tất cả bài tập</option></select></label><div id="volumeChart"></div></article>
     <article class="card"><h3>Cân nặng &amp; Body fat</h3><p class="muted" id="bodyReference"></p><div id="bodyChart"></div><div id="fatChart"></div></article>
   </div>
+  <article class="card spaced"><h3>Kỷ lục cá nhân gần đây</h3><div id="recentPR"></div></article>
   <article class="card spaced"><h3>Bản đồ cơ trong tuần này</h3><p class="muted">Màu đậm hơn khi nhóm cơ có nhiều hiệp được ghi. Cơ phụ tính nửa hiệp quy đổi.</p><div class="muscle-layout"><div id="muscleMap"></div><div id="muscleCounts"></div></div></article>
 </section>
 <section id="schedule" aria-labelledby="scheduleTitle"><div class="section-head"><h2 id="scheduleTitle">Lịch tập trong tuần</h2></div><div class="week" id="week"></div></section>
@@ -72,7 +106,16 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
   <div class="work-grid">
     <div class="card">
       <div class="controls"><label>Ngày ghi tập<input type="date" id="dateInput" onchange="onDateChange()"></label><label>Chọn giáo án<select id="daySelect" onchange="renderWorkout()"></select></label></div>
-      <div class="actions"><button class="gray" id="addBench">+ Bench Press</button></div><div id="workout"></div>
+      <div class="session-summary spaced"><div><strong id="durationTime" role="timer">00:00</strong><p class="muted" id="durationStatus">Bắt đầu để tính thời gian buổi tập</p></div><button id="durationAction" class="gray">Bắt đầu buổi</button></div>
+      <details class="recovery spaced" id="recoveryDetails"><summary>Ghi chú phục hồi <small id="recoverySummary"></small></summary>
+        <form id="recoveryForm" class="tracker-form">
+          <label>Năng lượng<select name="energy"><option value="">Chưa chọn</option></select></label>
+          <label>Giấc ngủ<select name="sleep"><option value="">Chưa chọn</option></select></label>
+          <label>Ghi chú<input name="note" maxlength="180" placeholder="VD: Ngủ 6 tiếng"></label>
+          <button type="submit">Lưu ghi chú</button>
+        </form>
+      </details>
+      <div class="actions"><button class="gray" id="editPlan">Sửa bài trong buổi</button><button class="gray" id="addBench">+ Bench Press</button></div><div id="workout"></div>
     </div>
     <div class="stack">
       <div class="card"><h3>Đồng hồ nghỉ</h3><div id="timer" role="timer">--</div><div class="actions"><button onclick="startRest(90)">90 giây</button><button class="gray" onclick="startRest(60)">60 giây</button><button class="gray" onclick="startRest(120)">120 giây</button></div><p class="muted" id="wakeStatus"></p></div>
@@ -107,7 +150,7 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
   </div>
 </section>
 <section id="library">
-  <div class="section-head"><h2>Thư viện bài tập</h2></div>
+  <div class="section-head"><h2>Danh mục bài tập</h2><button id="newExercise">+ Thêm bài</button></div>
   <div class="card">
     <div class="controls"><label>Tìm bài<input id="exerciseSearch" type="search" placeholder="Tên bài tập"></label>
     <label>Nhóm cơ<select id="muscleFilter"></select></label>
@@ -132,19 +175,42 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
     </div>
   </div>
 </section>
-<div class="split account">
+<div class="account">
   <div class="card"><h3>Đồng bộ thiết bị</h3><p class="muted" id="userInfo" role="status">Đang dùng dữ liệu lưu trên thiết bị.</p>
     <div class="actions" id="loginCard"><button class="gray" id="loginButton" onclick="login()">Đăng nhập bằng Google</button></div>
     <div class="actions hidden" id="logoutCard"><button class="gray" onclick="logout()">Đăng xuất</button></div>
-    <div class="actions hidden" id="migrateCard"><button onclick="migrateLocal()">Đưa dữ liệu trên máy lên đám mây</button></div>
   </div>
-  <div class="card"><h3>Sao lưu nhật ký</h3><div class="actions"><button class="gray" onclick="exportData()">Xuất JSON</button><button class="gray" onclick="document.getElementById('importFile').click()">Nhập JSON</button></div><input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importData(event)"></div>
 </div>
 </main>
 <dialog id="bodyDialog" aria-labelledby="bodyTitle"><form id="bodyForm"><h2 id="bodyTitle">Chỉ số cơ thể</h2><label>Ngày đo<input name="date" type="date" required></label><label>Body fat (%)<input name="fat" type="number" min="0.1" max="100" step="0.1" placeholder="Nếu có số đo"></label><label>Cân nặng (kg)<input name="weight" type="number" min="1" step="0.1" required></label><label>Chiều cao (cm)<input name="height" type="number" min="1" step="0.1" required></label><label>Mục tiêu cân nặng (kg)<input name="goal" type="number" min="1" step="0.1" required></label><div class="actions"><button type="submit">Lưu chỉ số</button><button type="button" class="gray" id="closeBody">Hủy</button></div></form></dialog>
 
 <div id="restDock" class="rest-dock" hidden><strong id="restDockTime"></strong><button class="gray" id="stopRest">Dừng</button></div>
-<dialog id="restAlert" aria-labelledby="restTitle"><div class="rest-alert"><div class="fire-logo" aria-hidden="true"><span>🔥</span><b>GT</b></div><h2 id="restTitle">Lên Tạ</h2><button id="closeRest">Sẵn sàng</button></div></dialog>
+<dialog id="restAlert" aria-labelledby="restTitle"><div class="rest-alert"><div class="fire-logo" aria-hidden="true"><span>💪&nbsp;💪</span></div><h2 id="restTitle">Đứng lên và Tiếp tục</h2><button id="closeRest">Sẵn sàng</button></div></dialog>
+<div id="mobileDock" class="mobile-dock" hidden>
+  <strong id="dockExercise">Chọn một bài tập</strong>
+  <div class="dock-buttons">
+    <button class="gray" id="dockCopy" disabled>Chép hiệp 1</button>
+    <button class="gray" onclick="startRest(60)">60s</button>
+    <button onclick="startRest(90)">90s</button>
+    <button class="gray" onclick="startRest(120)">120s</button>
+  </div>
+</div>
+<dialog id="planDialog" aria-labelledby="planTitle"><form id="planForm">
+  <h2 id="planTitle">Sửa giáo án</h2><p class="muted" id="planDateLabel"></p>
+  <div id="planRows"></div>
+  <label>Thêm bài từ danh mục<select id="planAdd"></select></label>
+  <div class="actions"><button type="submit">Lưu giáo án</button><button class="gray" type="button" data-close="planDialog">Hủy</button></div>
+</form></dialog>
+<dialog id="exerciseDialog" aria-labelledby="exerciseTitle"><form id="exerciseForm">
+  <h2 id="exerciseTitle">Thêm bài tập</h2>
+  <label>Tên bài<input name="name" required maxlength="100"></label>
+  <label>Thiết bị<select name="equipment" required></select></label>
+  <label>Cơ chính<select name="primary" required></select></label>
+  <label>Cơ phụ<select name="secondary"></select></label>
+  <label>Link video YouTube<input name="video" type="url" placeholder="https://youtu.be/…"></label>
+  <div class="actions"><button type="submit">Lưu bài tập</button><button class="gray" type="button" data-close="exerciseDialog">Hủy</button></div>
+</form></dialog>
+
 <script>
 "use strict";
     const firebaseConfig = {
@@ -258,15 +324,17 @@ function maxWeight(sets) {
 
 function renderStats() {
   const monday = startOfWeek(new Date());
+  const plans = DAYS.map((day,index) => planFor(day,weekDate(monday,index)));
   const count = DAYS.filter((day, index) => {
-    const plan = WORKOUTS[day]?.exercises;
+    const plan = plans[index];
     const entries = logs[weekDate(monday, index)] || {};
-    return plan?.every(([name, slots]) =>
+    return plan.length > 0 && plan.every(([name, slots]) =>
       Array.from({ length: slots }, (_, slot) => complete(entries[name]?.[slot])).every(Boolean)
     );
   }).length;
-  const planned = Object.keys(WORKOUTS).length;
-  $("weekPercent").textContent = Math.round(count / planned * 100) + "%";
+  const planned = plans.filter(plan => plan.length).length;
+  $("weekPercent").textContent = Math.round(planned ? count / planned * 100 : 0) + "%";
+  $("weekProgress").max = Math.max(1, planned);
   $("weekProgress").value = count;
   $("weekCount").textContent = count + " / " + planned + " buổi đã hoàn thành đủ hiệp";
   $("bodyWeight").textContent = format.format(profile.weight) + " kg";
@@ -280,6 +348,8 @@ function selectDate(key) {
   $("daySelect").value = localDate(key).getDay();
   renderWeek();
   renderWorkout();
+  updateRecovery(true);
+  updateDuration();
 }
 
 function onDateChange() {
@@ -291,10 +361,11 @@ function renderWeek() {
   $("week").replaceChildren(...DAYS.map((day, index) => {
     const key = weekDate(monday, index);
     const button = document.createElement("button");
-    button.className = WORKOUTS[day] ? "day" : "day rest";
+    const hasPlan = planFor(day,key).length;
+    button.className = hasPlan ? "day" : "day rest";
     button.setAttribute("aria-pressed", String(selectedDate === key));
     if (key === todayKey()) button.setAttribute("aria-current", "date");
-    button.innerHTML = `<small>${DAY_NAMES[day]} · ${key.slice(8)}/${key.slice(5, 7)}</small><strong>${TITLES[day]}</strong><small>${GROUPS[day]}</small>`;
+    button.innerHTML = `<small>${DAY_NAMES[day]} · ${key.slice(8)}/${key.slice(5, 7)}</small><strong>${hasPlan ? (WORKOUTS[day] ? TITLES[day] : "Buổi tập") : "Nghỉ"}</strong><small>${hasPlan ? (WORKOUTS[day] ? GROUPS[day] : "Giáo án riêng") : "Phục hồi"}</small>`;
     button.onclick = () => {
       selectDate(key);
       $("week").children[index].focus({ preventScroll: true });
@@ -308,12 +379,12 @@ let pendingWorkoutRender = false;
 
 function renderWorkout() {
   const day = Number($("daySelect").value);
-  const workout = WORKOUTS[day];
+  const workout = planFor(day, selectedDate);
   const date = selectedDate;
   const logged = logs[date] || {};
   const showBench = Object.hasOwn(logged, BENCH) || benchDays.has(date);
-  $("addBench").hidden = showBench;
-  const list = [...(workout?.exercises || []), ...(showBench ? [EXTRA_BENCH] : [])];
+  $("addBench").hidden = showBench || workout.some(([name]) => name === BENCH);
+  const list = [...workout, ...(showBench && !workout.some(([name]) => name === BENCH) ? [EXTRA_BENCH] : [])];
   const box = $("workout");
   const sameWorkout = box.dataset.date === date && Number(box.dataset.plan) === day;
   const open = new Set([...box.querySelectorAll("details[open]")].map(row => row.dataset.exercise));
@@ -321,6 +392,7 @@ function renderWorkout() {
   box.dataset.plan = day;
   if (!list.length) {
     box.innerHTML = '<p class="ex-info">Ngày phục hồi theo lịch tuần.</p>';
+    syncDock();
     return;
   }
 
@@ -328,26 +400,30 @@ function renderWorkout() {
     const current = logged[name] || [];
     const key = EXERCISES.indexOf(name);
     const filled = current.slice(0, slots).filter(complete).length;
-    const previous = Object.keys(logs).filter(dayKey => dayKey < date && logs[dayKey]?.[name]?.some?.(complete)).sort().pop();
+    const { previous, suggestion } = workoutHistory(name, date);
     const cells = Array.from({ length: slots }, (_, slot) => {
       const set = current[slot] || {};
+      const proposed = date === todayKey() && set.w == null && !set.weightCleared ? suggestedWeight(suggestion, slot) : null;
+      const prev = previous?.[slot];
       return `<div class="set-cell"><small>Hiệp ${slot + 1}</small>
         <input type="number" min="0" step="any" inputmode="decimal" placeholder="kg" aria-label="Tạ hiệp ${slot + 1}"
-          data-slot="${slot}" data-field="w" value="${validNumber(set.w) ? set.w : ""}">
+          data-slot="${slot}" data-field="w" ${proposed == null ? "" : 'class="suggested" data-suggested title="Gợi ý từ tuần trước"'} value="${validNumber(set.w) ? set.w : proposed ?? ""}">
         <input type="number" min="1" step="1" inputmode="numeric" placeholder="reps" aria-label="Số lần hiệp ${slot + 1}"
           data-slot="${slot}" data-field="r" value="${validNumber(set.r) ? set.r : ""}">
+        <small class="set-history">${complete(prev) ? format.format(prev.w) + " kg × " + prev.r : "—"}</small>
         <button class="gray quick" data-add="${slot}" type="button" aria-label="Thêm 2,5 kg cho hiệp ${slot + 1}">+2,5</button>
       </div>`;
     }).join("");
     const isOpen = sameWorkout ? open.has(String(key)) : index === 0 && filled < slots;
-    return `<details class="ex ${filled === slots ? "done" : ""}" data-exercise="${key}" data-slots="${slots}" ${isOpen ? "open" : ""}>
-      <summary><strong>${name}</strong><span class="ex-info">${reps} reps · <span class="filled">${filled}/${slots} hiệp</span></span></summary>
+    return `<details class="ex ${filled === slots ? "done" : ""}" data-exercise="${key}" data-name="${escapeHtml(name)}" data-slots="${slots}" ${isOpen ? "open" : ""}>
+      <summary><strong>${escapeHtml(name)}</strong><span class="ex-info">${escapeHtml(reps)} reps · <span class="filled">${filled}/${slots} hiệp</span></span><span class="pr-label">${prBadge(name,date,current)}</span></summary>
       <div class="set-editor">
-        ${previous ? `<p class="last">Lần trước · ${format.format(maxWeight(logs[previous][name]))} kg</p>` : ""}
+        <p class="last">Dòng mờ dưới mỗi hiệp là kg × reps lần trước.${suggestion && date === todayKey() ? " Ô kg chữ cam là gợi ý tuần trước." : ""}</p><p class="epley">${epleyLabel(current)}</p>
         <div class="sets-grid" style="--slots:${slots}">${cells}</div>
         <div class="actions"><button class="gray quick" data-copy type="button">Chép kg + reps hiệp 1 sang hiệp còn lại</button></div>
       </div></details>`;
   }).join("");
+  syncDock();
 }
 
 $("addBench").onclick = () => {
@@ -360,7 +436,7 @@ $("addBench").onclick = () => {
 
 function workoutRow(target) {
   const row = target.closest("[data-exercise]");
-  const name = EXERCISES[Number(row.dataset.exercise)];
+  const name = row.dataset.name || EXERCISES[Number(row.dataset.exercise)];
   const date = $("workout").dataset.date;
   const workout = logs[date] ??= {};
   const sets = workout[name] ??= [];
@@ -373,6 +449,9 @@ async function saveRow({ row, name, date, sets, slots }) {
   const count = sets.slice(0, slots).filter(complete).length;
   row.classList.toggle("done", count === slots);
   row.querySelector(".filled").textContent = count + "/" + slots + " hiệp";
+  row.querySelector(".pr-label").innerHTML = prBadge(name,date,sets);
+  row.querySelector(".epley").textContent = epleyLabel(sets);
+  syncDock(row);
   renderStats();
   renderProgress();
   renderAnalytics();
@@ -387,6 +466,12 @@ $("workout").addEventListener("change", event => {
   const slot = Number(field.dataset.slot);
   state.sets[slot] ??= { w: null, r: null };
   state.sets[slot][field.dataset.field] = field.value === "" ? null : field.valueAsNumber;
+  if (field.dataset.field === "w") state.sets[slot].weightCleared = field.value === "";
+  const weight = state.row.querySelector(`[data-slot="${slot}"][data-field="w"]`);
+  if (weight?.hasAttribute("data-suggested") && (field === weight || state.sets[slot].r > 0)) {
+    state.sets[slot].w = weight.value === "" ? null : weight.valueAsNumber;
+    markWeightSaved(weight);
+  }
   void saveRow(state);
 });
 
@@ -404,15 +489,20 @@ $("workout").addEventListener("click", event => {
     if (hasOtherData && !confirm("Thay kg và reps ở các hiệp sau bằng số liệu hiệp 1?")) return;
     for (let i = 1; i < slots; i++) {
       sets[i] = { ...sets[0] };
-      row.querySelector(`[data-slot="${i}"][data-field="w"]`).value = sets[i].w;
+      const weight = row.querySelector(`[data-slot="${i}"][data-field="w"]`);
+      weight.value = sets[i].w;
+      markWeightSaved(weight);
       row.querySelector(`[data-slot="${i}"][data-field="r"]`).value = sets[i].r;
     }
   } else {
     const slot = Number(button.dataset.add);
-    const fallback = sets.slice(0, slot).reverse().find(set => validNumber(set?.w))?.w ?? 0;
+    const weight = row.querySelector(`[data-slot="${slot}"][data-field="w"]`);
+    const fallback = (validNumber(weight.valueAsNumber) ? weight.valueAsNumber : null) ??
+      sets.slice(0, slot).reverse().find(set => validNumber(set?.w))?.w ?? 0;
     sets[slot] ??= { w: null, r: null };
     sets[slot].w = (sets[slot].w ?? fallback) + 2.5;
-    row.querySelector(`[data-slot="${slot}"][data-field="w"]`).value = sets[slot].w;
+    weight.value = sets[slot].w;
+    markWeightSaved(weight);
   }
   void saveRow(state);
 });
@@ -504,6 +594,7 @@ function stopRest() {
   clearInterval(timer);
   endTime = 0;
   $("restDock").hidden = true;
+  syncDock();
   $("timer").textContent = "--";
 }
 
@@ -516,7 +607,7 @@ function tickRest() {
     return;
   }
   stopRest();
-  $("timer").textContent = "Lên Tạ!";
+  $("timer").textContent = "Đứng lên và Tiếp tục";
   navigator.vibrate?.([250, 100, 250]);
   soundAlarm();
   if (!$("restAlert").open) $("restAlert").showModal();
@@ -533,6 +624,7 @@ function startRest(seconds) {
   clearInterval(timer);
   endTime = Date.now() + seconds * 1000;
   $("restDock").hidden = false;
+  syncDock();
   tickRest();
   timer = setInterval(tickRest, 200);
 }
@@ -581,7 +673,6 @@ function changeAccount(user) {
   changeExtraAccount(uid);
   $("loginCard").classList.toggle("hidden", Boolean(uid));
   $("logoutCard").classList.toggle("hidden", !uid);
-  $("migrateCard").classList.add("hidden");
   if (!uid) {
     logs = readLocal(LOG_KEY, {});
     localStatus();
@@ -597,7 +688,6 @@ function changeAccount(user) {
       .map(item => [item.id, item.data().exercises || {}]));
     acceptCloudExtras(snapshot.docs);
     $("userInfo").textContent = "Tài khoản Google · " + (user.email || "");
-    void showMigrationButton(user.uid);
     refresh();
   }, error => { $("userInfo").textContent = "Lỗi đồng bộ: " + error.message; });
 }
@@ -635,76 +725,6 @@ async function saveDay(date, exercises, account = uid) {
 
 function isDateKey(date) {
   return /^\d{4}-\d{2}-\d{2}$/.test(date) && dateKey(localDate(date)) === date;
-}
-
-function migrationData() {
-  const local = readLocal(LOG_KEY, {});
-  const old = readLocal("gymLogsV2", {});
-  for (const [key, sets] of Object.entries(old)) {
-    const [date, name] = key.split("|");
-    if (isDateKey(date) && EXERCISES.includes(name) && Array.isArray(sets)) {
-      (local[date] ??= {})[name] ??= sets;
-    }
-  }
-  return local;
-}
-
-async function migrateLocal() {
-  const account = uid;
-  if (!account) return;
-  const button = $("migrateCard").querySelector("button");
-  button.disabled = true;
-  try {
-    for (const [date, exercises] of Object.entries(migrationData())) {
-      const missing = Object.fromEntries(Object.entries(exercises).filter(([name]) => !Object.hasOwn(logs[date] || {}, name)));
-      if (uid !== account) throw new Error("Phiên đăng nhập đã thay đổi.");
-      if (Object.keys(missing).length) await saveDay(date, missing, account);
-    }
-    await migrateExtraData(account);
-    alert("Đã chuyển dữ liệu còn thiếu lên đám mây.");
-  } catch (error) { alert("Chuyển dữ liệu chưa xong: " + error.message); }
-  finally { button.disabled = false; }
-}
-
-function exportData() {
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(new Blob([JSON.stringify(logs, null, 2)], { type: "application/json" }));
-  link.download = "gym-backup-" + todayKey() + ".json";
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-}
-
-function validateBackup(data) {
-  const object = value => value && typeof value === "object" && !Array.isArray(value);
-  return object(data) && Object.entries(data).every(([date, exercises]) =>
-    isDateKey(date) && object(exercises) && Object.entries(exercises).every(([name, sets]) =>
-      !["__proto__", "prototype", "constructor"].includes(name) && Array.isArray(sets) && sets.every(set =>
-        set === null || (object(set) && [set.w, set.r].every(value => value == null || validNumber(value))))));
-}
-
-async function importData(event) {
-  const file = event.target.files[0];
-  event.target.value = "";
-  if (!file) return;
-  const account = uid;
-  try {
-    const data = JSON.parse(await file.text());
-    if (!validateBackup(data)) throw new Error("Sai định dạng nhật ký JSON.");
-    if (uid !== account) throw new Error("Phiên đăng nhập đã thay đổi.");
-    if (account) {
-      for (const [date, exercises] of Object.entries(data)) {
-        if (uid !== account) throw new Error("Phiên đăng nhập đã thay đổi.");
-        if (Object.keys(exercises).length) await saveDay(date, exercises, account);
-      }
-    } else {
-      const merged = { ...logs };
-      for (const [date, exercises] of Object.entries(data)) merged[date] = { ...merged[date], ...exercises };
-      localStorage.setItem(LOG_KEY, JSON.stringify(merged));
-      logs = merged;
-    }
-    refresh();
-    alert("Đã nhập nhật ký.");
-  } catch (error) { alert("Chưa nhập xong nhật ký: " + error.message); }
 }
 
 const OWNER_EMAIL = "daeha19902021@gmail.com";
@@ -748,11 +768,12 @@ const metadata = [
   ["Barbell Bench", "Thanh đòn", "chest", "shoulders triceps", "hWbUlkb5Ms4"]
 ];
 
-const library = EXERCISES.map(name => {
+const baseLibrary = EXERCISES.map(name => {
   const [, equipment, primary, secondary, video] = metadata.find(([prefix]) => name.startsWith(prefix));
   return { name, equipment, primary: primary.split(" "), secondary: secondary.split(" ").filter(Boolean), video };
 });
-const libraryByName = Object.fromEntries(library.map(item => [item.name, item]));
+let library = baseLibrary;
+let libraryByName = new Map(library.map(item => [item.name,item]));
 const defaultProfile = { weight: 68.5, height: 175, goal: 75 };
 let extras = readLocal(EXTRA_KEY, {});
 let photos = {};
@@ -788,38 +809,19 @@ async function writeLocalPhoto(id, photo) {
   });
 }
 
-async function migrateExtraData(account) {
-  const local = readLocal(EXTRA_KEY, {});
-  const olderProfile = readLocal(BODY_KEY, null);
-  if (olderProfile && !local["tracker-profile"]) local["tracker-profile"] = olderProfile;
-  if ("indexedDB" in window) Object.assign(local, await readPhotos());
-  const missing = Object.entries(local).filter(([id]) => !extras[id] && !photos[id]);
-  for (let i = 0; i < missing.length; i += 12) {
-    await saveExtras(Object.fromEntries(missing.slice(i, i + 12)), account);
-  }
-}
-
-async function showMigrationButton(account) {
-  const hasLocal = Object.keys(migrationData()).length ||
-    Object.keys(readLocal(EXTRA_KEY, {})).length || readLocal(BODY_KEY, null);
-  if (hasLocal) {
-    if (uid === account) $("migrateCard").classList.remove("hidden");
-    return;
-  }
-  if ("indexedDB" in window) {
-    const items = await readPhotos().catch(() => ({}));
-    if (uid === account && Object.keys(items).length) $("migrateCard").classList.remove("hidden");
-  }
-}
-
 function applyExtras() {
+  syncCatalog();
   profile = extras["tracker-profile"] || (extraAccount ? defaultProfile : readLocal(BODY_KEY, defaultProfile));
   renderStats();
   renderAnalytics();
+  renderWeek();
+  updateTodayPlan();
   const active = document.activeElement;
   if (!$("nutritionForm").contains(active)) renderNutrition(true);
   else renderNutrition(false);
   renderPhotos();
+  updateRecovery();
+  updateDuration();
 }
 
 function loadLocalPhotos() {
@@ -843,7 +845,7 @@ function changeExtraAccount(account) {
 function acceptCloudExtras(documents) {
   const next = {}, nextPhotos = {};
   for (const item of documents) {
-    if (/^tracker-(profile|goals|body-|food-|photo-)/.test(item.id)) {
+    if (/^tracker-(profile|goals|body-|food-|photo-|plan-|exercise-|recovery-|duration-)/.test(item.id)) {
       const payload = item.data().tracker;
       if (!payload) continue;
       if (item.id.startsWith("tracker-photo-")) nextPhotos[item.id] = payload;
@@ -937,18 +939,8 @@ function chart(container, lines, unit) {
 }
 
 function renderAnalytics() {
-  const dates = Object.keys(logs).filter(isDateKey).sort().slice(-120);
-  const indicators = [
-    ["Hack Squat", "Reverse Hack", "#ff7136"],
-    ["RDL", "Romanian Deadlift", "#5de1c0"],
-    ["Bench Press", "Barbell Bench", "#b8a1ff"]
-  ];
-  const series = indicators.map(([label, prefix, color]) => {
-    const exercise = EXERCISES.find(name => name.startsWith(prefix));
-    return { name: label, color, points: dates.map(date => [date, volume(logs[date][exercise])]).filter(([, value]) => value > 0).slice(-12) };
-  });
-  chart($("volumeChart"), series, "kg × reps");
-
+  renderWeeklyVolume();
+  renderRecentPR();
   const measurements = Object.entries(extras).filter(([id]) => id.startsWith("tracker-body-"))
     .map(([id, data]) => [id.slice("tracker-body-".length), data])
     .filter(([date]) => isDateKey(date)).sort(([a], [b]) => a.localeCompare(b)).slice(-30);
@@ -969,7 +961,7 @@ function renderHeatmap() {
   const totals = Object.fromEntries(Object.keys(MUSCLES).map(key => [key, 0]));
   DAYS.forEach((_, index) => {
     for (const [name, sets] of Object.entries(logs[weekDate(monday, index)] || {})) {
-      const item = libraryByName[name];
+      const item = libraryByName.get(name);
       if (!item || !Array.isArray(sets)) continue;
       const n = sets.filter(complete).length;
       item.primary.forEach(key => { totals[key] += n; });
@@ -1012,10 +1004,11 @@ function renderLibrary() {
     (!muscle || (role ? item[role] : [...item.primary, ...item.secondary]).includes(muscle)));
   $("libraryList").innerHTML = matches.map(item => {
     const videoURL = item.video ? "https://www.youtube.com/watch?v=" + item.video : "https://www.youtube.com/results?search_query=" + encodeURIComponent(item.name.split(" (")[0] + " exercise proper form");
-    return `<details class="library-row" ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>${item.name}</summary>
-      <p class="muted">${item.equipment} · Cơ chính: ${item.primary.map(key => MUSCLES[key]).join(", ")}</p>
+    return `<details class="library-row" ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>${escapeHtml(item.name)}</summary>
+      <p class="muted">${escapeHtml(item.equipment)} · Cơ chính: ${item.primary.map(key => MUSCLES[key]).join(", ")}</p>
       ${item.secondary.length ? `<p class="muted">Cơ phụ: ${item.secondary.map(key => MUSCLES[key]).join(", ")}</p>` : ""}
       <a target="_blank" rel="noopener noreferrer" href="${videoURL}">${item.video ? "Mở video hướng dẫn trên YouTube" : "Tìm video hướng dẫn kỹ thuật trên YouTube"}</a>
+      <div class="actions"><button class="gray quick" type="button" data-video-edit="${EXERCISES.indexOf(item.name)}">Sửa link video</button></div>
       </details>`;
   }).join("") || '<p class="muted">Không tìm thấy bài phù hợp.</p>';
 }
@@ -1024,20 +1017,22 @@ function renderNutrition(updateInputs = true) {
   const form = $("nutritionForm");
   const totals = extras["tracker-food-" + $("nutritionDate").value] || {};
   const targets = extras["tracker-goals"] || {};
+  const calorieGoal = targets.calorieGoal > 0 ? targets.calorieGoal : 2200;
+  const proteinGoal = targets.proteinGoal > 0 ? targets.proteinGoal : 120;
   if (updateInputs) {
     for (const key of ["calories", "protein"]) form.elements[key].value = totals[key] ?? "";
-    for (const key of ["calorieGoal", "proteinGoal"]) form.elements[key].value = targets[key] ?? "";
+    form.elements.calorieGoal.value = calorieGoal;
+    form.elements.proteinGoal.value = proteinGoal;
   }
-
-  $("nutritionBars").innerHTML = [
-    ["Calories", totals.calories ?? 0, targets.calorieGoal, "kcal"],
-    ["Protein", totals.protein ?? 0, targets.proteinGoal, "g"]
-  ].map(([label, current, goal, unit]) => {
-    const text = label + " · " + format.format(current) + " " + unit;
-    if (!goal) return `<p>${text} · Chưa đặt mục tiêu</p>`;
-    return `<p>${text} / ${format.format(goal)} ${unit} · ${Math.round(current / goal * 100)}%</p>
-      <progress max="${goal}" value="${Math.min(current, goal)}" aria-label="${label}"></progress>`;
-  }).join("");
+  const rings = [
+    ["Calories", totals.calories ?? 0, calorieGoal, "kcal", "#ff7136"],
+    ["Protein", totals.protein ?? 0, proteinGoal, "g", "#5de1c0"]
+  ];
+  $("nutritionBars").innerHTML = '<div class="nutrition-rings">' + rings.map(([label,current,goal,unit,color]) => {
+    const percent = Math.round(current / goal * 100);
+    return `<div class="nutri-ring"><div class="ring" style="--fill:${Math.min(100,percent)};--ring-color:${color}" role="img" aria-label="${label} ${percent}% mục tiêu"><strong aria-hidden="true">${percent}%</strong></div>
+      <strong>${label}</strong><small class="muted">${format.format(current)} / ${format.format(goal)} ${unit}</small></div>`;
+  }).join("") + '</div>';
 }
 
 function renderPhotos() {
@@ -1161,7 +1156,7 @@ function initFeatures() {
     if (!isDateKey(date)) throw new Error("Ngày dinh dưỡng không hợp lệ.");
     const nullable = name => data.get(name) === "" ? null : Number(data.get(name));
     await saveExtras({
-      "tracker-goals": { calorieGoal:nullable("calorieGoal"), proteinGoal:nullable("proteinGoal") },
+      "tracker-goals": { calorieGoal:nullable("calorieGoal") ?? 2200, proteinGoal:nullable("proteinGoal") ?? 120 },
       ["tracker-food-" + date]: { calories:nullable("calories"), protein:nullable("protein") }
     });
     renderNutrition();
@@ -1203,6 +1198,399 @@ function bindForm(id, save) {
   };
 }
 
+const escapeHtml = value => String(value).replace(/[&<>"']/g, char =>
+  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[char]);
+const equipmentOptions = ["Máy","Tạ đơn","Thanh đòn","Cáp","Trọng lượng cơ thể","Khác"];
+const builtinNames = [...EXERCISES];
+let catalogSignature;
+let planDraft = [];
+let planTarget;
+let editingExercise;
+let dockRow;
+let activeDurationDate;
+
+function planFor(day, date) {
+  const prefix = "tracker-plan-" + day + "-";
+  const revision = Object.keys(extras).filter(key => key.startsWith(prefix) &&
+    isDateKey(key.slice(prefix.length)) && key.slice(prefix.length) <= date).sort().at(-1);
+  return extras[revision]?.rows?.map(row => Array.isArray(row) ? row : [row.name,row.sets,row.reps]).filter(row =>
+    Array.isArray(row) && typeof row[0] === "string" && Number.isInteger(row[1]) && row[1] >= 1 && row[1] <= 6 &&
+    typeof row[2] === "string"
+  ) ?? WORKOUTS[day]?.exercises ?? [];
+}
+
+function updateTodayPlan() {
+  const date = todayKey(), day = localDate(date).getDay();
+  const plan = planFor(day,date);
+  $("todayWorkout").textContent = plan.length ? (WORKOUTS[day] ? TITLES[day] : "Buổi tập") : "Nghỉ";
+  $("todayDetail").textContent = plan.length
+    ? (WORKOUTS[day] ? GROUPS[day] : "Giáo án riêng") + " · " + plan.length + " bài"
+    : "Ngày phục hồi theo lịch tuần";
+}
+
+function workoutHistory(name, date) {
+  const previousWeek = startOfWeek(localDate(date));
+  previousWeek.setDate(previousWeek.getDate() - 7);
+  const from = dateKey(previousWeek), through = weekDate(previousWeek, 6);
+  const eligible = Object.keys(logs).filter(key => key < date && isDateKey(key) &&
+    Array.isArray(logs[key]?.[name]) && logs[key][name].some(complete)).sort();
+  const latest = eligible.at(-1);
+  const suggestion = eligible.filter(key => key >= from && key <= through).at(-1);
+  return {previous:logs[latest]?.[name],suggestion:logs[suggestion]?.[name]};
+}
+
+function suggestedWeight(sets, slot) {
+  if (!sets) return null;
+  return complete(sets[slot]) ? sets[slot].w : sets.find(complete)?.w ?? null;
+}
+
+function markWeightSaved(input) {
+  input.classList.remove("suggested");
+  input.removeAttribute("data-suggested");
+  input.removeAttribute("title");
+}
+
+function bestSetStats(sets) {
+  return (Array.isArray(sets) ? sets : []).reduce((best,set) => {
+    if (complete(set)) {
+      best.w = Math.max(best.w, set.w);
+      best.r = Math.max(best.r, set.r);
+      best.epley = Math.max(best.epley, set.w * (1 + set.r / 30));
+    }
+    return best;
+  }, {w:-1,r:0,epley:0});
+}
+
+function personalRecord(name, date, sets) {
+  const current = bestSetStats(sets);
+  if (!current.r) return [];
+  let pastWeight = -1, pastReps = 0;
+  for (const key of Object.keys(logs)) {
+    if (!isDateKey(key) || key >= date) continue;
+    const previous = bestSetStats(logs[key]?.[name]);
+    pastWeight = Math.max(pastWeight,previous.w);
+    pastReps = Math.max(pastReps,previous.r);
+  }
+  if (!pastReps) return [];
+  return [
+    ...(current.w > pastWeight ? [format.format(current.w) + " kg"] : []),
+    ...(current.r > pastReps ? [current.r + " reps"] : [])
+  ];
+}
+
+function prBadge(name, date, sets) {
+  const records = personalRecord(name,date,sets);
+  return records.length ? "🏆 PR · " + records.join(" · ") : "";
+}
+
+function epleyLabel(sets) {
+  const value = bestSetStats(sets).epley;
+  return value ? "1RM ước tính · " + format.format(Math.round(value * 10) / 10) + " kg" : "";
+}
+
+function renderRecentPR() {
+  const latest = [];
+  const history = new Map();
+  const dates = Object.keys(logs).filter(isDateKey).sort();
+  for (const date of dates) {
+    for (const [name,sets] of Object.entries(logs[date] || {})) {
+      const current = bestSetStats(sets);
+      if (!current.r) continue;
+      const previous = history.get(name);
+      const records = previous ? [
+        ...(current.w > previous.w ? [format.format(current.w) + " kg"] : []),
+        ...(current.r > previous.r ? [current.r + " reps"] : [])
+      ] : [];
+      if (records.length) {
+        latest.push({name,date,records});
+        if (latest.length > 6) latest.shift();
+      }
+      history.set(name,{w:Math.max(current.w,previous?.w ?? -1),r:Math.max(current.r,previous?.r ?? 0)});
+    }
+  }
+  $("recentPR").innerHTML = latest.reverse().map(({name,date,records}) =>
+    `<div class="pr-entry"><span><strong class="pr-name">${escapeHtml(name)}</strong><br><span class="muted">🏆 PR · ${records.join(" · ")}</span></span><time datetime="${date}">${date.slice(8)}/${date.slice(5,7)}</time></div>`
+  ).join("") || '<p class="muted">Kỷ lục xuất hiện khi anh vượt mức tạ hoặc reps đã từng ghi của một bài.</p>';
+}
+
+function renderWeeklyVolume() {
+  const exercise = $("volumeFilter").value;
+  const monday = startOfWeek(new Date());
+  monday.setDate(monday.getDate() - 49);
+  const weeks = Array.from({length:8}, (_,index) => {
+    const start = weekDate(monday,index * 7);
+    const end = weekDate(monday,index * 7 + 6);
+    let total = 0;
+    for (let day = 0; day < 7; day++) {
+      const entries = logs[weekDate(monday,index * 7 + day)] || {};
+      total += exercise ? volume(entries[exercise]) : Object.values(entries).reduce((sum,sets) => sum + volume(sets),0);
+    }
+    return {start,end,total};
+  });
+  const maximum = Math.max(1,...weeks.map(week => week.total));
+  const bars = weeks.map(({start,end,total},index) => {
+    const x = 32 + index * 45;
+    const height = total ? Math.max(3,total / maximum * 94) : 2;
+    const label = start.slice(8) + "/" + start.slice(5,7);
+    const description = `Tuần ${label} đến ${end.slice(8)}/${end.slice(5,7)} · ${format.format(total)} kg × reps`;
+    return `<rect tabindex="0" role="button" data-volume-bar aria-label="${description}" class="volume-bar${index === 7 ? " is-current" : ""}" x="${x}" y="${115-height}" width="29" height="${height}" rx="3"><title>${description}</title></rect>
+      <text x="${x+14.5}" y="135" text-anchor="middle">${label}</text>`;
+  }).join("");
+  const current = weeks[7].total, previous = weeks[6].total;
+  $("volumeChart").innerHTML = `<svg class="chart" viewBox="0 0 394 144" role="img" aria-label="Volume Load 8 tuần">
+    <path d="M25 115H392" stroke="#414141"/>${bars}</svg>
+    <p id="volumeDetail" class="muted" aria-live="polite">Chạm vào cột để xem tổng tải của tuần.</p>
+    <div class="legend"><span>Tuần này đang diễn ra · <strong>${format.format(current)}</strong></span><span>Tuần trước · <strong>${format.format(previous)}</strong> kg × reps</span></div>`;
+}
+
+function syncDock(row) {
+  const box = $("workout");
+  if (row?.open && box.contains(row)) dockRow = row;
+  if (!dockRow?.open || !box.contains(dockRow)) dockRow = box.querySelector("details[open]");
+  $("dockExercise").textContent = dockRow ? dockRow.dataset.name : "Đồng hồ nghỉ";
+  $("dockCopy").disabled = !dockRow;
+  $("mobileDock").hidden = !trainingVisible && !endTime;
+}
+
+function updateRecovery(force = false) {
+  const form = $("recoveryForm");
+  const record = extras["tracker-recovery-" + selectedDate] || {};
+  $("recoverySummary").textContent = [
+    record.energy ? "Năng lượng " + record.energy + "★" : "",
+    record.sleep ? "Giấc ngủ " + record.sleep + "★" : ""
+  ].filter(Boolean).join(" · ");
+  if (!force && form.contains(document.activeElement)) return;
+  for (const key of ["energy","sleep","note"]) form.elements[key].value = record[key] ?? "";
+}
+
+function durationLabel(seconds) {
+  const part = number => String(number).padStart(2,"0");
+  return seconds >= 3600
+    ? part(Math.floor(seconds / 3600)) + ":" + part(Math.floor(seconds / 60) % 60) + ":" + part(seconds % 60)
+    : part(Math.floor(seconds / 60)) + ":" + part(seconds % 60);
+}
+
+function updateDuration() {
+  const active = Object.entries(extras).find(([id,item]) =>
+    id.startsWith("tracker-duration-") && Number.isFinite(item.started) && !item.ended
+  );
+  activeDurationDate = active?.[0].slice("tracker-duration-".length);
+  const date = activeDurationDate || selectedDate;
+  const item = extras["tracker-duration-" + date];
+  const seconds = item?.started ? Math.max(0,Math.floor(((item.ended || Date.now()) - item.started) / 1000)) : 0;
+  $("durationTime").textContent = durationLabel(seconds);
+  $("durationAction").textContent = active ? "Kết thúc buổi" : item?.ended ? "Tập tiếp" : "Bắt đầu buổi";
+  $("durationStatus").classList.toggle("overtime",seconds >= 3600);
+  $("durationStatus").textContent = active ? (seconds >= 3600 ? "Đã đến mốc 60 phút" : "Mục tiêu dưới 60 phút") + (date !== selectedDate ? " · " + date : "")
+    : item?.ended ? "Đã kết thúc" : "Bắt đầu để tính thời gian buổi tập";
+}
+
+async function changeDuration(startOnly = false) {
+  const button = $("durationAction");
+  if (button.disabled || (startOnly && activeDurationDate)) return;
+  const date = activeDurationDate || selectedDate;
+  const id = "tracker-duration-" + date;
+  const previous = extras[id];
+  const now = Date.now();
+  const record = activeDurationDate ? { started:previous.started, ended:now }
+    : { started:previous?.ended ? now - Math.max(0,previous.ended-previous.started) : now, ended:null };
+  button.disabled = true;
+  try { await saveExtras({ [id]:record }); }
+  catch (error) { alert("Chưa lưu được thời gian tập: " + error.message); }
+  finally { button.disabled = false; updateDuration(); }
+}
+
+function youtubeId(raw) {
+  if (!raw) return "";
+  let url;
+  try { url = new URL(raw); } catch { throw new Error("Link YouTube không hợp lệ."); }
+  const host = url.hostname.toLowerCase();
+  let id;
+  if (["http:","https:"].includes(url.protocol) && host === "youtu.be") id = url.pathname.split("/")[1];
+  else if (["http:","https:"].includes(url.protocol) && ["youtube.com","www.youtube.com","m.youtube.com","www.youtube-nocookie.com"].includes(host)) {
+    id = url.pathname === "/watch" ? url.searchParams.get("v") :
+      /^\/(shorts|embed|live)\//.test(url.pathname) ? url.pathname.split("/")[2] : null;
+  }
+  if (!/^[A-Za-z0-9_-]{11}$/.test(id || "")) throw new Error("Hãy dán link của một video YouTube.");
+  return id;
+}
+
+function syncCatalog() {
+  const changes = Object.entries(extras).filter(([id]) => id.startsWith("tracker-exercise-")).sort();
+  const signature = JSON.stringify(changes);
+  if (signature === catalogSignature) return;
+  catalogSignature = signature;
+  const items = new Map(baseLibrary.map(item => [item.name,item]));
+  for (const [id,item] of changes) {
+    if (typeof item.name !== "string" || !item.name.trim() || Object.hasOwn(Object.prototype,item.name) ||
+      !equipmentOptions.includes(item.equipment) || !Array.isArray(item.primary) ||
+      !Array.isArray(item.secondary) || ![...item.primary,...item.secondary].every(key => Object.hasOwn(MUSCLES,key))) continue;
+    items.set(item.name,{...item,video:/^[A-Za-z0-9_-]{11}$/.test(item.video || "") ? item.video : "",id});
+  }
+  library = [...items.values()];
+  libraryByName = items;
+  EXERCISES.splice(0,EXERCISES.length,...library.map(item => item.name));
+  for (const id of ["progressSelect","volumeFilter"]) {
+    const select = $(id);
+    const previous = select.value;
+    select.replaceChildren(...(id === "volumeFilter" ? [new Option("Tất cả bài tập","")] : []),
+      ...EXERCISES.map(name => new Option(name,name)));
+    if (EXERCISES.includes(previous) || id === "volumeFilter") select.value = EXERCISES.includes(previous) ? previous : "";
+  }
+  renderLibrary();
+}
+
+function openExercise(item = null) {
+  editingExercise = item;
+  const form = $("exerciseForm"), fields = form.elements;
+  $("exerciseTitle").textContent = item ? "Sửa link video" : "Thêm bài tập";
+  fields.name.value = item?.name ?? "";
+  fields.name.readOnly = Boolean(item);
+  fields.equipment.value = item?.equipment ?? equipmentOptions[0];
+  fields.primary.value = item?.primary[0] ?? Object.keys(MUSCLES)[0];
+  fields.secondary.value = item?.secondary[0] ?? "";
+  for (const key of ["equipment","primary","secondary"]) fields[key].disabled = Boolean(item);
+  fields.video.value = item?.video ? "https://youtu.be/" + item.video : "";
+  $("exerciseDialog").showModal();
+}
+
+function stashPlanFields() {
+  for (const [index,row] of [...$("planRows").children].entries()) {
+    const count = row.querySelector("[data-slots-field]");
+    const reps = row.querySelector("[data-reps-field]");
+    planDraft[index][1] = count.valueAsNumber;
+    planDraft[index][2] = reps.value.trim();
+  }
+}
+
+function renderPlanEditor() {
+  $("planRows").innerHTML = planDraft.map(([name,count,reps],index) => `<div class="plan-row">
+    <strong>${escapeHtml(name)}</strong>
+    <label>Hiệp<input data-slots-field type="number" min="1" max="6" step="1" required value="${Number.isFinite(count) ? count : ""}"></label>
+    <label>Reps<input data-reps-field required maxlength="12" value="${escapeHtml(reps)}"></label>
+    <div class="plan-move"><button type="button" class="gray" data-index="${index}" data-move="-1" aria-label="Đưa bài lên" ${index ? "" : "disabled"}>↑</button>
+      <button type="button" class="gray" data-index="${index}" data-move="1" aria-label="Đưa bài xuống" ${index < planDraft.length-1 ? "" : "disabled"}>↓</button>
+      <button type="button" class="gray" data-index="${index}" data-move="0">Bỏ</button></div></div>`).join("");
+  $("planAdd").replaceChildren(new Option("Chọn bài để thêm",""),...EXERCISES.filter(name =>
+    !planDraft.some(row => row[0] === name)).map(name => new Option(name,name)));
+}
+
+let trainingVisible = false;
+
+function initV4() {
+  const training = $("training");
+  const observer = typeof IntersectionObserver !== "undefined" ? new IntersectionObserver(([entry]) => {
+    trainingVisible = entry.isIntersecting;
+    syncDock();
+  }) : null;
+  if (observer) observer.observe(training);
+  else trainingVisible = true;
+
+  $("workout").addEventListener("toggle",event => {
+    if (event.target.matches("details[data-exercise]")) syncDock(event.target);
+  },true);
+  $("workout").addEventListener("focusin",event => {
+    const row = event.target.closest("details[data-exercise]");
+    if (row) syncDock(row);
+  });
+  $("dockCopy").onclick = () => dockRow?.querySelector("[data-copy]")?.click();
+  $("volumeFilter").onchange = renderWeeklyVolume;
+  const showVolume = event => {
+    if (event.type === "keydown" && ![" ","Enter"].includes(event.key)) return;
+    const bar = event.target.closest("[data-volume-bar]");
+    if (!bar) return;
+    event.preventDefault();
+    $("volumeDetail").textContent = bar.getAttribute("aria-label");
+  };
+  $("volumeChart").addEventListener("click",showVolume);
+  $("volumeChart").addEventListener("keydown",showVolume);
+  $("startWorkoutLink").addEventListener("click",() => {
+    if (!activeDurationDate) {
+      selectDate(todayKey());
+      void changeDuration(true);
+    }
+  });
+  $("durationAction").onclick = () => void changeDuration();
+  setInterval(() => { if (activeDurationDate) updateDuration(); }, 500);
+
+  for (const field of ["energy","sleep"]) for (let level = 1; level <= 5; level++) {
+    $("recoveryForm").elements[field].add(new Option("★".repeat(level),level));
+  }
+  bindForm("recoveryForm",async data => {
+    const date = selectedDate;
+    await saveExtras({["tracker-recovery-" + date]:{
+      energy:Number(data.get("energy")) || null, sleep:Number(data.get("sleep")) || null, note:String(data.get("note")).trim()
+    }});
+    if (date === selectedDate) $("recoveryDetails").open = false;
+  });
+
+  $("editPlan").onclick = () => {
+    const day = Number($("daySelect").value);
+    const from = selectedDate;
+    planTarget = {day,date:from};
+    planDraft = planFor(day,from).map(row => [...row]);
+    $("planDateLabel").textContent = DAY_NAMES[day] + " · áp dụng từ " + from.split("-").reverse().join("/") + " cho các tuần sau";
+    renderPlanEditor();
+    $("planDialog").showModal();
+  };
+  $("planAdd").onchange = () => {
+    const name = $("planAdd").value;
+    if (!name) return;
+    stashPlanFields();
+    planDraft.push([name,3,"8–12"]);
+    renderPlanEditor();
+  };
+  $("planRows").onclick = event => {
+    const button = event.target.closest("button[data-index]");
+    if (!button) return;
+    stashPlanFields();
+    const index = Number(button.dataset.index), direction = Number(button.dataset.move);
+    if (!direction) planDraft.splice(index,1);
+    else {
+      const [row] = planDraft.splice(index,1);
+      planDraft.splice(index+direction,0,row);
+    }
+    renderPlanEditor();
+  };
+  bindForm("planForm",async () => {
+    stashPlanFields();
+    if (!planDraft.every(([, count,reps]) => Number.isInteger(count) && count >= 1 && count <= 6 && reps)) {
+      throw Error("Nhập đủ số hiệp và reps cho mỗi bài.");
+    }
+    await saveExtras({["tracker-plan-" + planTarget.day + "-" + planTarget.date]:{rows:planDraft.map(([name,sets,reps]) => ({name,sets,reps}))}});
+    $("planDialog").close();
+    refresh();
+  });
+
+  const exercise = $("exerciseForm").elements;
+  exercise.secondary.add(new Option("Không chọn",""));
+  for (const gear of equipmentOptions) exercise.equipment.add(new Option(gear,gear));
+  for (const [key,label] of Object.entries(MUSCLES)) {
+    exercise.primary.add(new Option(label,key));
+    exercise.secondary.add(new Option(label,key));
+  }
+  $("newExercise").onclick = () => openExercise();
+  $("libraryList").addEventListener("click",event => {
+    const button = event.target.closest("[data-video-edit]");
+    if (button) openExercise(libraryByName.get(EXERCISES[Number(button.dataset.videoEdit)]));
+  });
+  bindForm("exerciseForm",async data => {
+    const original = editingExercise;
+    const name = original?.name ?? String(data.get("name")).trim();
+    if (!name || Object.hasOwn(Object.prototype,name) || (!original && library.some(item => item.name.toLowerCase() === name.toLowerCase()))) throw Error("Tên bài trống hoặc đã tồn tại.");
+    const video = youtubeId(String(data.get("video")).trim());
+    const id = original?.id ?? (original ? "tracker-exercise-base-" + builtinNames.indexOf(name) :
+      "tracker-exercise-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2));
+    const primary = original?.primary ?? [String(data.get("primary"))];
+    const secondary = original?.secondary ?? [String(data.get("secondary") || "")].filter(key => key && !primary.includes(key));
+    await saveExtras({[id]:{name,equipment:original?.equipment ?? data.get("equipment"),primary,secondary,video}});
+    $("exerciseDialog").close();
+  });
+  document.querySelectorAll("[data-close]").forEach(button => {
+    button.onclick = () => $(button.dataset.close).close();
+  });
+}
+
 const today = new Date();
 $("todayLabel").textContent = "Hôm nay · " + DAY_NAMES[today.getDay()] + " · " + today.toLocaleDateString("vi-VN");
 $("todayWorkout").textContent = TITLES[today.getDay()];
@@ -1212,6 +1600,7 @@ $("todayDetail").textContent = todayPlan
   : "Ngày phục hồi theo lịch tuần";
 for (const day of DAYS) $("daySelect").add(new Option(DAY_NAMES[day] + " · " + TITLES[day], day));
 for (const name of EXERCISES) $("progressSelect").add(new Option(name, name));
+initV4();
 initFeatures();
 selectDate(selectedDate);
 refresh();
