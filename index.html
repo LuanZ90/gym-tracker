@@ -1,62 +1,108 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#10121b">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gym Tracker của Luân</title>
 <style>
-:root{color-scheme:dark;--bg:#10121b;--panel:#191d2b;--line:#30364b;--muted:#aab4cd;--lime:#dafa76;--violet:#b7a4ff;--mint:#8ef1cb}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 86% 0,#292047 0,transparent 40rem),var(--bg);color:#f6f7fc;font:16px/1.5 system-ui,sans-serif}
-main{max-width:1160px;margin:auto;padding:28px 24px 56px}
-header,.section-head,.exercise-head,.actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-header{margin-bottom:24px}.brand{font-weight:850;letter-spacing:.04em}.brand span{display:inline-grid;place-items:center;color:#182017;background:var(--lime);width:36px;height:36px;border-radius:10px;margin-right:9px}
-.hero{background:linear-gradient(115deg,#251f40,#1c2636);border:1px solid #403a5b;border-radius:24px;padding:clamp(18px,4vw,38px)}
-h1,h2,h3,p{margin:0}h1{font-size:clamp(32px,5vw,58px);line-height:1.08;letter-spacing:-.05em;margin:6px 0 22px}h2{font-size:22px}h3{font-size:17px}
-small,.muted,label{color:var(--muted)}.date{color:var(--violet);font-weight:750}
-.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
-button,input,select{font:inherit;border-radius:10px;border:1px solid var(--line);color:inherit;background:#111521;min-height:44px}
-button{cursor:pointer;padding:8px 13px;font-weight:700}button:hover{border-color:var(--violet)}button:disabled{opacity:.4;cursor:default}
-.primary,.day[aria-pressed=true]{color:#192016;background:var(--lime);border-color:var(--lime)}
-.day{padding:8px 3px;min-width:0}.day small{display:block;font-size:11px;color:inherit;opacity:.85}.day.today{outline:1px solid var(--violet);outline-offset:2px}
-:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(255px,320px);gap:18px;margin-top:18px;align-items:start}
-aside{display:grid;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;min-width:0}
-.section-head{margin-bottom:14px}.exercise{background:#141825;border:1px solid var(--line);border-radius:13px;padding:14px;margin-top:12px;border-left:3px solid var(--violet);overflow-wrap:anywhere}.exercise.done{border-left-color:var(--mint)}.done .badge{color:var(--mint)}.badge{color:var(--violet);font-size:.8rem}
-.set{display:grid;grid-template-columns:52px 1fr 1fr;gap:8px;align-items:center;margin-top:7px}.set small{text-align:center}.set input,select,.editor input{width:100%;min-width:0;padding:8px 10px}
-progress{width:100%;height:10px;accent-color:var(--lime);display:block;margin-top:8px}
-#timer{font-size:43px;font-weight:850;color:var(--mint);font-variant-numeric:tabular-nums;margin:4px 0}
-#progress{max-height:340px;overflow:auto;margin-top:12px}.bar-row{display:grid;grid-template-columns:78px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12px;margin:8px 0}.track{background:#292e41;border-radius:8px;height:9px}.bar{height:100%;background:linear-gradient(90deg,#9976ff,#d0bbff);border-radius:inherit}
-.editor{display:grid;gap:12px}.editor label{display:grid;gap:4px}.edit-row{display:grid;gap:8px;padding:12px;border-radius:12px;border:1px solid var(--line)}.targets{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.danger{color:#ffadbc}.empty{color:var(--muted);padding:13px 0}.status{color:var(--mint);min-height:24px;margin-top:8px}
-@media(max-width:720px){main{padding:16px 12px 32px}.layout{grid-template-columns:1fr}.week{gap:5px}.day{font-size:12px}.day small{font-size:10px}.panel{padding:14px}}
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #111; color: #eee; margin: 0 auto; padding: 12px; max-width: 700px; }
+  h1 { color: #f5a623; text-align: center; font-size: 22px; }
+  h2 { color: #f5a623; font-size: 18px; margin: 4px 0 10px; }
+  .card { background: #1e1e1e; border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+  .hidden { display: none !important; }
+  .ex { border-bottom: 1px solid #333; padding: 10px; border-radius: 8px; }
+  .ex.done { background: #2e4d2e; }
+  .ex-name { font-weight: bold; font-size: 15px; }
+  .ex-info { font-size: 13px; color: #aaa; margin: 4px 0 6px; }
+  .last { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .set { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+  .set span { width: 52px; font-size: 14px; }
+  .set input { flex: 1; padding: 8px; font-size: 16px; border-radius: 8px; border: none; background: #2b2b2b; color: #fff; min-width: 0; }
+  select, input[type=date], button { font-size: 16px; padding: 10px; border-radius: 8px; border: none; width: 100%; margin-bottom: 8px; }
+  select, input[type=date] { background: #2b2b2b; color: #fff; }
+  button { background: #f5a623; font-weight: bold; cursor: pointer; }
+  button.gray { background: #333; color: #eee; }
+  #timer { font-size: 34px; text-align: center; color: #f5a623; font-weight: bold; margin: 6px 0; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; }
+  .bar-label { width: 50px; color: #aaa; }
+  .bar { height: 16px; background: #f5a623; border-radius: 4px; }
+  .bar-val { white-space: nowrap; }
+  #userInfo { font-size: 13px; color: #aaa; }
 </style>
 </head>
 <body>
-<main>
-<header><div class="brand"><span aria-hidden="true">L</span>GYM TRACKER</div><div class="muted">Nhật ký tập của Luân</div></header>
-<section class="hero" aria-labelledby="heroTitle">
-  <p class="date" id="today"></p>
-  <h1 id="heroTitle">Lịch tập của tôi</h1>
-  <nav class="week" id="week" aria-label="Chọn ngày trong tuần"></nav>
-</section>
-<div class="layout">
-<section class="panel" aria-labelledby="sessionName">
-  <div class="section-head"><h2 id="sessionName"></h2><button class="primary" id="edit">Chỉnh buổi tập</button></div>
-  <div id="workout"></div>
-</section>
-<aside>
-<section class="panel"><h2>Đồng hồ nghỉ</h2><div id="timer" role="timer">00:00</div><div class="row-actions"><button data-rest="60">60 giây</button><button data-rest="90">90 giây</button><button id="stop" disabled>Dừng</button></div></section>
-<section class="panel"><div class="section-head"><h2>Tiến độ mức tạ</h2></div><select id="progressSelect" aria-label="Bài tập để xem tiến độ"></select><div id="progress"></div></section>
-<section class="panel"><div class="section-head"><h2>Sao lưu dữ liệu</h2></div><div class="row-actions"><button id="export">Xuất JSON</button><button id="import">Nhập JSON</button><input id="file" type="file" accept=".json,application/json" hidden></div></section>
-</aside>
-</div>
-<p id="status" class="status" role="status"></p>
-</main>
-<script>
+  <h1>🏋️ Gym Tracker của Luân</h1>
+
+  <div class="card" id="loginCard">
+    <p>Đăng nhập bằng Google để đồng bộ giữa điện thoại và máy tính.</p>
+    <button onclick="login()">Đăng nhập bằng Google</button>
+  </div>
+
+  <div id="appArea" class="hidden">
+    <div class="card">
+      <div id="userInfo"></div>
+      <button class="gray" onclick="logout()">Đăng xuất</button>
+    </div>
+
+    <div class="card hidden" id="migrateCard">
+      <p>Máy này còn dữ liệu cũ (bản chưa đồng bộ). Bấm nút dưới để chuyển lên đám mây.</p>
+      <button onclick="migrateLocal()">Chuyển dữ liệu cũ lên đám mây</button>
+    </div>
+
+    <div class="card">
+      <h2>Ghi buổi tập</h2>
+      <input type="date" id="dateInput" onchange="onDateChange()">
+      <select id="daySelect" onchange="renderWorkout()"></select>
+      <div id="workout"></div>
+    </div>
+
+    <div class="card">
+      <h2>⏱️ Đồng hồ nghỉ</h2>
+      <div id="timer">--</div>
+      <button onclick="startRest(90)">Nghỉ 90 giây</button>
+      <button class="gray" onclick="startRest(60)">Nghỉ 60 giây</button>
+    </div>
+
+    <div class="card">
+      <h2>📈 Tiến độ theo bài</h2>
+      <select id="progressSelect" onchange="renderProgress()"></select>
+      <div id="progress"></div>
+    </div>
+
+    <div class="card">
+      <h2>💾 Sao lưu</h2>
+      <button onclick="exportData()">Xuất ra file</button>
+      <button class="gray" onclick="document.getElementById('importFile').click()">Nhập từ file</button>
+      <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+             collection, doc, setDoc, onSnapshot }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJTVdfIaogCbSkog4SgLhXaq1K5jMm9dQ",
+      authDomain: "gym-tracker-39b78.firebaseapp.com",
+      projectId: "gym-tracker-39b78",
+      storageBucket: "gym-tracker-39b78.firebasestorage.app",
+      messagingSenderId: "360974190701",
+      appId: "1:360974190701:web:092f8e3dd1641571be5764"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = initializeFirestore(app, {
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+    });
+
     const DAY_NAMES = { 1: "Thứ 2", 2: "Thứ 3", 3: "Thứ 4", 4: "Thứ 5", 5: "Thứ 6", 6: "Thứ 7", 0: "Chủ nhật" };
 
-    // Mỗi bài: [tên, số set, số reps]
     const WORKOUTS = {
       1: { name: "Buổi 1 – PUSH (Đẩy: Ngực, Vai, Tay sau)", exercises: [
         ["Incline Machine Chest Press (Đẩy ngực máy nghiêng 30 độ)", 4, "8–10"],
@@ -103,288 +149,264 @@ progress{width:100%;height:10px;accent-color:var(--lime);display:block;margin-to
       ]}
     };
 
-const $ = id => document.getElementById(id);
-const weekDays = [1, 2, 3, 4, 5, 6, 0];
-const initialPlan = Object.fromEntries(Object.entries(WORKOUTS).map(([day, session]) => [
-  day, {name: session.name, exercises: session.exercises.map(([name, sets, reps]) => ({id: name, name, sets, reps}))}
-]));
-const PLAN_KEY = "gymPlanV1";
-const LOG_KEY = "gymLogsV2";
-const APP_KEY = "gymTrackerV3";
-const dateFormat = new Intl.DateTimeFormat("vi-VN", {weekday:"long", day:"numeric", month:"numeric", year:"numeric"});
-const numberFormat = new Intl.NumberFormat("vi-VN");
-function read(key, fallback) {
-  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-  catch { return fallback; }
-}
-const saved = read(APP_KEY, {});
-let plan = saved.plan ?? read(PLAN_KEY, initialPlan);
-let logs = saved.logs ?? read(LOG_KEY, {});
-let day = new Date().getDay();
-let draft = null;
+    let uid = null;
+    let logs = {};
+    let unsubscribe = null;
+    let selectedDate = todayKey();
 
-function persist(nextPlan, nextLogs) {
-  try { localStorage.setItem(APP_KEY, JSON.stringify({plan: nextPlan, logs: nextLogs})); }
-  catch { announce("Không lưu được. Hãy kiểm tra dung lượng và quyền lưu dữ liệu của trình duyệt."); return false; }
-  plan = nextPlan;
-  logs = nextLogs;
-  return true;
-}
-function announce(message) { $("status").textContent = message; }
-function todayKey() {
-  const date = new Date();
-  return [date.getFullYear(), date.getMonth() + 1, date.getDate()].map(n => String(n).padStart(2,"0")).join("-");
-}
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
-}
-function history(id) {
-  return Object.entries(logs).filter(([key, entries]) => key.slice(11) === id && entries.some(s => s?.w != null))
-    .sort(([a], [b]) => a.localeCompare(b));
-}
-function maxWeight(sets) {
-  return sets.reduce((max, set) => Math.max(max, set?.w ?? 0), 0);
-}
-function complete(set) { return set?.w != null && set?.r > 0; }
-
-function renderWeek() {
-  $("today").textContent = dateFormat.format(new Date());
-  $("week").innerHTML = weekDays.map(d =>
-    `<button class="day ${d === new Date().getDay() ? "today" : ""}" data-day="${d}" aria-pressed="${d === day}">${d ? "T" + (d + 1) : "CN"}<small>${plan[d]?.exercises.length ? plan[d].exercises.length + " bài" : "Nghỉ"}</small></button>`
-  ).join("");
-}
-function updateCompletion() {
-  let finished = 0;
-  const exercises = plan[day]?.exercises ?? [];
-  exercises.forEach(({id, sets}, index) => {
-    const entries = logs[todayKey() + "|" + id] ?? [];
-    const done = Array.from({length: sets}, (_, i) => complete(entries[i])).every(Boolean);
-    const card = $("workout").querySelector(`[data-exercise="${index}"]`);
-    card.classList.toggle("done", done);
-    card.querySelector(".badge").textContent = done ? "✓ Hoàn thành" : "Đang theo dõi";
-    finished += Number(done);
-  });
-  if (exercises.length) {
-    $("count").textContent = `${finished}/${exercises.length} bài hoàn thành`;
-    $("completion").value = finished;
-  }
-}
-function renderWorkout() {
-  const session = plan[day];
-  const exercises = session?.exercises ?? [];
-  $("sessionName").textContent = session?.name || DAY_NAMES[day] + " · Ngày nghỉ";
-  $("edit").hidden = false;
-  const box = $("workout");
-  if (!exercises.length) {
-    box.innerHTML = '<p class="empty">Chưa có bài tập. Bấm “Chỉnh buổi tập” để lên lịch cho ngày này.</p>';
-    return;
-  }
-  box.innerHTML = `<p id="count" class="muted"></p><progress id="completion" max="${exercises.length}" aria-label="Số bài đã hoàn thành"></progress>` +
-    exercises.map(({id, name, sets, reps}, i) => {
-      const current = logs[todayKey() + "|" + id] ?? [];
-      const last = history(id).filter(([key]) => key.slice(0,10) < todayKey()).at(-1);
-      const rows = Array.from({length: sets}, (_, s) => `
-        <div class="set"><span>Hiệp ${s + 1}</span>
-          <input type="number" min="0" step="any" inputmode="decimal" placeholder="kg" aria-label="Hiệp ${s + 1}, mức tạ kg" data-set="${s}" data-field="w" value="${current[s]?.w ?? ""}">
-          <input type="number" min="1" step="1" inputmode="numeric" placeholder="rep" aria-label="Hiệp ${s + 1}, số rep" data-set="${s}" data-field="r" value="${current[s]?.r ?? ""}">
-        </div>`).join("");
-      return `<article class="exercise" data-exercise="${i}">
-        <div class="exercise-head"><h3>${escapeHtml(name)}</h3><span class="badge"></span></div>
-        <p class="muted">${sets} hiệp × ${escapeHtml(reps)} rep${last ? " · Lần trước tối đa " + numberFormat.format(maxWeight(last[1])) + " kg" : ""}</p>
-        ${rows}</article>`;
-    }).join("");
-  updateCompletion();
-}
-function renderProgress() {
-  const id = $("progressSelect").value;
-  const entries = history(id);
-  const max = entries.reduce((peak, [, sets]) => Math.max(peak, maxWeight(sets)), 1);
-  $("progress").innerHTML = entries.length ? entries.map(([key, sets]) => {
-    const weight = maxWeight(sets);
-    const [year, month, date] = key.slice(0,10).split("-");
-    return `<div class="bar-row"><span>${date}/${month}/${year}</span><div class="track" aria-hidden="true"><div class="bar" style="width:${weight / max * 100}%"></div></div><span>${numberFormat.format(weight)} kg</span></div>`;
-  }).join("") : '<p class="empty">Chưa có mức tạ được ghi.</p>';
-}
-function refreshProgressOptions() {
-  const select = $("progressSelect");
-  const previous = select.value;
-  const names = new Map();
-  Object.values(plan).forEach(session => session.exercises.forEach(({id, name}) => names.set(id, name)));
-  const defaults = new Map(Object.values(initialPlan).flatMap(session => session.exercises.map(({id, name}) => [id,name])));
-  Object.keys(logs).forEach(key => {
-    const id = key.slice(11);
-    if (!names.has(id)) names.set(id, defaults.get(id) ?? id.replace(/^bài-[^:]+:/,""));
-  });
-  select.replaceChildren(...Array.from(names, ([id, name]) => new Option(name,id)));
-  select.disabled = !names.size;
-  if (names.has(previous)) select.value = previous;
-  renderProgress();
-}
-function refresh() { renderWeek(); renderWorkout(); refreshProgressOptions(); }
-
-function editSession() {
-  draft = structuredClone(plan[day] ?? {name:"", exercises:[]});
-  renderEditor();
-  $("editor").elements.sessionName.focus();
-}
-function renderEditor() {
-  $("edit").hidden = true;
-  $("sessionName").textContent = "Chỉnh buổi tập · " + DAY_NAMES[day];
-  $("workout").innerHTML = `<form class="editor" id="editor">
-    <label>Tên buổi<input name="sessionName" maxlength="100" placeholder="VD: PUSH · Ngực, vai, tay sau" value="${escapeHtml(draft.name)}"></label>
-    ${draft.exercises.map(({name,sets,reps},i) => `<div class="edit-row">
-      <label>Tên bài<input required maxlength="180" name="name-${i}" value="${escapeHtml(name)}"></label>
-      <div class="targets"><label>Số hiệp<input required type="number" min="1" max="30" name="sets-${i}" value="${escapeHtml(sets)}"></label>
-      <label>Rep mục tiêu<input required maxlength="24" name="reps-${i}" value="${escapeHtml(reps)}" placeholder="VD: 8–12"></label></div>
-      <div class="row-actions">
-        <button type="button" data-action="up" data-index="${i}" ${i === 0 ? "disabled" : ""}>↑ Lên</button>
-        <button type="button" data-action="down" data-index="${i}" ${i === draft.exercises.length-1 ? "disabled" : ""}>↓ Xuống</button>
-        <button type="button" class="danger" data-action="remove" data-index="${i}">Bỏ bài</button>
-      </div></div>`).join("")}
-    <div class="row-actions"><button type="button" data-action="add">+ Thêm bài tập</button></div>
-    <div class="row-actions"><button class="primary" type="submit">Lưu buổi tập</button><button type="button" data-action="cancel">Hủy</button></div>
-  </form>`;
-}
-function readDraft(form) {
-  draft.name = form.elements.sessionName.value;
-  draft.exercises.forEach((exercise, i) => {
-    exercise.name = form.elements["name-" + i].value;
-    exercise.sets = form.elements["sets-" + i].value;
-    exercise.reps = form.elements["reps-" + i].value;
-  });
-}
-
-$("week").addEventListener("click", event => {
-  const button = event.target.closest("[data-day]");
-  if (!button) return;
-  if (draft && !confirm("Bỏ các thay đổi chưa lưu của buổi đang chỉnh?")) return;
-  draft = null;
-  day = Number(button.dataset.day);
-  renderWeek();
-  renderWorkout();
-  $("week").querySelector('[aria-pressed="true"]').focus();
-});
-$("edit").onclick = editSession;
-$("workout").addEventListener("click", event => {
-  const button = event.target.closest("[data-action]");
-  if (!button || !draft) return;
-  const {action, index} = button.dataset;
-  if (action === "cancel") { draft = null; renderWorkout(); $("edit").focus(); return; }
-  readDraft($("editor"));
-  let focusIndex = Number(index);
-  if (action === "add") {
-    draft.exercises.push({id:null, name:"", sets:3, reps:"8–12"});
-    focusIndex = draft.exercises.length - 1;
-  } else if (action === "remove") {
-    draft.exercises.splice(focusIndex, 1);
-    focusIndex = Math.min(focusIndex, draft.exercises.length - 1);
-  } else {
-    const other = focusIndex + (action === "up" ? -1 : 1);
-    [draft.exercises[focusIndex], draft.exercises[other]] = [draft.exercises[other],draft.exercises[focusIndex]];
-    focusIndex = other;
-  }
-  renderEditor();
-  ($("editor").elements["name-" + focusIndex] ?? $("editor").querySelector('[data-action="add"]')).focus();
-});
-$("workout").addEventListener("submit", event => {
-  event.preventDefault();
-  readDraft(event.target);
-  const exercises = draft.exercises.map(exercise => ({
-    id: exercise.id ?? ("bài-" + crypto.randomUUID() + ":" + exercise.name.trim()),
-    name: exercise.name.trim(), sets:Number(exercise.sets), reps:exercise.reps.trim()
-  }));
-  if (exercises.some(exercise => !exercise.name || !exercise.reps)) {
-    announce("Hãy nhập tên bài và số rep mục tiêu cho từng bài."); return;
-  }
-  const nextPlan = {...plan, [day]: {name:draft.name.trim() || (exercises.length ? DAY_NAMES[day] + " · Buổi tập" : ""), exercises}};
-  if (!persist(nextPlan,logs)) return;
-  draft = null;
-  refresh();
-  $("edit").focus();
-  announce("Đã lưu lịch " + DAY_NAMES[day] + ".");
-});
-$("workout").addEventListener("change", event => {
-  const {field} = event.target.dataset;
-  if (!field) return;
-  const input = event.target;
-  if (!input.checkValidity()) { input.reportValidity(); return; }
-  const {id} = plan[day].exercises[Number(input.closest("[data-exercise]").dataset.exercise)];
-  const key = todayKey() + "|" + id;
-  const index = Number(input.dataset.set);
-  const entries = [...(logs[key] ?? [])];
-  entries[index] = {...entries[index], [field]: input.value === "" ? null : input.valueAsNumber};
-  if (!persist(plan,{...logs,[key]:entries})) return;
-  updateCompletion();
-  renderProgress();
-});
-
-let interval = null;
-function stopTimer(label = "00:00") {
-  clearInterval(interval);
-  $("timer").textContent = label;
-  $("stop").disabled = true;
-}
-document.querySelectorAll("[data-rest]").forEach(button => button.onclick = () => {
-  clearInterval(interval);
-  const deadline = Date.now() + Number(button.dataset.rest) * 1000;
-  function tick() {
-    const seconds = Math.ceil((deadline - Date.now()) / 1000);
-    if (seconds <= 0) {
-      stopTimer("Hết giờ");
-      if (navigator.vibrate) navigator.vibrate([300,150,300]);
-      return;
+    function todayKey() {
+      const d = new Date();
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     }
-    $("timer").textContent = String(Math.floor(seconds / 60)).padStart(2,"0") + ":" + String(seconds % 60).padStart(2,"0");
-  }
-  $("stop").disabled = false;
-  tick();
-  interval = setInterval(tick,250);
-});
-$("stop").onclick = () => stopTimer();
-$("progressSelect").onchange = renderProgress;
-$("export").onclick = () => {
-  const url = URL.createObjectURL(new Blob([JSON.stringify({version:3,plan,logs},null,2)],{type:"application/json"}));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "gym-backup-" + todayKey() + ".json";
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url),1000);
-};
-function record(value) { return value && typeof value === "object" && !Array.isArray(value); }
-function validLogs(value) {
-  return record(value) && Object.entries(value).every(([key,sets]) =>
-    /^\d{4}-\d{2}-\d{2}\|.+/s.test(key) && Array.isArray(sets) && sets.every(set =>
-      set === null || (record(set) && ["w","r"].every(field => set[field] == null || (Number.isFinite(set[field]) && set[field] >= 0)))));
-}
-function validPlan(value) {
-  return record(value) && Object.entries(value).every(([key,session]) =>
-    /^[0-6]$/.test(key) && record(session) && typeof session.name === "string" && Array.isArray(session.exercises) &&
-    session.exercises.every(exercise => record(exercise) && typeof exercise.id === "string" && exercise.id &&
-      typeof exercise.name === "string" && exercise.name.trim() && typeof exercise.reps === "string" && exercise.reps.trim() &&
-      Number.isInteger(exercise.sets) && exercise.sets >= 1 && exercise.sets <= 30));
-}
-$("import").onclick = () => {
-  if (draft) { announce("Hãy lưu hoặc hủy chỉnh sửa trước khi nhập dữ liệu."); return; }
-  $("file").click();
-};
-$("file").onchange = async event => {
-  const file = event.target.files[0];
-  event.target.value = "";
-  if (!file) return;
-  try {
-    const data = JSON.parse(await file.text());
-    const full = record(data) && data.version === 3;
-    const imported = full ? data.logs : data;
-    if (!validLogs(imported) || (full && !validPlan(data.plan))) throw new Error("Invalid backup");
-    if (draft) { announce("Hãy lưu hoặc hủy chỉnh sửa trước khi nhập dữ liệu."); return; }
-    if (!confirm(full ? "Dùng lịch từ bản sao lưu và gộp nhật ký? Các mục nhật ký trùng sẽ dùng dữ liệu trong tệp." : "Gộp nhật ký? Các mục trùng sẽ dùng dữ liệu trong tệp.")) return;
-    if (persist(full ? data.plan : plan,{...logs,...imported})) {
-      refresh();
-      announce("Đã nhập dữ liệu.");
+
+    function dayOfWeek(dateStr) {
+      const [y, m, d] = dateStr.split("-").map(Number);
+      return new Date(y, m - 1, d).getDay();
     }
-  } catch { announce("Tệp sao lưu Gym Tracker không hợp lệ."); }
-};
-refresh();
-</script>
+
+    function maxWeight(sets) {
+      let m = 0;
+      (sets || []).forEach(s => { if (s && s.w && s.w > m) m = s.w; });
+      return m;
+    }
+
+    function getLastSets(name) {
+      const dates = Object.keys(logs)
+        .filter(d => d < selectedDate && logs[d][name])
+        .sort();
+      return dates.length ? logs[dates[dates.length - 1]][name] : null;
+    }
+
+    // ---------- Đăng nhập ----------
+    window.login = () => {
+      signInWithPopup(auth, new GoogleAuthProvider()).catch(e => alert("Đăng nhập lỗi: " + e.message));
+    };
+    window.logout = () => signOut(auth);
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        uid = user.uid;
+        document.getElementById("loginCard").classList.add("hidden");
+        document.getElementById("appArea").classList.remove("hidden");
+        document.getElementById("userInfo").textContent = "Đang đăng nhập: " + (user.email || "");
+        startSync();
+        checkLocalData();
+      } else {
+        uid = null;
+        logs = {};
+        if (unsubscribe) unsubscribe();
+        document.getElementById("loginCard").classList.remove("hidden");
+        document.getElementById("appArea").classList.add("hidden");
+      }
+    });
+
+    // ---------- Đồng bộ đám mây ----------
+    function startSync() {
+      if (unsubscribe) unsubscribe();
+      unsubscribe = onSnapshot(collection(db, "users", uid, "days"), snap => {
+        logs = {};
+        snap.forEach(d => { logs[d.id] = d.data().exercises || {}; });
+        renderAll();
+      });
+    }
+
+    async function saveDay(date) {
+      try {
+        await setDoc(doc(db, "users", uid, "days", date), { exercises: logs[date] || {} });
+      } catch (e) {
+        alert("Lưu lỗi: " + e.message);
+      }
+    }
+
+    // ---------- Ghi buổi tập ----------
+    window.onDateChange = () => {
+      selectedDate = document.getElementById("dateInput").value;
+      document.getElementById("daySelect").value = dayOfWeek(selectedDate);
+      renderAll();
+    };
+
+    window.updateSet = (day, i, s, field, value) => {
+      const name = WORKOUTS[day].exercises[i][0];
+      if (!logs[selectedDate]) logs[selectedDate] = {};
+      if (!logs[selectedDate][name]) logs[selectedDate][name] = [];
+      const arr = logs[selectedDate][name];
+      for (let k = 0; k <= s; k++) if (!arr[k]) arr[k] = { w: null, r: null };
+      arr[s][field] = value === "" ? null : Number(value);
+      renderAll();
+      saveDay(selectedDate);
+    };
+
+    window.renderWorkout = () => {
+      const day = Number(document.getElementById("daySelect").value);
+      const w = WORKOUTS[day];
+      const box = document.getElementById("workout");
+
+      if (!w) {
+        box.innerHTML = "<p>Ngày này là ngày nghỉ. Nghỉ cũng là một phần của tập luyện 😄</p>";
+        return;
+      }
+
+      const dayLog = logs[selectedDate] || {};
+      let html = `<p class="ex-info"><b>${w.name}</b></p>`;
+
+      w.exercises.forEach(([name, sets, reps], i) => {
+        const cur = dayLog[name] || [];
+        let done = true;
+        for (let s = 0; s < sets; s++) {
+          if (!cur[s] || !cur[s].w || !cur[s].r) { done = false; break; }
+        }
+
+        const last = getLastSets(name);
+        const lastText = last ? `<div class="last">Lần trước: tạ cao nhất ${maxWeight(last)}kg</div>` : "";
+
+        let rows = "";
+        for (let s = 0; s < sets; s++) {
+          const c = cur[s] || {};
+          rows += `
+            <div class="set">
+              <span>Set ${s + 1}</span>
+              <input type="number" inputmode="decimal" step="0.5" placeholder="kg"
+                value="${c.w ?? ""}" onchange="updateSet(${day}, ${i}, ${s}, 'w', this.value)">
+              <input type="number" inputmode="numeric" placeholder="reps"
+                value="${c.r ?? ""}" onchange="updateSet(${day}, ${i}, ${s}, 'r', this.value)">
+            </div>`;
+        }
+
+        html += `
+          <div class="ex ${done ? "done" : ""}">
+            <div class="ex-name">${i + 1}. ${name} ${done ? "✅" : ""}</div>
+            <div class="ex-info">${sets} set × ${reps} reps</div>
+            ${lastText}
+            ${rows}
+          </div>`;
+      });
+
+      box.innerHTML = html;
+    };
+
+    // ---------- Tiến độ ----------
+    window.renderProgress = () => {
+      const name = document.getElementById("progressSelect").value;
+      const box = document.getElementById("progress");
+      const dates = Object.keys(logs)
+        .filter(d => logs[d][name] && maxWeight(logs[d][name]) > 0)
+        .sort();
+
+      if (!dates.length) {
+        box.innerHTML = "<p>Chưa có dữ liệu cho bài này.</p>";
+        return;
+      }
+
+      const values = dates.map(d => maxWeight(logs[d][name]));
+      const max = Math.max(...values);
+
+      box.innerHTML = dates.map((d, idx) => {
+        const [, m, day] = d.split("-");
+        const width = (values[idx] / max) * 100;
+        return `
+          <div class="bar-row">
+            <span class="bar-label">${day}/${m}</span>
+            <div class="bar" style="width:${width}%"></div>
+            <span class="bar-val">${values[idx]}kg</span>
+          </div>`;
+      }).join("");
+    };
+
+    function renderAll() {
+      document.getElementById("dateInput").value = selectedDate;
+      renderWorkout();
+      renderProgress();
+    }
+
+    // ---------- Đồng hồ nghỉ ----------
+    let timerId = null;
+    window.startRest = (sec) => {
+      clearInterval(timerId);
+      let left = sec;
+      const el = document.getElementById("timer");
+      el.textContent = left + "s";
+      timerId = setInterval(() => {
+        left--;
+        el.textContent = left + "s";
+        if (left <= 0) {
+          clearInterval(timerId);
+          el.textContent = "Hết giờ! 💪";
+          if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
+        }
+      }, 1000);
+    };
+
+    // ---------- Chuyển dữ liệu cũ ----------
+    function checkLocalData() {
+      const old = JSON.parse(localStorage.getItem("gymLogsV2") || "{}");
+      if (Object.keys(old).length) document.getElementById("migrateCard").classList.remove("hidden");
+    }
+
+    window.migrateLocal = async () => {
+      const old = JSON.parse(localStorage.getItem("gymLogsV2") || "{}");
+      Object.entries(old).forEach(([key, sets]) => {
+        const [date, ...rest] = key.split("|");
+        const name = rest.join("|");
+        if (!logs[date]) logs[date] = {};
+        logs[date][name] = sets;
+      });
+      for (const date of Object.keys(logs)) await saveDay(date);
+      localStorage.setItem("gymLogsV2_backup", localStorage.getItem("gymLogsV2"));
+      localStorage.removeItem("gymLogsV2");
+      document.getElementById("migrateCard").classList.add("hidden");
+      alert("Đã chuyển xong dữ liệu lên đám mây!");
+    };
+
+    // ---------- Sao lưu ----------
+    window.exportData = () => {
+      const blob = new Blob([JSON.stringify(logs, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "gym-backup-" + todayKey() + ".json";
+      a.click();
+    };
+
+    window.importData = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const data = JSON.parse(reader.result);
+          for (const date of Object.keys(data)) {
+            logs[date] = { ...(logs[date] || {}), ...data[date] };
+            await saveDay(date);
+          }
+          alert("Nhập dữ liệu thành công!");
+        } catch (err) {
+          alert("File không hợp lệ 2 ơi.");
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    // ---------- Khởi tạo menu ----------
+    function init() {
+      const daySel = document.getElementById("daySelect");
+      [1, 2, 3, 4, 5, 6, 0].forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = DAY_NAMES[d] + (WORKOUTS[d] ? "" : " (nghỉ)");
+        daySel.appendChild(opt);
+      });
+      daySel.value = dayOfWeek(selectedDate);
+
+      const names = [...new Set(Object.values(WORKOUTS).flatMap(w => w.exercises.map(e => e[0])))];
+      const ps = document.getElementById("progressSelect");
+      names.forEach(n => {
+        const opt = document.createElement("option");
+        opt.value = n;
+        opt.textContent = n;
+        ps.appendChild(opt);
+      });
+    }
+
+    init();
+  </script>
 </body>
 </html>
