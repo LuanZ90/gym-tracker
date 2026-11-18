@@ -170,6 +170,17 @@ main section{scroll-margin-top:132px}
 @media(max-width:380px){.overview-macros .energy-label{flex-direction:column;gap:0}}
 @media(prefers-reduced-motion:reduce){#workout .ex:focus-within{animation:none}.dock-buttons button:active{transform:none}}
 
+
+.macro-donuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.macro-donut{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#141414;border-radius:12px;padding:8px}
+.macro-donut .ring{width:62px;height:62px;flex:none}.macro-donut .ring strong{font-size:13px}.macro-donut .ring::before{inset:6px}
+.macro-adjust{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}.macro-adjust button{min-height:38px;font-size:12px}
+.supplement-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px;margin-top:6px;border:1px solid var(--line);border-radius:9px;background:#181616}
+.supplement-row label{display:flex;align-items:center;gap:8px;min-height:42px;cursor:pointer}.supplement-row label small{display:block;color:#c8b7af}
+.supplement-row input{width:18px;min-height:18px;flex:none;accent-color:#ff7136}
+.supplement-row.is-taken{background:#3b2118;border-color:#ff7136}.supplement-row.is-taken label strong{color:#ffb18a}
+.stock-button{font-size:12px;min-height:36px;padding:6px 8px;text-align:left}.stock-low{color:#ff9b95;border-color:#88423d;background:#371b1b}
+@media(max-width:420px){.macro-donut{gap:5px;font-size:12px}.macro-donut .ring{width:46px;height:46px}}
 </style>
 </head>
 <body>
@@ -240,16 +251,20 @@ main section{scroll-margin-top:132px}
       <label>Mục tiêu protein (g)<input name="proteinGoal" type="number" min="1" step="0.1" placeholder="Nhập mục tiêu"></label>
       <button type="submit">Lưu dinh dưỡng</button>
     </form>
-    <div id="nutritionBars" class="spaced"></div>
+    <div id="nutritionDonuts" class="macro-donuts spaced"></div><div id="nutritionBars" class="spaced"></div>
     <div class="meal-box">
-      <h3>Nhập nhanh thực phẩm</h3>
+      <h3>Nhập nhanh thực phẩm</h3><label>Món cá nhân<select id="presetChoice"></select></label>
       <form id="mealForm" class="tracker-form">
         <label>Tên món<input name="name" list="foodSuggestions" maxlength="100" placeholder="VD: Phở bò" required></label>
         <datalist id="foodSuggestions"></datalist>
         <label>Số khẩu phần<input name="quantity" type="number" min="0.1" max="50" step="0.1" value="1" required></label>
         <label>Calories (kcal)<input name="calories" type="number" min="0" step="any" inputmode="decimal" required></label>
         <label>Protein (g)<input name="protein" type="number" min="0" step="any" inputmode="decimal" required></label>
-        <button type="submit">Cộng vào tổng ngày</button>
+        <div id="macroAdjust" class="macro-adjust">
+          <button type="button" class="gray" data-kcal="-100">−100 kcal</button><button type="button" class="gray" data-kcal="100">+100 kcal</button>
+          <button type="button" class="gray" data-protein="-10">−10 g protein</button><button type="button" class="gray" data-protein="10">+10 g protein</button>
+          <button type="button" class="gray" data-scale="1.2">×1,2</button></div>
+        <button type="button" class="gray" id="savePreset">Lưu vào bộ nhớ</button><button type="submit">Cộng vào tổng ngày</button>
       </form>
       <p class="muted" id="foodEstimate">Nhập tên món và số khẩu phần để xem ước tính.</p>
       <p id="mealPreview" aria-live="polite"></p><p id="mealStatus" class="meal-status" role="status"></p>
@@ -265,7 +280,10 @@ main section{scroll-margin-top:132px}
       <div class="entry"><span class="muted">Sau tập</span><span>Sữa và whey thực vật</span></div>
       <div class="entry"><time>20:00</time><span>Cơm tối</span></div>
     </div>
-    <div class="card"><h3>Supplement đang theo dõi</h3><p class="muted">Whey thực vật · Creatine Amix · Omega-3 · Magnesium Webber · Kẽm DHC · Vitamin C DHC</p></div>
+    <div class="card"><div class="overview-macros-title"><h3>Checklist Supplement</h3><small id="supplementCount" class="muted"></small></div>
+      <p class="muted">Theo ngày đang chọn ở trên. Mỗi lần tích tính 1 phần. Cảnh báo khi còn 5 phần hoặc ít hơn.</p>
+      <div id="supplementList"></div><p id="supplementStatus" role="status" class="muted"></p>
+    </div>
   </div>
 </section>
 <section data-screen="library" hidden id="library">
@@ -330,6 +348,7 @@ main section{scroll-margin-top:132px}
   <div class="actions"><button type="submit">Lưu bài tập</button><button class="gray" type="button" data-close="exerciseDialog">Hủy</button></div>
 </form></dialog>
 
+<dialog id="stockDialog"><form id="stockForm"><h2 id="stockTitle">Tồn kho</h2><label><span id="stockUnit">Số phần còn lại</span><input id="stockAmount" name="amount" type="number" min="0" step="0.1" required></label><div class="actions"><button type="submit">Lưu tồn kho</button><button type="button" class="gray" id="closeStock">Đóng</button></div></form></dialog>
 <script>
 "use strict";
     const firebaseConfig = {
@@ -1011,7 +1030,7 @@ function changeExtraAccount(account) {
 function acceptCloudExtras(documents) {
   const next = {}, nextPhotos = {};
   for (const item of documents) {
-    if (/^tracker-(profile|goals|body-|food-|meal-|photo-|plan-|exercise-|recovery-|duration-)/.test(item.id)) {
+    if (/^tracker-(profile|goals|body-|food-|meal-|supplement-|stock-|preset-|photo-|plan-|exercise-|recovery-|duration-)/.test(item.id)) {
       const payload = item.data().tracker;
       if (!payload) continue;
       if (item.id.startsWith("tracker-photo-")) nextPhotos[item.id] = payload;
@@ -1200,7 +1219,8 @@ function normalizeFood(value) {
 
 function estimateFood(name, quantity) {
   const normalized = " " + normalizeFood(name) + " ";
-  const food = foodDatabase.find(item => item.aliases.some(alias => normalized.includes(" " + alias + " ")));
+  const custom = foodPresets().find(([,item]) => normalizeFood(item.name) === normalized.trim())?.[1];
+  const food = custom || foodDatabase.find(item => item.aliases.some(alias => normalized.includes(" " + alias + " ")));
   if (!food || !Number.isFinite(quantity) || quantity <= 0) return null;
   return {food,kcal:Math.round(food.kcal * quantity),protein:Math.round(food.protein * quantity * 10) / 10};
 }
@@ -1226,12 +1246,6 @@ function renderFoodLog() {
 
 function initFoodEstimator() {
   const form = $("mealForm"), fields = form.elements;
-  for (const food of foodDatabase) {
-    const option = document.createElement("option");
-    option.value = food.name;
-    $("foodSuggestions").append(option);
-  }
-
   function updateMealPreview() {
     const values = [fields.calories,fields.protein].map(input => input.value === "" ? null : input.valueAsNumber);
     const current = nutritionTotals($("nutritionDate").value);
@@ -1246,7 +1260,7 @@ function initFoodEstimator() {
     if (resetOverrides) for (const key of ["calories","protein"]) delete fields[key].dataset.override;
     applyEstimate = estimateFood(fields.name.value,fields.quantity.valueAsNumber);
     $("foodEstimate").textContent = applyEstimate
-      ? `Ước tính cho ${format.format(fields.quantity.valueAsNumber)} × ${applyEstimate.food.unit} · khoảng ${format.format(applyEstimate.kcal)} kcal và ${format.format(applyEstimate.protein)} g protein.`
+      ? `Ước tính cho ${format.format(fields.quantity.valueAsNumber)} × ${applyEstimate.food.unit || "khẩu phần"} · khoảng ${format.format(applyEstimate.kcal)} kcal và ${format.format(applyEstimate.protein)} g protein.`
       : fields.name.value.trim() ? "Chưa có món này trong bảng tra. Nhập kcal và protein thực tế." : "Nhập tên món và số khẩu phần để xem ước tính.";
     for (const [key,value] of [["calories",applyEstimate?.kcal],["protein",applyEstimate?.protein]]) {
       if (!fields[key].dataset.override) fields[key].value = value ?? "";
@@ -1256,6 +1270,53 @@ function initFoodEstimator() {
   fields.name.oninput = () => preview(true);
   fields.quantity.oninput = () => preview();
   for (const key of ["calories","protein"]) fields[key].oninput = () => { fields[key].dataset.override = "true"; };
+
+  $("presetChoice").onchange = () => {
+    const preset = extras[$("presetChoice").value];
+    if (!preset) return;
+    fields.name.value = preset.name;
+    fields.quantity.value = 1;
+    pending = null;
+    preview(true);
+  };
+
+  $("macroAdjust").addEventListener("click",event => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    const {kcal,protein,scale} = button.dataset;
+    const keys = scale ? ["calories","protein"] : [kcal ? "calories" : "protein"];
+    if (keys.some(key => !validNumber(fields[key].valueAsNumber))) {
+      $("mealStatus").textContent = "Điền chỉ số của món trước khi điều chỉnh.";
+      return;
+    }
+    for (const key of keys) {
+      const value = fields[key].valueAsNumber;
+      fields[key].value = Math.round(Math.max(0,scale ? value * Number(scale) : value + Number(kcal || protein)) * 10) / 10;
+      fields[key].dataset.override = "true";
+    }
+    pending = null;
+    updateMealPreview();
+  });
+
+  $("savePreset").onclick = async () => {
+    const name = fields.name.value.trim();
+    const quantity = fields.quantity.valueAsNumber;
+    const normalized = normalizeFood(name);
+    const kcal = fields.calories.valueAsNumber, protein = fields.protein.valueAsNumber;
+    if (!normalized || !fields.quantity.checkValidity() || !validNumber(quantity) || quantity === 0 || !validNumber(kcal) || !validNumber(protein)) {
+      $("mealStatus").textContent = "Nhập tên, khẩu phần, kcal và protein trước khi lưu.";
+      return;
+    }
+    const key = "tracker-preset-" + encodeURIComponent(normalized);
+    const button = $("savePreset");
+    button.disabled = true;
+    try {
+      await saveExtras({[key]:{name,unit:"khẩu phần",kcal:kcal/quantity,protein:protein/quantity}});
+      $("presetChoice").value = key;
+      $("mealStatus").textContent = "Đã lưu " + name + " theo 1 khẩu phần.";
+    } catch (error) { $("mealStatus").textContent = "Chưa lưu được món: " + error.message; }
+    finally { button.disabled = false; }
+  };
 
   let pending;
   form.addEventListener("input", () => { pending = null; });
@@ -1319,6 +1380,9 @@ function renderNutrition(updateInputs = true) {
   }
   const combined = nutritionTotals($("nutritionDate").value);
   renderFoodLog();
+  renderFoodPresets();
+  renderSupplements();
+  $("nutritionDonuts").innerHTML = macroDonuts(combined,calorieGoal,proteinGoal);
   $("nutritionBars").innerHTML = macroBars(combined,calorieGoal,proteinGoal);
   renderOverviewNutrition();
 }
@@ -1912,7 +1976,109 @@ $("todayDetail").textContent = todayPlan
 for (const day of DAYS) $("daySelect").add(new Option(DAY_NAMES[day],day));
 for (const name of EXERCISES) $("progressSelect").add(new Option(name, name));
 initV4();
+const supplements = [
+  ["whey","Whey thực vật","Theo lịch dinh dưỡng","scoop"],
+  ["creatine","Creatine Monohydrate · Amix","Sau tập buổi chiều","phần"],
+  ["omega3","Omega-3","Kèm bữa chính có chất béo","phần"],
+  ["magnesium","Magnesium · Webber","Trước khi ngủ","phần"],
+  ["zinc","Kẽm · DHC","Theo lịch cá nhân","phần"],
+  ["vitaminc","Vitamin C · DHC","Theo lịch cá nhân","phần"],
+  ["adek","ADEK","Kèm bữa chính có chất béo","phần"]
+];
+const supplementWrites = new Set();
+const supplementEntry = (date,id) => "tracker-supplement-" + date + "-" + id;
+
+function supplementStock(id) {
+  const stock = extras["tracker-stock-" + id];
+  if (!stock || !validNumber(stock.amount)) return null;
+  const used = Object.entries(extras).filter(([key,item]) => key.startsWith("tracker-supplement-") &&
+    key.endsWith("-" + id) && key.slice("tracker-supplement-".length,"tracker-supplement-".length + 10) >= stock.date &&
+    item.taken === true && item.checkedAt >= stock.measuredAt).length;
+  return Math.max(0,stock.amount - used);
+}
+
+function renderSupplements() {
+  const date = $("nutritionDate").value;
+  const completed = supplements.filter(([id]) => extras[supplementEntry(date,id)]?.taken).length;
+  $("supplementCount").textContent = completed + " / " + supplements.length + " mục đã tích";
+  $("supplementList").innerHTML = supplements.map(([id,name,timing,unit]) => {
+    const checked = extras[supplementEntry(date,id)]?.taken === true;
+    const remaining = supplementStock(id);
+    const stock = remaining === null ? "Chưa nhập tồn" : remaining === 0 ? "Đã hết" :
+      "Còn " + format.format(remaining) + " " + unit + (remaining <= 5 ? " · Sắp hết" : "");
+    return `<div class="supplement-row ${checked ? "is-taken" : ""}">
+      <label><input type="checkbox" data-supplement="${id}" ${checked ? "checked" : ""} ${supplementWrites.has(id) ? "disabled" : ""}>
+      <span><strong>${name}</strong><small>${timing}</small></span></label>
+      <button type="button" class="gray stock-button ${remaining !== null && remaining <= 5 ? "stock-low" : ""}" data-stock="${id}" ${supplementWrites.has(id) ? "disabled" : ""}>${stock}</button>
+    </div>`;
+  }).join("");
+}
+
+function initSupplements() {
+  $("supplementList").addEventListener("change",async event => {
+    const {supplement:id} = event.target.dataset;
+    const date = $("nutritionDate").value;
+    if (!supplements.some(item => item[0] === id) || !isDateKey(date) || supplementWrites.has(id)) return;
+    const checked = event.target.checked;
+    supplementWrites.add(id);
+    event.target.disabled = true;
+    try {
+      await saveExtras({[supplementEntry(date,id)]:{taken:checked,checkedAt:checked ? Date.now() : 0}});
+      $("supplementStatus").textContent = "Đã lưu checklist của ngày đã chọn.";
+    } catch (error) { $("supplementStatus").textContent = "Chưa lưu được: " + error.message; }
+    finally { supplementWrites.delete(id); renderSupplements(); }
+  });
+  let stockTarget;
+  $("supplementList").addEventListener("click",event => {
+    const button = event.target.closest("[data-stock]");
+    const item = supplements.find(([id]) => id === button?.dataset.stock);
+    if (!item) return;
+    stockTarget = { id:item[0],account:uid };
+    $("stockTitle").textContent = "Tồn kho · " + item[1];
+    $("stockUnit").textContent = "Số " + item[3] + " hiện còn";
+    $("stockAmount").value = supplementStock(item[0]) ?? "";
+    $("stockDialog").showModal();
+  });
+  bindForm("stockForm",async data => {
+    if (!stockTarget) return;
+    const amount = Number(data.get("amount"));
+    if (!validNumber(amount) || data.get("amount") === "") throw Error("Nhập số lượng tồn hiện tại.");
+    await saveExtras({["tracker-stock-" + stockTarget.id]:{amount,measuredAt:Date.now(),date:todayKey()}},stockTarget.account);
+    $("stockDialog").close();
+  });
+  $("closeStock").onclick = () => $("stockDialog").close();
+}
+
+function foodPresets() {
+  return Object.entries(extras).filter(([key,item]) => key.startsWith("tracker-preset-") &&
+    typeof item.name === "string" && validNumber(item.kcal) && validNumber(item.protein));
+}
+
+function renderFoodPresets() {
+  const choices = $("presetChoice");
+  const selected = choices.value;
+  const presets = foodPresets().sort(([,a],[,b]) => a.name.localeCompare(b.name,"vi"));
+  choices.replaceChildren(new Option("Chọn món đã lưu",""),...presets.map(([key,item]) => new Option(item.name,key)));
+  if (presets.some(([key]) => key === selected)) choices.value = selected;
+  $("foodSuggestions").replaceChildren(...[...new Set([...foodDatabase.map(food => food.name),...presets.map(([,food]) => food.name)])].map(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      return option;
+    }));
+}
+
+function macroDonuts(combined,calorieGoal,proteinGoal) {
+  return [["Calories",combined.calories,calorieGoal,"kcal"],["Protein",combined.protein,proteinGoal,"g"]]
+    .map(([label,current,goal,unit]) => {
+      const rest = Math.max(0,goal-current);
+      const percent = Math.round(current/goal*100);
+      return `<article class="macro-donut"><div class="ring" style="--fill:${Math.min(100,percent)};--ring-color:${label === "Protein" && !rest ? "#36f195" : "#ff7136"}" aria-hidden="true"><strong>${percent}%</strong></div>
+      <div><strong>${label}</strong><p>${format.format(current)} / ${format.format(goal)} ${unit}</p><small class="muted">${rest ? "Còn " + format.format(rest) + " " + unit : "Đã đạt mục tiêu"}</small></div></article>`;
+    }).join("");
+}
+
 initFeatures();
+initSupplements();
 function showGymScreen() {
   const [target,query] = location.hash.slice(1).split("?");
   const muscle = new URLSearchParams(query).get("muscle");
