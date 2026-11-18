@@ -104,19 +104,35 @@ body:has(.mobile-dock:not([hidden])){padding-bottom:calc(var(--tabs-height) + 88
 @media(max-width:800px){.mobile-dock{bottom:calc(var(--tabs-height) + env(safe-area-inset-bottom));padding:6px 12px}.bottom-tabs a{font-size:11px}}
 main section{scroll-margin-top:12px}main > section:first-of-type{margin-top:0}[data-screen]:not([hidden]) + section:not([hidden]){margin-top:20px}
 
+
+header{position:sticky;top:0;z-index:11;background:#171413;border-bottom:1px solid #563524}
+header .top{min-height:49px;flex-wrap:nowrap;justify-content:space-between;padding-block:3px}
+header .brand b{width:35px;height:35px}header .brand svg{width:29px;height:29px}
+header .master-timer{border:0;border-top:1px solid #392b25;border-radius:0;margin:0;padding:5px 0;background:#1a1513}
+header .master-inner{flex-wrap:nowrap}.master-controls button{min-height:38px}
+#wakeStatus{font-size:11px}#wakeStatus:empty{display:none}
+#workoutMode[aria-pressed=true]{color:#ffad84;border-color:#955539}
+main section{scroll-margin-top:132px}
+.exercise-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.exercise-vn{display:block;color:#c9bdb5}.muscle-tags{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0}
+.muscle-tags span,.video-link{border:1px solid #654131;border-radius:7px;padding:3px 7px;color:#ffc0a1;font-size:12px}
+.library-row .video-link{flex:none;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+#mealPreview{color:#ffb08a;font-weight:650}
 </style>
 </head>
 <body>
-<header><div class="wrap top"><a class="brand" href="#overview"><b><svg viewBox="0 0 48 48" width="35" height="35" aria-hidden="true"><circle cx="24" cy="11" r="4.6" fill="currentColor"/><path d="M16 23q3-4 8-3 5-1 8 3l4 1 2-8-3-2 1-4 5 1 3 5-2 12q-1 4-6 4l-4-2-2 11H18l-2-11-4 2q-5 0-6-4L4 16l3-5 5-1 1 4-3 2 2 8z" fill="currentColor"/><path d="M18 27q3 3 6 1 3 2 6-1m-6 2v9m-4-5h8" fill="none" stroke="#ff7136" stroke-width="1.5" stroke-linecap="round"/></svg></b><span>My Gym</span></a></div></header>
-<main class="wrap">
-<div class="hero" id="homeHero" data-screen="overview">
-  <div class="intro"><div class="eyebrow">Chào Luân</div><h1>Never Give Up<span>One More...One More</span></h1><div class="master-timer">
-  <div class="master-inner">
+<header><div class="wrap top"><a class="brand" href="#overview"><b><svg viewBox="0 0 48 48" width="35" height="35" aria-hidden="true"><circle cx="24" cy="11" r="4.6" fill="currentColor"/><path d="M16 23q3-4 8-3 5-1 8 3l4 1 2-8-3-2 1-4 5 1 3 5-2 12q-1 4-6 4l-4-2-2 11H18l-2-11-4 2q-5 0-6-4L4 16l3-5 5-1 1 4-3 2 2 8z" fill="currentColor"/><path d="M18 27q3 3 6 1 3 2 6-1m-6 2v9m-4-5h8" fill="none" stroke="#ff7136" stroke-width="1.5" stroke-linecap="round"/></svg></b><span>My Gym</span></a><button class="gray quick" id="workoutMode" aria-pressed="true" aria-describedby="wakeStatus">Giữ màn hình sáng</button></div>
+<div class="master-timer">
+  <div class="wrap master-inner">
     <div><strong id="durationTime" role="timer" aria-label="Thời gian buổi tập">00:00:00</strong><p class="muted" id="durationStatus">Thời gian buổi tập</p></div>
     <div class="master-controls"><button id="durationAction" type="button">Bắt đầu</button><button id="durationStop" type="button" class="gray" disabled>Kết thúc</button></div>
   </div>
 </div>
-<a id="startWorkoutLink" class="cta" href="#training">Mở nhật ký tập →</a></div>
+<p class="wrap muted" id="wakeStatus" role="status"></p>
+</header>
+<main class="wrap">
+<div class="hero" id="homeHero" data-screen="overview">
+  <div class="intro"><div class="eyebrow">Chào Luân</div><h1>Never Give Up<span>One More...One More</span></h1><a id="startWorkoutLink" class="cta" href="#training">Mở nhật ký tập →</a></div>
   <div class="hero-today"><div class="eyebrow" id="todayLabel">Hôm nay</div><h2 id="todayWorkout">Lịch tập</h2><p id="todayDetail"></p></div>
 </div>
 <section data-screen="overview" id="overview" aria-labelledby="overviewTitle">
@@ -136,7 +152,7 @@ main section{scroll-margin-top:12px}main > section:first-of-type{margin-top:0}[d
 </section>
 <section data-screen="schedule" hidden id="schedule" aria-labelledby="scheduleTitle"><div class="section-head"><h2 id="scheduleTitle">Lịch tập trong tuần</h2></div><div class="week" id="week"></div></section>
 <section data-screen="schedule" hidden id="training" aria-labelledby="trainingTitle">
-  <div class="section-head"><h2 id="trainingTitle">Nhật ký tập</h2><button class="gray" id="workoutMode" aria-pressed="false">Chế độ tập</button></div><p class="muted" id="wakeStatus" role="status"></p>
+  <div class="section-head"><h2 id="trainingTitle">Nhật ký tập</h2></div>
   <div class="work-grid">
     <div class="card">
       <div class="controls"><label>Ngày ghi tập<input type="date" id="dateInput" onchange="onDateChange()"></label><label>Chọn giáo án<select id="daySelect" onchange="renderWorkout()"></select></label></div>
@@ -169,7 +185,7 @@ main section{scroll-margin-top:12px}main > section:first-of-type{margin-top:0}[d
     </form>
     <div id="nutritionBars" class="spaced"></div>
     <div class="meal-box">
-      <h3>Thêm món ăn hoặc supplement</h3>
+      <h3>Nhập nhanh thực phẩm</h3>
       <form id="mealForm" class="tracker-form">
         <label>Tên món<input name="name" list="foodSuggestions" maxlength="100" placeholder="VD: Phở bò" required></label>
         <datalist id="foodSuggestions"></datalist>
@@ -179,7 +195,7 @@ main section{scroll-margin-top:12px}main > section:first-of-type{margin-top:0}[d
         <button type="submit">Cộng vào tổng ngày</button>
       </form>
       <p class="muted" id="foodEstimate">Nhập tên món và số khẩu phần để xem ước tính.</p>
-      <p id="mealStatus" class="meal-status" role="status"></p>
+      <p id="mealPreview" aria-live="polite"></p><p id="mealStatus" class="meal-status" role="status"></p>
       <div id="foodLog" class="meal-log"></div>
     </div>
   </article>
@@ -200,7 +216,7 @@ main section{scroll-margin-top:12px}main > section:first-of-type{margin-top:0}[d
   <div class="card">
     <div class="controls"><label>Tìm bài<input id="exerciseSearch" type="search" placeholder="Tên bài tập"></label>
     <label>Nhóm cơ<select id="muscleFilter"></select></label>
-    <label>Vai trò<select id="roleFilter"><option value="">Chính hoặc phụ</option><option value="primary">Cơ chính</option><option value="secondary">Cơ phụ</option></select></label>
+    <label>Vai trò<select id="roleFilter"><option value="">Chính hoặc phụ</option><option value="primary" selected>Cơ chính</option><option value="secondary">Cơ phụ</option></select></label>
     <label>Thiết bị<select id="equipmentFilter"></select></label></div>
     <div id="libraryList" class="spaced"></div>
   </div>
@@ -581,18 +597,20 @@ $("workout").addEventListener("focusout", () => {
   }, 0);
 });
 
-let workoutMode = false;
+let workoutMode = readLocal("myGym.keepAwake",true);
+let wakePending = false;
 let wakeLock, sound, timer, endTime;
 
 async function requestWakeLock() {
-  if (!workoutMode || document.hidden || wakeLock) return;
+  if (!workoutMode || document.hidden || wakeLock || wakePending) return;
   if (!navigator.wakeLock) {
     $("wakeStatus").textContent = "Trình duyệt chưa hỗ trợ giữ màn hình sáng.";
     return;
   }
+  wakePending = true;
   try {
     const lock = await navigator.wakeLock.request("screen");
-    if (!workoutMode) {
+    if (!workoutMode || document.hidden) {
       await lock.release();
       return;
     }
@@ -603,20 +621,26 @@ async function requestWakeLock() {
       $("wakeStatus").textContent = workoutMode ? "Giữ màn hình sáng đang tạm dừng." : "";
     }, { once: true });
   } catch {
-    $("wakeStatus").textContent = "Thiết bị chưa cấp quyền giữ màn hình sáng.";
-  }
+    if (workoutMode) $("wakeStatus").textContent = "Chưa giữ được màn hình sáng. Thử chạm vào app.";
+  } finally { wakePending = false; }
 }
 
 $("workoutMode").onclick = () => {
   workoutMode = !workoutMode;
   $("workoutMode").setAttribute("aria-pressed", String(workoutMode));
-  $("workoutMode").textContent = workoutMode ? "Tắt chế độ tập" : "Chế độ tập";
+  try { localStorage.setItem("myGym.keepAwake",JSON.stringify(workoutMode)); } catch {}
   if (workoutMode) void requestWakeLock();
   else {
     $("wakeStatus").textContent = "";
     void wakeLock?.release().catch(() => {});
   }
 };
+
+$("workoutMode").setAttribute("aria-pressed",String(workoutMode));
+document.addEventListener("pointerdown",event => {
+  if (!event.target.closest("#workoutMode")) void requestWakeLock();
+});
+void requestWakeLock();
 
 function timerLabel(seconds) {
   return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
@@ -1055,21 +1079,26 @@ function renderHeatmap() {
 }
 
 function renderLibrary() {
-  const term = $("exerciseSearch").value.trim().toLocaleLowerCase("vi");
+  const term = normalizeFood($("exerciseSearch").value);
   const muscle = $("muscleFilter").value;
   const role = $("roleFilter").value;
   const gear = $("equipmentFilter").value;
-  const matches = library.filter(item => (!term || item.name.toLocaleLowerCase("vi").includes(term)) &&
+  const muscleKeys = muscle === "legs" ? ["quads","hamstrings","glutes","calves"] : [muscle];
+  const matches = library.filter(item => (!term || normalizeFood(item.name).includes(term)) &&
     (!gear || item.equipment === gear) &&
-    (!muscle || (role ? item[role] : [...item.primary, ...item.secondary]).includes(muscle)));
+    (!muscle || (role ? item[role] : [...item.primary, ...item.secondary]).some(key => muscleKeys.includes(key))));
   $("libraryList").innerHTML = matches.map(item => {
     const videoURL = item.video ? "https://www.youtube.com/watch?v=" + item.video : "https://www.youtube.com/results?search_query=" + encodeURIComponent(item.name.split(" (")[0] + " exercise proper form");
-    return `<details class="library-row" ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>${escapeHtml(item.name)}${item.suggested ? ' <small class="eyebrow">Đề xuất</small>' : ""}</summary>
-      <p class="muted">${escapeHtml(item.equipment)} · Cơ chính: ${item.primary.map(key => MUSCLES[key]).join(", ")}</p>
-      ${item.secondary.length ? `<p class="muted">Cơ phụ: ${item.secondary.map(key => MUSCLES[key]).join(", ")}</p>` : ""}
-      <a target="_blank" rel="noopener noreferrer" href="${videoURL}">${item.video ? "Mở video hướng dẫn trên YouTube" : "Tìm video hướng dẫn kỹ thuật trên YouTube"}</a>
+    const bilingual = item.name.match(/^(.+?) \((.+)\)$/);
+    return `<article class="library-row">
+      <div class="exercise-heading"><div><strong>${escapeHtml(bilingual?.[1] || item.name)}</strong>
+        ${bilingual ? `<span class="exercise-vn">${escapeHtml(bilingual[2])}</span>` : ""}
+        <div class="muscle-tags">${item.primary.map(key => `<span>${escapeHtml(MUSCLES[key])}</span>`).join("")}</div>
+      </div><a class="video-link" target="_blank" rel="noopener noreferrer" href="${videoURL}">${item.video ? "▶ YouTube" : "Tìm video"}</a></div>
+      <details ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>Chi tiết</summary>
+      <p class="muted">${escapeHtml(item.equipment)}${item.secondary.length ? " · Cơ phụ: " + item.secondary.map(key => MUSCLES[key]).join(", ") : ""}</p>
       <div class="actions"><button class="gray quick" type="button" data-video-edit="${EXERCISES.indexOf(item.name)}">Sửa link video</button></div>
-      </details>`;
+      </details></article>`;
   }).join("") || '<p class="muted">Không tìm thấy bài phù hợp.</p>';
 }
 
@@ -1121,6 +1150,15 @@ function initFoodEstimator() {
     $("foodSuggestions").append(option);
   }
 
+  function updateMealPreview() {
+    const values = [fields.calories,fields.protein].map(input => input.value === "" ? null : input.valueAsNumber);
+    const current = nutritionTotals($("nutritionDate").value);
+    $("mealPreview").textContent = fields.name.value.trim() && values.every(validNumber)
+      ? "Tổng ngày sau khi cộng: " + format.format(current.calories + values[0]) + " kcal · " + format.format(current.protein + values[1]) + " g protein."
+      : "";
+  }
+  $("nutritionDate").addEventListener("change",updateMealPreview);
+  form.addEventListener("input",updateMealPreview);
   let applyEstimate;
   function preview(resetOverrides = false) {
     if (resetOverrides) for (const key of ["calories","protein"]) delete fields[key].dataset.override;
@@ -1131,6 +1169,7 @@ function initFoodEstimator() {
     for (const [key,value] of [["calories",applyEstimate?.kcal],["protein",applyEstimate?.protein]]) {
       if (!fields[key].dataset.override) fields[key].value = value ?? "";
     }
+    updateMealPreview();
   }
   fields.name.oninput = () => preview(true);
   fields.quantity.oninput = () => preview();
@@ -1258,6 +1297,7 @@ function initFeatures() {
   $("photoLeft").onchange = renderPhotos;
   $("photoRight").onchange = renderPhotos;
   $("muscleFilter").add(new Option("Tất cả nhóm cơ", ""));
+  $("muscleFilter").add(new Option("Chân · Mông", "legs"));
   for (const [key, label] of Object.entries(MUSCLES)) $("muscleFilter").add(new Option(label, key));
   $("equipmentFilter").add(new Option("Tất cả thiết bị", ""));
   for (const gear of new Set(library.map(item => item.equipment))) $("equipmentFilter").add(new Option(gear, gear));
