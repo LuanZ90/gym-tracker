@@ -76,10 +76,27 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
 }
 @media(max-width:640px){.ex[data-slots="5"] .sets-grid,.ex[data-slots="6"] .sets-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
+
+.master-timer{position:sticky;top:0;z-index:10;background:#191513f7;border-bottom:1px solid #563524;padding:7px 0}
+.master-inner{display:flex;align-items:center;justify-content:space-between;gap:8px}.master-timer strong{color:#ff986a;font-size:23px;line-height:1.15;font-variant-numeric:tabular-nums}
+.master-controls{display:flex;gap:6px}.master-controls button{min-height:40px;white-space:nowrap}.master-timer p{font-size:11px}
+section{scroll-margin-top:78px}.meal-box{margin-top:14px;border-top:1px solid var(--line);padding-top:13px}.meal-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.meal-status{overflow-wrap:anywhere}.meal-log{margin-top:10px}
+.mobile-dock{display:grid;position:fixed;right:14px;bottom:14px;z-index:8;gap:6px;background:#1a1716f5;border:1px solid #663926;border-radius:12px;padding:10px}
+.dock-top{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:24px}.dock-top output{color:var(--accent);white-space:nowrap;font-variant-numeric:tabular-nums}.dock-top button{min-height:32px;padding:3px 8px}
+.dock-buttons{display:grid;grid-template-columns:1.65fr repeat(3,1fr);gap:6px}.dock-buttons button{padding-inline:7px;justify-content:center}
+@media(max-width:800px){.mobile-dock{bottom:0;left:0;right:0;border-radius:0;padding-bottom:calc(8px + env(safe-area-inset-bottom))}}
+@media(max-width:420px){.master-controls button{padding-inline:8px;font-size:13px}.master-timer strong{font-size:19px}.master-timer p{line-height:1.2}}
 </style>
 </head>
 <body>
 <header><div class="wrap top"><a class="brand" href="#"><b>GT</b> GYM TRACKER</a><nav class="nav" aria-label="Điều hướng"><a href="#overview">Tổng quan</a><a href="#schedule">Lịch tập</a><a href="#nutrition">Dinh dưỡng</a><a href="#library">Danh mục bài tập</a></nav></div></header>
+<div class="master-timer">
+  <div class="wrap master-inner">
+    <div><strong id="durationTime" role="timer" aria-label="Thời gian buổi tập">00:00:00</strong><p class="muted" id="durationStatus">Thời gian buổi tập</p></div>
+    <div class="master-controls"><button id="durationAction" type="button">🔥 Chiến</button><button id="durationStop" type="button" class="gray" disabled>🏁 Kết thúc</button></div>
+  </div>
+</div>
 <main class="wrap">
 <div class="hero">
   <div class="intro"><div class="eyebrow">Chào Luân</div><h1>Never Give Up<span>One More...One More</span></h1><a id="startWorkoutLink" class="cta" href="#training">Mở nhật ký tập →</a></div>
@@ -102,11 +119,10 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
 </section>
 <section id="schedule" aria-labelledby="scheduleTitle"><div class="section-head"><h2 id="scheduleTitle">Lịch tập trong tuần</h2></div><div class="week" id="week"></div></section>
 <section id="training" aria-labelledby="trainingTitle">
-  <div class="section-head"><h2 id="trainingTitle">Nhật ký tập</h2><button class="gray" id="workoutMode" aria-pressed="false">Chế độ tập</button></div>
+  <div class="section-head"><h2 id="trainingTitle">Nhật ký tập</h2><button class="gray" id="workoutMode" aria-pressed="false">Chế độ tập</button></div><p class="muted" id="wakeStatus" role="status"></p>
   <div class="work-grid">
     <div class="card">
       <div class="controls"><label>Ngày ghi tập<input type="date" id="dateInput" onchange="onDateChange()"></label><label>Chọn giáo án<select id="daySelect" onchange="renderWorkout()"></select></label></div>
-      <div class="session-summary spaced"><div><strong id="durationTime" role="timer">00:00</strong><p class="muted" id="durationStatus">Bắt đầu để tính thời gian buổi tập</p></div><button id="durationAction" class="gray">Bắt đầu buổi</button></div>
       <details class="recovery spaced" id="recoveryDetails"><summary>Ghi chú phục hồi <small id="recoverySummary"></small></summary>
         <form id="recoveryForm" class="tracker-form">
           <label>Năng lượng<select name="energy"><option value="">Chưa chọn</option></select></label>
@@ -118,7 +134,6 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
       <div class="actions"><button class="gray" id="editPlan">Sửa bài trong buổi</button><button class="gray" id="addBench">+ Bench Press</button></div><div id="workout"></div>
     </div>
     <div class="stack">
-      <div class="card"><h3>Đồng hồ nghỉ</h3><div id="timer" role="timer">--</div><div class="actions"><button onclick="startRest(90)">90 giây</button><button class="gray" onclick="startRest(60)">60 giây</button><button class="gray" onclick="startRest(120)">120 giây</button></div><p class="muted" id="wakeStatus"></p></div>
       <div class="card"><h3>Tiến độ theo bài</h3><label>Bài tập<select id="progressSelect" onchange="renderProgress()"></select></label><div id="progress" class="muted"></div></div>
     </div>
   </div>
@@ -129,13 +144,27 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
     <h3>Calories &amp; Protein trong ngày</h3>
     <form id="nutritionForm" class="tracker-form">
       <label>Ngày<input id="nutritionDate" type="date" required></label>
-      <label>Đã nạp (kcal)<input name="calories" type="number" min="0" step="1" placeholder="0"></label>
-      <label>Protein đã nạp (g)<input name="protein" type="number" min="0" step="0.1" placeholder="0"></label>
+      <label>Calories ngoài danh sách món (kcal)<input name="calories" type="number" min="0" step="1" placeholder="0"></label>
+      <label>Protein ngoài danh sách món (g)<input name="protein" type="number" min="0" step="0.1" placeholder="0"></label>
       <label>Mục tiêu (kcal)<input name="calorieGoal" type="number" min="1" step="1" placeholder="Nhập mục tiêu"></label>
       <label>Mục tiêu protein (g)<input name="proteinGoal" type="number" min="1" step="0.1" placeholder="Nhập mục tiêu"></label>
       <button type="submit">Lưu dinh dưỡng</button>
     </form>
     <div id="nutritionBars" class="spaced"></div>
+    <div class="meal-box">
+      <h3>Thêm món ăn hoặc supplement</h3>
+      <form id="mealForm" class="tracker-form">
+        <label>Tên món<input name="name" list="foodSuggestions" maxlength="100" placeholder="VD: Phở bò" required></label>
+        <datalist id="foodSuggestions"></datalist>
+        <label>Số khẩu phần<input name="quantity" type="number" min="0.1" max="50" step="0.1" value="1" required></label>
+        <label>Calories (kcal)<input name="calories" type="number" min="0" step="any" inputmode="decimal" required></label>
+        <label>Protein (g)<input name="protein" type="number" min="0" step="any" inputmode="decimal" required></label>
+        <button type="submit">Cộng vào tổng ngày</button>
+      </form>
+      <p class="muted" id="foodEstimate">Nhập tên món và số khẩu phần để xem ước tính.</p>
+      <p id="mealStatus" class="meal-status" role="status"></p>
+      <div id="foodLog" class="meal-log"></div>
+    </div>
   </article>
   <div class="split spaced">
     <div class="card"><h3>Thực đơn tham khảo</h3>
@@ -184,10 +213,9 @@ section{margin-top:30px;scroll-margin-top:18px}.section-head{display:flex;align-
 </main>
 <dialog id="bodyDialog" aria-labelledby="bodyTitle"><form id="bodyForm"><h2 id="bodyTitle">Chỉ số cơ thể</h2><label>Ngày đo<input name="date" type="date" required></label><label>Body fat (%)<input name="fat" type="number" min="0.1" max="100" step="0.1" placeholder="Nếu có số đo"></label><label>Cân nặng (kg)<input name="weight" type="number" min="1" step="0.1" required></label><label>Chiều cao (cm)<input name="height" type="number" min="1" step="0.1" required></label><label>Mục tiêu cân nặng (kg)<input name="goal" type="number" min="1" step="0.1" required></label><div class="actions"><button type="submit">Lưu chỉ số</button><button type="button" class="gray" id="closeBody">Hủy</button></div></form></dialog>
 
-<div id="restDock" class="rest-dock" hidden><strong id="restDockTime"></strong><button class="gray" id="stopRest">Dừng</button></div>
 <dialog id="restAlert" aria-labelledby="restTitle"><div class="rest-alert"><div class="fire-logo" aria-hidden="true"><span>💪&nbsp;💪</span></div><h2 id="restTitle">Đứng lên và Tiếp tục</h2><button id="closeRest">Sẵn sàng</button></div></dialog>
 <div id="mobileDock" class="mobile-dock" hidden>
-  <strong id="dockExercise">Chọn một bài tập</strong>
+  <div class="dock-top"><strong id="dockExercise">Đồng hồ nghỉ</strong><output id="timer" role="timer" aria-label="Thời gian nghỉ">--</output><button id="stopRest" class="gray" hidden>Dừng</button></div>
   <div class="dock-buttons">
     <button class="gray" id="dockCopy" disabled>Chép hiệp 1</button>
     <button class="gray" onclick="startRest(60)">60s</button>
@@ -593,7 +621,7 @@ function soundAlarm() {
 function stopRest() {
   clearInterval(timer);
   endTime = 0;
-  $("restDock").hidden = true;
+  $("stopRest").hidden = true;
   syncDock();
   $("timer").textContent = "--";
 }
@@ -603,7 +631,6 @@ function tickRest() {
   const left = Math.ceil((endTime - Date.now()) / 1000);
   if (left > 0) {
     $("timer").textContent = timerLabel(left);
-    $("restDockTime").textContent = "Nghỉ " + timerLabel(left);
     return;
   }
   stopRest();
@@ -623,7 +650,7 @@ function startRest(seconds) {
   }
   clearInterval(timer);
   endTime = Date.now() + seconds * 1000;
-  $("restDock").hidden = false;
+  $("stopRest").hidden = false;
   syncDock();
   tickRest();
   timer = setInterval(tickRest, 200);
@@ -772,6 +799,20 @@ const baseLibrary = EXERCISES.map(name => {
   const [, equipment, primary, secondary, video] = metadata.find(([prefix]) => name.startsWith(prefix));
   return { name, equipment, primary: primary.split(" "), secondary: secondary.split(" ").filter(Boolean), video };
 });
+const suggestedExercises = [
+  ["Barbell Squat","Gánh tạ đòn","Thanh đòn",["quads","glutes"],["core"],"3PRwtVpyslo"],
+  ["Conventional Deadlift","Deadlift truyền thống","Thanh đòn",["glutes","hamstrings","lowerBack"],["back","quads","core"],"ZaTM37cfiDs"],
+  ["Dumbbell Overhead Press","Đẩy vai tạ đơn đứng","Tạ đơn",["shoulders"],["triceps","core"],"CE9KiCPFw0E"],
+  ["Barbell Bent Over Row","Gập người kéo tạ đòn","Thanh đòn",["back"],["biceps","lowerBack"],"rqTOAM8WoeM"],
+  ["Dumbbell Forward Lunges","Bước tấn trước với tạ đơn","Tạ đơn",["quads","glutes"],["hamstrings","core"],"EWFbPxeJ8vY"],
+  ["Dumbbell Bulgarian Split Squat","Squat một chân kê ghế với tạ đơn","Tạ đơn",["quads","glutes"],["hamstrings","core"],"0644tPueakM"],
+  ["Chest Dips","Nhún xà kép thiên ngực","Trọng lượng cơ thể",["chest"],["triceps","shoulders"],"vi1-BOcj3cQ"],
+  ["Dumbbell Shrug","Nhún vai tạ đơn","Tạ đơn",["back"],["shoulders"],"xiLT85G_GuU"]
+].map(([en,vi,equipment,primary,secondary,video]) => ({
+  name:en + " (" + vi + ")",equipment,primary,secondary,video,suggested:true
+}));
+baseLibrary.push(...suggestedExercises);
+EXERCISES.push(...suggestedExercises.map(item => item.name));
 let library = baseLibrary;
 let libraryByName = new Map(library.map(item => [item.name,item]));
 const defaultProfile = { weight: 68.5, height: 175, goal: 75 };
@@ -845,7 +886,7 @@ function changeExtraAccount(account) {
 function acceptCloudExtras(documents) {
   const next = {}, nextPhotos = {};
   for (const item of documents) {
-    if (/^tracker-(profile|goals|body-|food-|photo-|plan-|exercise-|recovery-|duration-)/.test(item.id)) {
+    if (/^tracker-(profile|goals|body-|food-|meal-|photo-|plan-|exercise-|recovery-|duration-)/.test(item.id)) {
       const payload = item.data().tracker;
       if (!payload) continue;
       if (item.id.startsWith("tracker-photo-")) nextPhotos[item.id] = payload;
@@ -1004,13 +1045,99 @@ function renderLibrary() {
     (!muscle || (role ? item[role] : [...item.primary, ...item.secondary]).includes(muscle)));
   $("libraryList").innerHTML = matches.map(item => {
     const videoURL = item.video ? "https://www.youtube.com/watch?v=" + item.video : "https://www.youtube.com/results?search_query=" + encodeURIComponent(item.name.split(" (")[0] + " exercise proper form");
-    return `<details class="library-row" ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>${escapeHtml(item.name)}</summary>
+    return `<details class="library-row" ${item.video ? 'data-video="' + item.video + '"' : ""}><summary>${escapeHtml(item.name)}${item.suggested ? ' <small class="eyebrow">Đề xuất</small>' : ""}</summary>
       <p class="muted">${escapeHtml(item.equipment)} · Cơ chính: ${item.primary.map(key => MUSCLES[key]).join(", ")}</p>
       ${item.secondary.length ? `<p class="muted">Cơ phụ: ${item.secondary.map(key => MUSCLES[key]).join(", ")}</p>` : ""}
       <a target="_blank" rel="noopener noreferrer" href="${videoURL}">${item.video ? "Mở video hướng dẫn trên YouTube" : "Tìm video hướng dẫn kỹ thuật trên YouTube"}</a>
       <div class="actions"><button class="gray quick" type="button" data-video-edit="${EXERCISES.indexOf(item.name)}">Sửa link video</button></div>
       </details>`;
   }).join("") || '<p class="muted">Không tìm thấy bài phù hợp.</p>';
+}
+
+const foodDatabase = [
+  {name:"Phở bò", unit:"tô", aliases:["pho bo"], kcal:500, protein:30},
+  {name:"Cơm tấm", unit:"đĩa", aliases:["com tam"], kcal:650, protein:35},
+  {name:"Ức gà luộc", unit:"100 g", aliases:["uc ga luoc","uc ga"], kcal:165, protein:31},
+  {name:"Trứng luộc", unit:"quả", aliases:["trung luoc"], kcal:75, protein:6},
+  {name:"Whey protein", unit:"scoop", aliases:["whey protein","whey","whey thuc vat"], kcal:120, protein:24},
+  {name:"Bánh mì 2 trứng", unit:"ổ", aliases:["banh mi 2 trung","banh mi hai trung"], kcal:350, protein:14}
+];
+
+function normalizeFood(value) {
+  return value.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"")
+    .replace(/đ/g,"d").replace(/[^a-z0-9]+/g," ").trim();
+}
+
+function estimateFood(name, quantity) {
+  const normalized = " " + normalizeFood(name) + " ";
+  const food = foodDatabase.find(item => item.aliases.some(alias => normalized.includes(" " + alias + " ")));
+  if (!food || !Number.isFinite(quantity) || quantity <= 0) return null;
+  return {food,kcal:Math.round(food.kcal * quantity),protein:Math.round(food.protein * quantity * 10) / 10};
+}
+
+function foodsForDay(date) {
+  return Object.entries(extras).filter(([key,item]) => key.startsWith("tracker-meal-" + date + "-") &&
+    typeof item.name === "string" && validNumber(item.calories) && validNumber(item.protein));
+}
+
+function nutritionTotals(date) {
+  const base = extras["tracker-food-" + date] || {};
+  return foodsForDay(date).reduce((sum,[,item]) => ({
+    calories:sum.calories + item.calories, protein:sum.protein + item.protein
+  }), {calories:base.calories ?? 0,protein:base.protein ?? 0});
+}
+
+function renderFoodLog() {
+  const entries = foodsForDay($("nutritionDate").value);
+  $("foodLog").innerHTML = entries.map(([,item]) =>
+    `<div class="meal-row"><strong>${escapeHtml(item.name)}</strong><span>${format.format(item.calories)} kcal · ${format.format(item.protein)} g protein</span></div>`
+  ).join("") || '<p class="muted">Chưa thêm món nào cho ngày này.</p>';
+}
+
+function initFoodEstimator() {
+  const form = $("mealForm"), fields = form.elements;
+  for (const food of foodDatabase) {
+    const option = document.createElement("option");
+    option.value = food.name;
+    $("foodSuggestions").append(option);
+  }
+
+  let applyEstimate;
+  function preview(resetOverrides = false) {
+    if (resetOverrides) for (const key of ["calories","protein"]) delete fields[key].dataset.override;
+    applyEstimate = estimateFood(fields.name.value,fields.quantity.valueAsNumber);
+    $("foodEstimate").textContent = applyEstimate
+      ? `Ước tính cho ${format.format(fields.quantity.valueAsNumber)} × ${applyEstimate.food.unit} · khoảng ${format.format(applyEstimate.kcal)} kcal và ${format.format(applyEstimate.protein)} g protein.`
+      : fields.name.value.trim() ? "Chưa có món này trong bảng tra. Nhập kcal và protein thực tế." : "Nhập tên món và số khẩu phần để xem ước tính.";
+    for (const [key,value] of [["calories",applyEstimate?.kcal],["protein",applyEstimate?.protein]]) {
+      if (!fields[key].dataset.override) fields[key].value = value ?? "";
+    }
+  }
+  fields.name.oninput = () => preview(true);
+  fields.quantity.oninput = () => preview();
+  for (const key of ["calories","protein"]) fields[key].oninput = () => { fields[key].dataset.override = "true"; };
+
+  let pending;
+  form.addEventListener("input", () => { pending = null; });
+  bindForm("mealForm", async data => {
+    const date = $("nutritionDate").value;
+    const name = String(data.get("name")).trim();
+    const rawKcal = data.get("calories"), rawProtein = data.get("protein");
+    const calories = Number(rawKcal), protein = Number(rawProtein);
+    if (!isDateKey(date) || !name || rawKcal === "" || rawProtein === "" ||
+      !validNumber(calories) || !validNumber(protein)) throw Error("Kiểm tra ngày, tên món, kcal và protein.");
+    const signature = JSON.stringify([uid,date,name,calories,protein]);
+    if (pending?.signature !== signature) {
+      pending = {signature,id:"tracker-meal-" + date + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2)};
+    }
+    const account = uid;
+    await saveExtras({[pending.id]:{name,calories,protein}},account);
+    if (uid !== account) return;
+    form.reset();
+    pending = null;
+    preview(true);
+    $("mealStatus").textContent = "Đã cộng " + name + " vào ngày " + date.split("-").reverse().join("/") + ".";
+  });
 }
 
 function renderNutrition(updateInputs = true) {
@@ -1024,9 +1151,11 @@ function renderNutrition(updateInputs = true) {
     form.elements.calorieGoal.value = calorieGoal;
     form.elements.proteinGoal.value = proteinGoal;
   }
+  const combined = nutritionTotals($("nutritionDate").value);
+  renderFoodLog();
   const rings = [
-    ["Calories", totals.calories ?? 0, calorieGoal, "kcal", "#ff7136"],
-    ["Protein", totals.protein ?? 0, proteinGoal, "g", "#5de1c0"]
+    ["Calories", combined.calories, calorieGoal, "kcal", "#ff7136"],
+    ["Protein", combined.protein, proteinGoal, "g", "#5de1c0"]
   ];
   $("nutritionBars").innerHTML = '<div class="nutrition-rings">' + rings.map(([label,current,goal,unit,color]) => {
     const percent = Math.round(current / goal * 100);
@@ -1102,7 +1231,11 @@ async function compressPhoto(file) {
 function initFeatures() {
   $("nutritionDate").value = todayKey();
   $("photoForm").elements.date.value = todayKey();
-  $("nutritionDate").onchange = () => renderNutrition();
+  initFoodEstimator();
+  $("nutritionDate").onchange = () => {
+    $("mealStatus").textContent = "";
+    renderNutrition();
+  };
   $("photoLeft").onchange = renderPhotos;
   $("photoRight").onchange = renderPhotos;
   $("muscleFilter").add(new Option("Tất cả nhóm cơ", ""));
@@ -1349,7 +1482,7 @@ function syncDock(row) {
   if (!dockRow?.open || !box.contains(dockRow)) dockRow = box.querySelector("details[open]");
   $("dockExercise").textContent = dockRow ? dockRow.dataset.name : "Đồng hồ nghỉ";
   $("dockCopy").disabled = !dockRow;
-  $("mobileDock").hidden = !trainingVisible && !endTime;
+  $("mobileDock").hidden = !trainingVisible && !endTime && !activeDurationDate;
 }
 
 function updateRecovery(force = false) {
@@ -1365,9 +1498,7 @@ function updateRecovery(force = false) {
 
 function durationLabel(seconds) {
   const part = number => String(number).padStart(2,"0");
-  return seconds >= 3600
-    ? part(Math.floor(seconds / 3600)) + ":" + part(Math.floor(seconds / 60) % 60) + ":" + part(seconds % 60)
-    : part(Math.floor(seconds / 60)) + ":" + part(seconds % 60);
+  return part(Math.floor(seconds / 3600)) + ":" + part(Math.floor(seconds / 60) % 60) + ":" + part(seconds % 60);
 }
 
 function updateDuration() {
@@ -1379,25 +1510,35 @@ function updateDuration() {
   const item = extras["tracker-duration-" + date];
   const seconds = item?.started ? Math.max(0,Math.floor(((item.ended || Date.now()) - item.started) / 1000)) : 0;
   $("durationTime").textContent = durationLabel(seconds);
-  $("durationAction").textContent = active ? "Kết thúc buổi" : item?.ended ? "Tập tiếp" : "Bắt đầu buổi";
+  $("durationAction").disabled = durationSaving || Boolean(active);
+  $("durationStop").disabled = durationSaving || !active;
+  syncDock();
   $("durationStatus").classList.toggle("overtime",seconds >= 3600);
   $("durationStatus").textContent = active ? (seconds >= 3600 ? "Đã đến mốc 60 phút" : "Mục tiêu dưới 60 phút") + (date !== selectedDate ? " · " + date : "")
     : item?.ended ? "Đã kết thúc" : "Bắt đầu để tính thời gian buổi tập";
 }
 
-async function changeDuration(startOnly = false) {
-  const button = $("durationAction");
-  if (button.disabled || (startOnly && activeDurationDate)) return;
-  const date = activeDurationDate || selectedDate;
+let durationSaving = false;
+
+async function changeDuration(start) {
+  if (durationSaving || start === Boolean(activeDurationDate)) return;
+  const date = start ? todayKey() : activeDurationDate;
   const id = "tracker-duration-" + date;
   const previous = extras[id];
   const now = Date.now();
-  const record = activeDurationDate ? { started:previous.started, ended:now }
-    : { started:previous?.ended ? now - Math.max(0,previous.ended-previous.started) : now, ended:null };
-  button.disabled = true;
-  try { await saveExtras({ [id]:record }); }
-  catch (error) { alert("Chưa lưu được thời gian tập: " + error.message); }
-  finally { button.disabled = false; updateDuration(); }
+  const record = start ? {started:now,ended:null} : {started:previous.started,ended:now};
+
+  durationSaving = true;
+  updateDuration();
+  try {
+    await saveExtras({ [id]:record });
+    if (start) selectDate(date);
+  } catch (error) {
+    alert("Chưa lưu được thời gian tập: " + error.message);
+  } finally {
+    durationSaving = false;
+    updateDuration();
+  }
 }
 
 function youtubeId(raw) {
@@ -1425,7 +1566,7 @@ function syncCatalog() {
     if (typeof item.name !== "string" || !item.name.trim() || Object.hasOwn(Object.prototype,item.name) ||
       !equipmentOptions.includes(item.equipment) || !Array.isArray(item.primary) ||
       !Array.isArray(item.secondary) || ![...item.primary,...item.secondary].every(key => Object.hasOwn(MUSCLES,key))) continue;
-    items.set(item.name,{...item,video:/^[A-Za-z0-9_-]{11}$/.test(item.video || "") ? item.video : "",id});
+    items.set(item.name,{...items.get(item.name),...item,video:/^[A-Za-z0-9_-]{11}$/.test(item.video || "") ? item.video : "",id});
   }
   library = [...items.values()];
   libraryByName = items;
@@ -1504,13 +1645,8 @@ function initV4() {
   };
   $("volumeChart").addEventListener("click",showVolume);
   $("volumeChart").addEventListener("keydown",showVolume);
-  $("startWorkoutLink").addEventListener("click",() => {
-    if (!activeDurationDate) {
-      selectDate(todayKey());
-      void changeDuration(true);
-    }
-  });
-  $("durationAction").onclick = () => void changeDuration();
+  $("durationAction").onclick = () => void changeDuration(true);
+  $("durationStop").onclick = () => void changeDuration(false);
   setInterval(() => { if (activeDurationDate) updateDuration(); }, 500);
 
   for (const field of ["energy","sleep"]) for (let level = 1; level <= 5; level++) {
