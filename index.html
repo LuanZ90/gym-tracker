@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym Tracker của Luân</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; margin: 0; padding: 16px; }
+    h1 { color: #f5a623; text-align: center; }
+    .card { background: #1e1e1e; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    select, input, button { font-size: 16px; padding: 10px; margin: 4px 0; width: 100%; box-sizing: border-box; border-radius: 8px; border: none; }
+    button { background: #f5a623; font-weight: bold; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border-bottom: 1px solid #333; padding: 8px; text-align: left; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>🏋️ Gym Tracker</h1>
+
+  <div class="card">
+    <h3>Ghi buổi tập hôm nay</h3>
+    <select id="exercise"></select>
+    <input type="number" id="weight" placeholder="Tạ (kg)" step="0.5">
+    <input type="number" id="reps" placeholder="Số reps">
+    <button onclick="addLog()">Lưu</button>
+  </div>
+
+  <div class="card">
+    <h3>Lịch sử (30 lần gần nhất)</h3>
+    <table id="logTable"></table>
+  </div>
+
+  <script>
+    const exercises = [
+      "Bench Press (Đẩy ngực)",
+      "Hack Squat (Squat máy)",
+      "Leg Extension (Duỗi chân)",
+      "Leg Curl (Gập chân)",
+      "Lat Pulldown (Kéo xà)",
+      "Hip Abduction (Dạng hông)"
+    ];
+
+    const select = document.getElementById("exercise");
+    exercises.forEach(name => {
+      const opt = document.createElement("option");
+      opt.textContent = name;
+      select.appendChild(opt);
+    });
+
+    let logs = JSON.parse(localStorage.getItem("gymLogs") || "[]");
+
+    function addLog() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const reps = parseInt(document.getElementById("reps").value);
+
+      if (isNaN(weight) || isNaN(reps)) {
+        alert("Nhập đủ tạ và số reps nha 2!");
+        return;
+      }
+
+      logs.unshift({
+        date: new Date().toLocaleDateString("vi-VN"),
+        exercise: select.value,
+        weight: weight,
+        reps: reps
+      });
+
+      localStorage.setItem("gymLogs", JSON.stringify(logs));
+      document.getElementById("weight").value = "";
+      document.getElementById("reps").value = "";
+      render();
+    }
+
+    function render() {
+      const table = document.getElementById("logTable");
+      table.innerHTML = "<tr><th>Ngày</th><th>Bài tập</th><th>Tạ</th><th>Reps</th></tr>";
+      logs.slice(0, 30).forEach(l => {
+        table.innerHTML += `<tr><td>${l.date}</td><td>${l.exercise}</td><td>${l.weight}kg</td><td>${l.reps}</td></tr>`;
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
