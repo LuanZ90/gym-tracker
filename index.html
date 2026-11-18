@@ -201,6 +201,24 @@ main section{scroll-margin-top:132px}
 #checklistPanel{scroll-margin-top:105px}
 @media(max-width:420px){.tactical-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.tactical-card[data-level=high]{animation:none}.power-bar>span{transition:none}}
+
+.anatomy-board{display:grid;grid-template-columns:repeat(2,minmax(0,220px));justify-content:center;gap:clamp(10px,4vw,38px);margin-top:10px;padding:10px;border:1px solid #45322a;border-radius:12px;background:radial-gradient(ellipse at center,#39231a55,transparent 65%),repeating-linear-gradient(0deg,#141313 0 19px,#1e1917 19px 20px)}
+.anatomy-figure{margin:0;text-align:center}.anatomy-figure svg{width:100%;height:auto;display:block}
+.anatomy-figure figcaption{font-size:.78rem;font-weight:750;color:#e9c0ac}
+.body-silhouette{fill:var(--body-tint);stroke:#897873;stroke-width:1.1}.body-neutral{fill:#3c3532;stroke:#786965;stroke-width:.8}
+.body-muscle{--surface:#6c625e;--outline:#302a27;cursor:pointer}.body-muscle path{fill:var(--surface);stroke:var(--outline);stroke-width:1.1;stroke-linejoin:round}
+.body-muscle[data-level=mid]{--surface:#b67738;--outline:#ffbb68}
+.body-muscle[data-level=high]{--surface:#d8441b;--outline:#ff956e;filter:drop-shadow(0 0 2px #ff5722)}
+.body-muscle:hover path,.body-muscle:focus-visible path{stroke:#fff4ee;stroke-width:2;filter:brightness(1.2)}
+
+.plan-replace,.plan-picker{grid-column:1/-1}.plan-replace{justify-self:start}.plan-picker[hidden],#historyMore[hidden]{display:none}
+.history-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(144px,1fr));gap:8px}
+.history-note{font-size:.8rem;margin:9px 0}.history-day{border:1px solid #4d3930;border-radius:9px;margin:8px 0;background:#181615}
+.history-day summary{padding:10px;cursor:pointer}.history-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.history-badges span{font-size:.75rem;background:#30231e;border-radius:5px;padding:3px 6px}.history-badges .history-ok{color:#a4f4ba;background:#21382a}
+.history-detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;padding:0 10px 10px}
+.history-detail>div{border-top:1px solid #513d32;padding-top:6px}.history-detail h4{margin:0 0 5px}
+.history-detail p,.history-detail ul{margin:0 0 4px}.history-detail ul{padding-left:16px}.history-detail li small{display:block;color:#c8aca0}
 </style>
 </head>
 <body>
@@ -216,7 +234,7 @@ main section{scroll-margin-top:132px}
 <main class="wrap">
 <div class="hero" id="homeHero" data-screen="overview">
   <div class="intro"><div class="eyebrow">Chào Luân</div><span id="sessionBadge" class="session-badge" hidden>SESSION IN PROGRESS</span><h1>Never Give Up<span>One More...One More</span></h1>
-  <div class="motivation-ticker" aria-hidden="true"><span>NEVER GIVE UP &nbsp; ◆ &nbsp; ONE MORE...ONE MORE &nbsp; ◆ &nbsp; NEVER GIVE UP</span></div><a id="startWorkoutLink" class="cta" href="#training">Mở nhật ký tập →</a></div>
+  <div class="motivation-ticker" aria-hidden="true"><span>NEVER GIVE UP &nbsp; ◆ &nbsp; ONE MORE...ONE MORE &nbsp; ◆ &nbsp; NEVER GIVE UP</span></div></div>
   <div class="hero-today"><div class="eyebrow" id="todayLabel">Hôm nay</div><h2 id="todayWorkout">Lịch tập</h2><p id="todayDetail"></p></div>
 </div>
 <section data-screen="overview" id="overview" aria-labelledby="overviewTitle">
@@ -239,6 +257,7 @@ main section{scroll-margin-top:132px}
     <h3>Bản đồ cơ trong tuần này</h3>
     <p class="muted">Hiệp quy đổi trong tuần · Cơ phụ tính nửa hiệp. Chạm thẻ để xem bài tập.</p>
     <div class="heat-legend"><span>Dưới 12 hiệp</span><span>12–20 hiệp</span><span>Trên 20 hiệp</span></div>
+    <div id="muscleAnatomy" class="anatomy-board"></div>
     <div id="muscleCounts" class="tactical-grid"></div>
   </article>
   <article class="card spaced"><h3>Kỷ lục cá nhân gần đây</h3><div id="recentPR"></div></article>
@@ -319,6 +338,20 @@ main section{scroll-margin-top:132px}
     <label>Vai trò<select id="roleFilter"><option value="">Chính hoặc phụ</option><option value="primary" selected>Cơ chính</option><option value="secondary">Cơ phụ</option></select></label>
     <label>Thiết bị<select id="equipmentFilter"></select></label></div>
     <div id="libraryList" class="spaced"></div>
+  </div>
+</section>
+<section data-screen="photos" hidden id="historyPanel" aria-labelledby="historyTitle">
+  <div class="section-head"><h2 id="historyTitle">Lịch sử theo ngày</h2></div>
+  <div class="card">
+    <div class="controls history-controls">
+      <label>Từ ngày<input id="historyFrom" type="date"></label>
+      <label>Đến ngày<input id="historyTo" type="date"></label>
+      <label>Loại dữ liệu<select id="historyType"></select></label>
+      <label>Tìm bài, món hoặc supplement<input id="historySearch" type="search" placeholder="Ví dụ: Squat, phở, whey"></label>
+    </div>
+    <p class="muted history-note">So với mục tiêu kcal và protein đang cài. Danh sách chỉ hiện ngày có bản ghi.</p>
+    <p id="historyStatus" role="status" class="muted"></p>
+    <div id="historyList"></div><button class="gray" id="historyMore" type="button" hidden>Xem thêm 30 ngày</button>
   </div>
 </section>
 <section data-screen="photos" hidden id="photos">
@@ -710,6 +743,7 @@ function refresh() {
   renderStats();
   renderProgress();
   renderAnalytics();
+  renderHistory();
   if (!$("workout").contains(document.activeElement)) renderWorkout();
   else pendingWorkoutRender = true;
 }
@@ -1105,6 +1139,44 @@ function renderAnalytics() {
   $("quickWeight").hidden = validNumber(extras["tracker-body-" + todayKey()]?.weight);
 }
 
+const frontAnatomy = [
+  ["shoulders","M82 53Q71 44 61 49 51 54 48 70l13 8 15-10z"],
+  ["chest","M80 59q10-9 29-6l2 30q-18 8-32-10z"],
+  ["biceps","M48 73l13 7 13-8-8 29q-6 11-15 8l-9-10z"],
+  ["core","M89 87l20 0v19H93z M93 110h16v17l-13-2z M96 129l13 2v19l-12-12z M78 81l8 9 7 44-10-5-8-22z"],
+  ["quads","M82 135l16 11 10 15-5 46-8 12-8-11-13-37z M75 151l-9 19 7 33 13 16-2-16z"],
+  ["calves","M79 228l12-5 5 17-9 35-6-7-7-19z"]
+];
+const backAnatomy = [
+  ["shoulders","M82 53Q70 45 61 49 52 53 48 69l14 8 16-12z"],
+  ["back","M82 55l26-12 1 52-14-13-15-11z M78 75l16 11 13 15-4 31-13-7-13-21z"],
+  ["triceps","M48 72l14 7 13-10-8 33-11 9-13-12z"],
+  ["lowerBack","M107 103l2 31-13 7-8-10z"],
+  ["glutes","M85 132l14 5 10 8v16q-6 16-19 13l-13-10z"],
+  ["hamstrings","M77 168q15 12 29 3l-3 27-9 20-9-9-9-25z M69 170l7 20 8 24-8 5-8-18-4-19z"],
+  ["calves","M79 228l12-6 7 15-4 18-8 15-9-14-4-14z"]
+];
+
+function renderAnatomy(totals) {
+  const silhouette = "M110 43q-7 1-16-2-10 7-23 4-13-1-21 7-7 6-9 19l-8 31-15 27-8 17 7 9 9-5 5-12 20-26 17-27 1 23 7 18-11 31q-5 18 0 37l8 29q-6 17 0 38l4 22-7 10q-3 8 5 9l17-3 6-12-1-12 4-34 3-20 4-21 2-42L110 43z";
+  const neutral = "M34 103l13 10-17 23-7 12-8 4 1-7 9-17z M77 270l11 2-1 13-8 8-7 2 2-5z";
+  $("muscleAnatomy").innerHTML = [[frontAnatomy,"Mặt trước","front"],[backAnatomy,"Mặt sau","back"]].map(([areas,label,view]) => {
+    const body = `<path class="body-silhouette" d="${silhouette}"/><path class="body-neutral" d="${neutral}"/>`;
+    const shapes = areas.map(([key,path]) => {
+      const count = totals[key];
+      const level = count > 20 ? "high" : count >= 12 ? "mid" : "low";
+      return `<a class="body-muscle" data-level="${level}" href="#library?muscle=${key}" aria-label="${MUSCLES[key]}: ${format.format(count)} hiệp. Xem bài tập">
+        <title>${MUSCLES[key]} · ${format.format(count)} hiệp</title><path d="${path}"/><path d="${path}" transform="translate(220 0) scale(-1 1)"/>
+      </a>`;
+    }).join("");
+    return `<figure class="anatomy-figure"><svg viewBox="0 0 220 306" aria-label="${label}">
+      <defs><linearGradient id="bodyTint-${view}" x2="1" y2="1"><stop stop-color="#515050"/><stop offset="1" stop-color="#262424"/></linearGradient></defs>
+      <g style="--body-tint:url(#bodyTint-${view})">${body}<g transform="translate(220 0) scale(-1 1)">${body}</g>
+      <path class="body-silhouette" d="M101 35l-3 11 12 8 12-8-3-11z M97 24q-4-6-2-15 3-7 15-7t15 7q2 9-2 15l-4 10-9 5-9-5z"/></g>
+      ${shapes}</svg><figcaption>${label}</figcaption></figure>`;
+  }).join("");
+}
+
 function renderHeatmap() {
   const monday = startOfWeek(new Date());
   const totals = Object.fromEntries(Object.keys(MUSCLES).map(key => [key, 0]));
@@ -1118,6 +1190,7 @@ function renderHeatmap() {
     }
   });
 
+  renderAnatomy(totals);
   $("muscleCounts").innerHTML = Object.entries(totals).map(([key,count]) => {
     const level = count > 20 ? "high" : count >= 12 ? "mid" : "low";
     const fill = Math.min(100,count / 20 * 100);
@@ -1330,6 +1403,7 @@ function renderNutrition(updateInputs = true) {
   }
   const combined = nutritionTotals($("nutritionDate").value);
   renderFoodLog();
+  renderHistory();
   renderFoodPresets();
   renderSupplements();
   $("nutritionDonuts").innerHTML = macroDonuts(combined,calorieGoal,proteinGoal);
@@ -1784,6 +1858,8 @@ function openPlanEditor(day,from) {
 function renderPlanEditor() {
   $("planRows").innerHTML = planDraft.map(([name,count,reps],index) => `<div class="plan-row">
     <strong>${escapeHtml(name)}</strong>
+    <button type="button" class="gray quick plan-replace" data-replace="${index}">Đổi bài từ danh mục</button>
+    <label class="plan-picker" hidden>Bài thay thế<select data-replacement="${index}"><option value="">Chọn bài</option>${EXERCISES.map((exercise,index) => planDraft.some(row => row[0] === exercise) ? "" : `<option value="${index}">${escapeHtml(exercise)}</option>`).join("")}</select></label>
     <label>Hiệp<input data-slots-field type="number" min="1" max="6" step="1" required value="${Number.isFinite(count) ? count : ""}"></label>
     <label>Reps<input data-reps-field required maxlength="12" value="${escapeHtml(reps)}"></label>
     <div class="plan-move"><button type="button" class="gray" data-index="${index}" data-move="-1" aria-label="Đưa bài lên" ${index ? "" : "disabled"}>↑</button>
@@ -1827,7 +1903,24 @@ function initV4() {
     planDraft.push([name,3,"8–12"]);
     renderPlanEditor();
   };
+  $("planRows").onchange = event => {
+    const select = event.target.closest("[data-replacement]");
+    if (!select?.value) return;
+    const row = planDraft[Number(select.dataset.replacement)];
+    const name = EXERCISES[Number(select.value)];
+    if (!row || !name || planDraft.some(item => item[0] === name)) return;
+    stashPlanFields();
+    row[0] = name;
+    renderPlanEditor();
+  };
   $("planRows").onclick = event => {
+    const replaceButton = event.target.closest("[data-replace]");
+    if (replaceButton) {
+      const picker = replaceButton.nextElementSibling;
+      picker.hidden = !picker.hidden;
+      if (!picker.hidden) picker.querySelector("select").focus();
+      return;
+    }
     const button = event.target.closest("button[data-index]");
     if (!button) return;
     stashPlanFields();
@@ -1989,8 +2082,96 @@ function macroDonuts(combined,calorieGoal,proteinGoal) {
     }).join("");
 }
 
+let historyLimit = 30;
+const historyGroups = {
+  all:"Tất cả", workout:"Có buổi tập", supplement:"Có supplement", nutrition:"Có dinh dưỡng",
+  reached:"Đạt cả kcal và protein", below:"Chưa đạt kcal hoặc protein"
+};
+
+function historyDates() {
+  const dates = new Set(Object.keys(logs).filter(isDateKey));
+  for (const key of Object.keys(extras)) {
+    const date = /^tracker-(?:meal|food|supplement|duration)-(\d{4}-\d{2}-\d{2})(?:-|$)/.exec(key)?.[1];
+    if (date && isDateKey(date)) dates.add(date);
+  }
+  return [...dates].sort().reverse();
+}
+
+function historyRecord(date) {
+  const exercises = Object.entries(logs[date] || {}).filter(([,sets]) => Array.isArray(sets) && sets.some(complete));
+  const sets = exercises.reduce((sum,[,entries]) => sum + entries.filter(complete).length,0);
+  const duration = extras["tracker-duration-" + date];
+  const taken = supplements.filter(([id]) => extras[supplementEntry(date,id)]?.taken);
+  const meals = foodsForDay(date);
+  const manual = extras["tracker-food-" + date];
+  const hasFood = meals.length > 0 || manual?.calories != null || manual?.protein != null;
+  const total = nutritionTotals(date);
+  const goals = extras["tracker-goals"] || {};
+  const calorieGoal = goals.calorieGoal > 0 ? goals.calorieGoal : 2200;
+  const proteinGoal = goals.proteinGoal > 0 ? goals.proteinGoal : 120;
+  const reached = hasFood && total.calories >= calorieGoal && total.protein >= proteinGoal;
+  return {date,exercises,sets,duration,taken,meals,hasFood,total,calorieGoal,proteinGoal,reached};
+}
+
+function historyDetails(record) {
+  const {date,exercises,sets,duration,taken,meals,hasFood,total,calorieGoal,proteinGoal,reached} = record;
+  const elapsed = duration?.ended && duration.ended >= duration.started
+    ? durationLabel(Math.floor((duration.ended-duration.started)/1000)) : "";
+  const shortDate = date.split("-").reverse().join("/");
+  const workout = exercises.length || duration?.started;
+  const foodStatus = hasFood ? (reached ? "Đạt kcal & protein" : "Chưa đạt kcal hoặc protein") : "Chưa ghi dinh dưỡng";
+  return `<details class="history-day"><summary><strong>${DAY_NAMES[localDate(date).getDay()]} · ${shortDate}</strong>
+    <div class="history-badges"><span>${workout ? (exercises.length ? exercises.length + " bài · " + sets + " hiệp" : "Có phiên tập") : "Chưa ghi buổi tập"}</span>
+      <span>Supplement ${taken.length}/${supplements.length}</span><span class="${reached ? "history-ok" : ""}">${foodStatus}</span></div></summary>
+    <div class="history-detail">
+      <div><h4>Buổi tập${elapsed ? " · " + elapsed : ""}</h4>
+      ${exercises.length ? '<ul>' + exercises.map(([name,entries]) => `<li><strong>${escapeHtml(name)}</strong><small>${entries.filter(complete).map(set => format.format(set.w) + " kg × " + format.format(set.r)).join(" · ")}</small></li>`).join("") + '</ul>' : '<p class="muted">Chưa có hiệp được ghi.</p>'}</div>
+      <div><h4>Supplement</h4>
+      <p>Đã tích: ${taken.length ? taken.map(([,name]) => escapeHtml(name)).join(", ") : "0 mục."}</p>
+      <p class="muted">Chưa tích: ${supplements.filter(item => !taken.includes(item)).map(([,name]) => escapeHtml(name)).join(", ") || "Đã tích đủ."}</p></div>
+      <div><h4>Dinh dưỡng</h4>
+      ${hasFood ? `<p>${format.format(total.calories)} / ${format.format(calorieGoal)} kcal · ${format.format(total.protein)} / ${format.format(proteinGoal)} g protein</p>`
+        + (meals.length ? '<ul>' + meals.map(([,meal]) => `<li>${escapeHtml(meal.name)} <small>${format.format(meal.calories)} kcal · ${format.format(meal.protein)} g</small></li>`).join("") + '</ul>' : "") : '<p class="muted">Chưa ghi dinh dưỡng ngày này.</p>'}</div>
+    </div></details>`;
+}
+
+function renderHistory(force = false) {
+  if (!force && $("historyPanel").hidden) return;
+  const from = $("historyFrom").value, to = $("historyTo").value, type = $("historyType").value;
+  const term = normalizeFood($("historySearch").value);
+  const openDates = new Set([...$("historyList").querySelectorAll("details[open]")].map(item => item.querySelector("summary strong").textContent));
+  const records = historyDates().filter(date => (!from || date >= from) && (!to || date <= to)).map(historyRecord)
+    .filter(record => {
+      if (term && ![...record.exercises.map(([name]) => name),...record.taken.map(([,name]) => name),...record.meals.map(([,meal]) => meal.name)]
+        .some(name => normalizeFood(name).includes(term))) return false;
+      if (type === "workout") return record.exercises.length || record.duration?.started;
+      if (type === "supplement") return record.taken.length > 0;
+      if (type === "nutrition") return record.hasFood;
+      if (type === "reached") return record.reached;
+      if (type === "below") return record.hasFood && !record.reached;
+      return true;
+    });
+  $("historyStatus").textContent = from && to && from > to ? "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc."
+    : records.length ? "Hiển thị " + Math.min(historyLimit,records.length) + " / " + records.length + " ngày" : "Chưa có ngày phù hợp với bộ lọc.";
+  $("historyList").innerHTML = records.slice(0,historyLimit).map(historyDetails).join("");
+  $("historyList").querySelectorAll("details").forEach(item => {
+    item.open = openDates.has(item.querySelector("summary strong").textContent);
+  });
+  $("historyMore").hidden = records.length <= historyLimit;
+}
+
+function initHistory() {
+  for (const [value,label] of Object.entries(historyGroups)) $("historyType").add(new Option(label,value));
+  for (const id of ["historyFrom","historyTo","historyType","historySearch"]) $(id).addEventListener("input",() => {
+    historyLimit = 30;
+    renderHistory(true);
+  });
+  $("historyMore").onclick = () => { historyLimit += 30; renderHistory(true); };
+}
+
 initFeatures();
 initSupplements();
+initHistory();
 function showGymScreen() {
   const [target,query] = location.hash.slice(1).split("?");
   const params = new URLSearchParams(query);
@@ -2011,6 +2192,7 @@ function showGymScreen() {
   });
   syncDock();
   if (screen === "overview") renderOverviewNutrition();
+  if (screen === "photos") renderHistory(true);
   if (target === "training") $("training").scrollIntoView({block:"start"});
   else if (target === "nutrition" && params.get("checklist") === "1") {
     $("nutritionDate").value = todayKey();
