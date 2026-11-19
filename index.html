@@ -138,6 +138,8 @@ main section{scroll-margin-top:132px}
 #week .day-active{border-color:#ff5722;animation:gym-glow 2.6s ease-in-out infinite}
 #week .day-completed{border-color:#66716c;background:#202823}
 .day-completed .battle-badge{background:#26332d;color:#aee8c9;border-color:#4d7964}
+#week .day-skipped{border-color:#7d6b45;background:#262118;opacity:.85}
+.day-skipped .battle-badge{background:#3a2f18;color:#ffd98e;border-color:#9e7d36}
 .muscle-item:hover{color:#ffa884;background:#271b17}
 .energy-bars{display:grid;gap:10px}.energy-core{background:#171313;border:1px solid #50332a;border-radius:10px;padding:10px}
 .energy-label{display:flex;justify-content:space-between;gap:8px}.energy-core small{color:#ff9d76}
@@ -215,7 +217,7 @@ main section{scroll-margin-top:132px}
 .history-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(144px,1fr));gap:8px}
 .history-note{font-size:.8rem;margin:9px 0}.history-day{border:1px solid #4d3930;border-radius:9px;margin:8px 0;background:#181615}
 .history-day summary{padding:10px;cursor:pointer}.history-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
-.history-badges span{font-size:.75rem;background:#30231e;border-radius:5px;padding:3px 6px}.history-badges .history-ok{color:#a4f4ba;background:#21382a}
+.history-badges span{font-size:.75rem;background:#30231e;border-radius:5px;padding:3px 6px}.history-badges .history-ok{color:#a4f4ba;background:#21382a}.history-badges .history-skip{color:#ffd98e;background:#3a2f18}
 .history-detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;padding:0 10px 10px}
 .history-detail>div{border-top:1px solid #513d32;padding-top:6px}.history-detail h4{margin:0 0 5px}
 .history-detail p,.history-detail ul{margin:0 0 4px}.history-detail ul{padding-left:16px}.history-detail li small{display:block;color:#c8aca0}
@@ -253,6 +255,9 @@ main section{scroll-margin-top:132px}
 .exercise-notes p{margin:3px 0;color:#d0b9ad;font-size:.84rem}
 .exercise-notes textarea{width:100%;resize:vertical;padding:7px;border:1px solid #60483c;border-radius:5px;background:#171514;color:#fff;font:inherit}
 .exercise-notes small{color:#e9ad8f}
+.skip-banner{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;padding:12px;border:1px solid #9e7d36;border-radius:10px;background:#262118;color:#ffe6b3}
+.skip-btn{border-color:#9e7d36;color:#ffd98e}
+.skip-btn[aria-pressed=true]{background:#3a2f18;color:#ffe6b3}
 </style>
 </head>
 <body>
@@ -294,7 +299,27 @@ main section{scroll-margin-top:132px}
   <article class="card spaced"><h3 id="lastWeekTitle">Buổi tập tuần trước</h3><p id="lastWeekDate" class="muted"></p><div id="lastWeekExercises"></div></article>
   </div>
 </section>
-<section data-screen="schedule" hidden id="schedule" aria-labelledby="scheduleTitle"><div class="section-head"><h2 id="scheduleTitle">Lịch tập trong tuần</h2></div><div class="week" id="week"></div></section>
+<section data-screen="schedule" hidden id="schedule" aria-labelledby="scheduleTitle">
+  <div class="section-head"><h2 id="scheduleTitle">Lịch tập trong tuần</h2></div>
+  <div class="week" id="week"></div>
+  <div class="card spaced" id="shiftScheduleBox">
+    <h3>Dời / Chuyển đổi lịch tập sang ngày khác</h3>
+    <p class="muted">Ví dụ: Thứ 4 bận tập Legs Day → chọn dời hoặc hoán đổi sang Thứ 5.</p>
+    <form id="shiftScheduleForm" class="tracker-form">
+      <label>Từ ngày<input type="date" id="shiftFromDate" required></label>
+      <label>Sang ngày<input type="date" id="shiftToDate" required></label>
+      <label>Hình thức chuyển
+        <select id="shiftMode">
+          <option value="move">Dời hẳn (ngày cũ thành Nghỉ)</option>
+          <option value="swap">Hoán đổi lịch 2 ngày</option>
+          <option value="copy">Sao chép giáo án sang ngày đích</option>
+        </select>
+      </label>
+      <button type="submit">Xác nhận chuyển lịch</button>
+    </form>
+    <p class="muted spaced" id="shiftStatus" role="status"></p>
+  </div>
+</section>
 <section data-screen="schedule" hidden id="training" aria-labelledby="trainingTitle">
   <div class="section-head"><h2 id="trainingTitle">Nhật ký tập</h2></div>
   <div class="work-grid">
@@ -308,7 +333,17 @@ main section{scroll-margin-top:132px}
           <button type="submit">Lưu ghi chú</button>
         </form>
       </details>
-      <div class="actions"><button class="gray" id="editPlan">Sửa bài trong buổi</button><button class="gray" id="addBench">+ Bench Press</button></div><div id="workout"></div>
+      <div class="actions">
+        <button class="gray" id="editPlan">Sửa bài trong buổi</button>
+        <button class="gray" id="addBench">+ Bench Press</button>
+        <button class="gray skip-btn" id="toggleSkipBtn" type="button" aria-pressed="false">Bỏ qua buổi tập</button>
+        <button class="gray" id="resetDayPlanBtn" type="button" hidden>Khôi phục lịch gốc</button>
+      </div>
+      <div id="skipNotice" class="skip-banner" hidden>
+        <div><strong>Buổi tập ngày này đã được đánh dấu BỎ QUA</strong><p class="muted" id="skipReasonText"></p></div>
+        <button class="gray quick" id="unskipQuickBtn" type="button">Hủy bỏ qua</button>
+      </div>
+      <div id="workout"></div>
     </div>
     <div class="stack">
       <div class="card"><h3>Tiến độ theo bài</h3><label>Bài tập<select id="progressSelect" onchange="renderProgress()"></select></label><div id="progress" class="muted"></div></div>
@@ -521,7 +556,6 @@ const $ = id => document.getElementById(id);
 const DAY_NAMES = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 const DAYS = [1, 2, 3, 4, 5, 6, 0];
 const TITLES = ["Nghỉ", "Push Day", "Pull Day", "Legs Day", "Nghỉ", "Upper Day", "Lower Day"];
-// Keep earlier workout dates paired with the original weekday templates.
 const PULL_FIRST_FROM = "2026-11-18";
 function templateDay(day,date) {
   return date >= PULL_FIRST_FROM && (day === 1 || day === 2) ? 3 - day : day;
@@ -576,7 +610,43 @@ function maxWeight(sets) {
   return Math.max(0, ...(Array.isArray(sets) ? sets.map(s => validNumber(s?.w) ? s.w : 0) : []));
 }
 
+const dayPlanKey = date => "tracker-dayplan-" + date;
+const skipDayKey = date => "tracker-skip-" + date;
+
+function isDaySkipped(date) {
+  return extras[skipDayKey(date)]?.skipped === true;
+}
+
+function dayPlanMeta(date) {
+  const override = extras[dayPlanKey(date)];
+  if (override && Array.isArray(override.rows)) {
+    const rows = override.rows
+      .map(row => Array.isArray(row) ? row : [row.name, row.sets, row.reps])
+      .filter(row => Array.isArray(row) && typeof row[0] === "string" && Number.isInteger(row[1]) && row[1] >= 1 && row[1] <= 6 && typeof row[2] === "string");
+    return {
+      rows,
+      title: override.title || (rows.length ? "Giáo án riêng" : "Nghỉ"),
+      group: override.group || (rows.length ? "Lịch đã chuyển" : "Phục hồi"),
+      isCustom: true
+    };
+  }
+  const day = localDate(date).getDay();
+  const rows = planFor(day, date);
+  const tDay = templateDay(day, date);
+  return {
+    rows,
+    title: rows.length ? (WORKOUTS[day] ? TITLES[tDay] : "Training Day") : "Nghỉ",
+    group: rows.length ? (WORKOUTS[day] ? GROUPS[tDay] : "Giáo án riêng") : "Phục hồi",
+    isCustom: false
+  };
+}
+
+function dayPlanFor(date) {
+  return dayPlanMeta(date).rows;
+}
+
 function isDayComplete(plan,date) {
+  if (isDaySkipped(date)) return false;
   const entries = logs[date] || {};
   return plan.length > 0 && plan.every(([name,slots]) =>
     Array.from({length:slots},(_,slot) => complete(entries[name]?.[slot])).every(Boolean)
@@ -585,11 +655,10 @@ function isDayComplete(plan,date) {
 
 function renderStats() {
   const monday = startOfWeek(new Date());
-  const plans = DAYS.map((day,index) => planFor(day,weekDate(monday,index)));
-  const count = DAYS.filter((day, index) => {
-    return isDayComplete(plans[index],weekDate(monday,index));
-  }).length;
-  const planned = plans.filter(plan => plan.length).length;
+  const dates = DAYS.map((_, index) => weekDate(monday, index));
+  const plans = dates.map(date => dayPlanFor(date));
+  const count = dates.filter((date, index) => isDayComplete(plans[index], date)).length;
+  const planned = dates.filter((date, index) => plans[index].length > 0 && !isDaySkipped(date)).length;
   $("weekPercent").textContent = Math.round(planned ? count / planned * 100 : 0) + "%";
   $("weekProgress").max = Math.max(1, planned);
   $("weekProgress").value = count;
@@ -603,11 +672,26 @@ function renderStats() {
 function selectDate(key) {
   selectedDate = key;
   $("dateInput").value = key;
+  if ($("shiftFromDate")) {
+    $("shiftFromDate").value = key;
+    const nextDay = new Date(localDate(key));
+    nextDay.setDate(nextDay.getDate() + 1);
+    $("shiftToDate").value = dateKey(nextDay);
+  }
+  const meta = dayPlanMeta(key);
   for (const option of $("daySelect").options) {
     const day = Number(option.value);
     option.textContent = DAY_NAMES[day] + " · " + TITLES[templateDay(day,key)];
   }
-  $("daySelect").value = localDate(key).getDay();
+  const customOpt = $("daySelect").querySelector('option[value="custom"]');
+  if (meta.isCustom) {
+    if (!customOpt) $("daySelect").add(new Option("Lịch riêng ngày này · " + meta.title, "custom"));
+    else customOpt.textContent = "Lịch riêng ngày này · " + meta.title;
+    $("daySelect").value = "custom";
+  } else {
+    customOpt?.remove();
+    $("daySelect").value = localDate(key).getDay();
+  }
   renderWeek();
   renderWorkout();
   updateRecovery(true);
@@ -623,17 +707,21 @@ function renderWeek() {
   $("week").replaceChildren(...DAYS.map((day, index) => {
     const key = weekDate(monday, index);
     const button = document.createElement("button");
-    const plan = planFor(day,key);
+    const meta = dayPlanMeta(key);
+    const plan = meta.rows;
     const hasPlan = plan.length > 0;
-    const done = isDayComplete(plan,key);
-    const active = hasPlan && key === todayKey() && !done;
-    button.className = "day" + (hasPlan ? "" : " rest") + (done ? " day-completed" : active ? " day-active" : "");
+    const skipped = isDaySkipped(key);
+    const done = !skipped && isDayComplete(plan, key);
+    const active = hasPlan && !skipped && key === todayKey() && !done;
+    button.className = "day" + (hasPlan ? "" : " rest") + (skipped ? " day-skipped" : done ? " day-completed" : active ? " day-active" : "");
     button.setAttribute("aria-pressed", String(selectedDate === key));
     if (key === todayKey()) button.setAttribute("aria-current", "date");
-    button.innerHTML = `<small>${DAY_NAMES[day]} · ${key.slice(8)}/${key.slice(5, 7)}</small><strong>${hasPlan ? (WORKOUTS[day] ? TITLES[templateDay(day,key)] : "Training Day") : "Nghỉ"}</strong><small>${hasPlan ? (WORKOUTS[day] ? GROUPS[templateDay(day,key)] : "Giáo án riêng") : "Phục hồi"}</small>${done ? '<span class="battle-badge">✓ COMPLETED</span>' : active ? '<span class="battle-badge">ACTIVE BATTLE</span>' : ""}`;
+    const badge = skipped ? '<span class="battle-badge">⏭ SKIPPED</span>'
+      : done ? '<span class="battle-badge">✓ COMPLETED</span>'
+      : active ? '<span class="battle-badge">ACTIVE BATTLE</span>' : "";
+    button.innerHTML = `<small>${DAY_NAMES[day]} · ${key.slice(8)}/${key.slice(5, 7)}</small><strong>${escapeHtml(meta.title)}</strong><small>${escapeHtml(meta.group)}</small>${badge}`;
     button.onclick = () => {
       selectDate(key);
-
       if (location.hash === "#training") $("training").scrollIntoView({block:"start"});
       else location.hash = "training";
     };
@@ -653,20 +741,30 @@ function renderWeek() {
 let pendingWorkoutRender = false;
 
 function renderWorkout() {
-  const day = Number($("daySelect").value);
-  const workout = planFor(day, selectedDate);
+  const rawDay = $("daySelect").value;
   const date = selectedDate;
+  const meta = dayPlanMeta(date);
+  const workout = rawDay === "custom" ? meta.rows : (meta.isCustom && Number(rawDay) === localDate(date).getDay() ? meta.rows : planFor(Number(rawDay), date));
   const logged = logs[date] || {};
+  const skipped = isDaySkipped(date);
+  const skipData = extras[skipDayKey(date)] || {};
+
+  $("toggleSkipBtn").setAttribute("aria-pressed", String(skipped));
+  $("toggleSkipBtn").textContent = skipped ? "Hủy bỏ qua buổi" : "Bỏ qua buổi tập";
+  $("skipNotice").hidden = !skipped;
+  $("skipReasonText").textContent = skipData.reason ? "Lý do: " + skipData.reason : "Buổi này không tính vào chỉ tiêu tuần.";
+  $("resetDayPlanBtn").hidden = !meta.isCustom;
+
   const showBench = Object.hasOwn(logged, BENCH) || benchDays.has(date);
   $("addBench").hidden = showBench || workout.some(([name]) => name === BENCH);
   const list = [...workout, ...(showBench && !workout.some(([name]) => name === BENCH) ? [EXTRA_BENCH] : [])];
   const box = $("workout");
-  const sameWorkout = box.dataset.date === date && Number(box.dataset.plan) === day;
+  const sameWorkout = box.dataset.date === date && box.dataset.plan === rawDay;
   const open = new Set([...box.querySelectorAll("details[open]")].map(row => row.dataset.exercise));
   box.dataset.date = date;
-  box.dataset.plan = day;
+  box.dataset.plan = rawDay;
   if (!list.length) {
-    box.innerHTML = '<p class="ex-info">Ngày phục hồi theo lịch tuần.</p>';
+    box.innerHTML = '<p class="ex-info spaced">Ngày phục hồi theo lịch tuần (hoặc lịch đã được dời sang ngày khác).</p>';
     syncDock();
     return;
   }
@@ -708,6 +806,83 @@ $("addBench").onclick = () => {
   row.open = true;
   row.scrollIntoView({ block: "nearest" });
 };
+
+async function toggleSkipSelectedDay(forceState) {
+  const date = selectedDate;
+  const nextSkipped = typeof forceState === "boolean" ? forceState : !isDaySkipped(date);
+  let reason = "";
+  if (nextSkipped) {
+    const input = prompt("Lý do bỏ qua buổi tập (có thể để trống):", extras[skipDayKey(date)]?.reason || "");
+    if (input === null) return;
+    reason = input.trim().slice(0, 120);
+  }
+  try {
+    await saveExtras({
+      [skipDayKey(date)]: { skipped: nextSkipped, reason, updatedAt: Date.now() }
+    });
+    renderStats();
+    renderWorkout();
+    updateTodayPlan();
+    renderHistory();
+  } catch (error) {
+    alert("Chưa cập nhật trạng thái bỏ qua: " + error.message);
+  }
+}
+
+$("toggleSkipBtn").onclick = () => void toggleSkipSelectedDay();
+$("unskipQuickBtn").onclick = () => void toggleSkipSelectedDay(false);
+
+$("resetDayPlanBtn").onclick = async () => {
+  const date = selectedDate;
+  if (!confirm("Khôi phục ngày " + date.split("-").reverse().join("/") + " về lịch tập mặc định theo thứ?")) return;
+  try {
+    await saveExtras({ [dayPlanKey(date)]: { rows: null } });
+    selectDate(date);
+    refresh();
+  } catch (error) {
+    alert("Chưa khôi phục được: " + error.message);
+  }
+};
+
+async function moveWorkoutSchedule(fromDate, toDate, mode = "move") {
+  if (!isDateKey(fromDate) || !isDateKey(toDate) || fromDate === toDate) {
+    throw new Error("Chọn ngày nguồn và ngày đích khác nhau.");
+  }
+  const sourceMeta = dayPlanMeta(fromDate);
+  const targetMeta = dayPlanMeta(toDate);
+  const sourceRows = sourceMeta.rows.map(([name, sets, reps]) => ({ name, sets, reps }));
+  const targetRows = targetMeta.rows.map(([name, sets, reps]) => ({ name, sets, reps }));
+  if (!sourceRows.length) {
+    throw new Error("Ngày nguồn hiện không có bài tập để dời.");
+  }
+
+  const updates = {
+    [dayPlanKey(toDate)]: {
+      rows: sourceRows,
+      title: sourceMeta.title,
+      group: sourceMeta.group
+    },
+    [skipDayKey(toDate)]: { skipped: false, reason: "", updatedAt: Date.now() }
+  };
+
+  if (mode === "move") {
+    updates[dayPlanKey(fromDate)] = {
+      rows: [],
+      title: "Nghỉ (Đã dời)",
+      group: "Dời sang " + toDate.split("-").reverse().join("/")
+    };
+  } else if (mode === "swap") {
+    updates[dayPlanKey(fromDate)] = {
+      rows: targetRows,
+      title: targetMeta.title,
+      group: targetMeta.group
+    };
+  }
+
+  await saveExtras(updates);
+  selectDate(toDate);
+  refresh();
+}
 
 function workoutRow(target) {
   const row = target.closest("[data-exercise]");
@@ -1219,7 +1394,7 @@ function changeExtraAccount(account) {
 function acceptCloudExtras(documents) {
   const next = {}, nextPhotos = {};
   for (const item of documents) {
-    if (/^tracker-(profile|goals|body-|food-|meal-|supplement-|supp-product-|stock-|preset-|photo-|plan-|exercise-|exercise-note-|recovery-|duration-)/.test(item.id)) {
+    if (/^tracker-(profile|goals|body-|food-|meal-|supplement-|supp-product-|stock-|preset-|photo-|plan-|dayplan-|skip-|exercise-|exercise-note-|recovery-|duration-)/.test(item.id)) {
       const payload = item.data().tracker;
       if (!payload) continue;
       if (item.id.startsWith("tracker-photo-")) nextPhotos[item.id] = payload;
@@ -1334,7 +1509,7 @@ function renderHeatmap() {
 
 const exerciseTips = [
   [/reverse hack squat/i,"Áp ngực vào đệm, đặt cả bàn chân trên bàn đạp. Hạ chậm rồi đẩy lên bằng cả bàn chân.","Giữ đầu gối theo hướng mũi chân và chọn độ sâu anh kiểm soát được."],
-  [/romanian deadlift|\brdl\b/i,"Hơi chùng gối, đẩy hông ra sau và giữ tạ hoặc tay cầm gần chân. Đứng lên bằng cách đưa hông về vị trí ban đầu.","Dừng hạ khi không còn giữ được lưng ổn định. Tránh giật tạ khi đổi chiều."],
+  [/romanian deadlift|rdl/i,"Hơi chùng gối, đẩy hông ra sau và giữ tạ hoặc tay cầm gần chân. Đứng lên bằng cách đưa hông về vị trí ban đầu.","Dừng hạ khi không còn giữ được lưng ổn định. Tránh giật tạ khi đổi chiều."],
   [/bench press/i,"Ổn định chân và thân người. Hạ tạ có kiểm soát rồi đẩy lên theo đường đi anh giữ ổn định được.","Khi tập tạ đòn nặng, dùng chốt an toàn hoặc người hỗ trợ."],
   [/crossover|chest fly|pec deck|iron cross/i,"Hơi gập khuỷu tay, khép hai tay theo vòng cung rồi mở lại chậm.","Giữ góc khuỷu ổn định. Giảm biên độ nếu vai khó chịu."],
   [/pulldown|pull-up/i,"Giữ thân ổn định và kéo khuỷu tay xuống. Trả tay về từ từ.","Tránh ngả người hoặc giật tay để hoàn thành reps."],
@@ -1764,6 +1939,14 @@ function initFeatures() {
     }
   });
 
+  bindForm("shiftScheduleForm", async () => {
+    const fromDate = $("shiftFromDate").value;
+    const toDate = $("shiftToDate").value;
+    const mode = $("shiftMode").value;
+    await moveWorkoutSchedule(fromDate, toDate, mode);
+    $("shiftStatus").textContent = `Đã chuyển lịch từ ${fromDate.split("-").reverse().join("/")} sang ${toDate.split("-").reverse().join("/")}.`;
+  });
+
   applyExtras();
   loadLocalPhotos();
   renderLibrary();
@@ -1803,12 +1986,13 @@ function planFor(day, date) {
 }
 
 function updateTodayPlan() {
-  const date = todayKey(), day = localDate(date).getDay();
-  const plan = planFor(day,date);
-  $("todayWorkout").textContent = plan.length ? (WORKOUTS[day] ? TITLES[templateDay(day,date)] : "Training Day") : "Nghỉ";
-  $("todayDetail").textContent = plan.length
-    ? (WORKOUTS[day] ? GROUPS[templateDay(day,date)] : "Giáo án riêng") + " · " + plan.length + " bài"
-    : "Ngày phục hồi theo lịch tuần";
+  const date = todayKey();
+  const meta = dayPlanMeta(date);
+  const skipped = isDaySkipped(date);
+  $("todayWorkout").textContent = skipped ? meta.title + " (Đã bỏ qua)" : meta.title;
+  $("todayDetail").textContent = skipped
+    ? "Đã đánh dấu bỏ qua buổi tập hôm nay"
+    : (meta.rows.length ? meta.group + " · " + meta.rows.length + " bài" : "Ngày phục hồi theo lịch tuần");
 }
 
 function workoutHistory(name, date) {
@@ -1872,16 +2056,16 @@ function epleyLabel(sets) {
 }
 
 function lastWeekSession(today) {
-  const day = localDate(today).getDay();
-  if (!planFor(day,today).length) return null;
-  const type = templateDay(day,today);
+  const meta = dayPlanMeta(today);
+  if (!meta.rows.length) return null;
   const monday = startOfWeek(localDate(today));
-  const dates = DAYS.map((weekday,index) => ({weekday,date:weekDate(monday,index-7)}));
-  const match = dates.find(({weekday,date}) => templateDay(weekday,date) === type);
-  if (!match) return null;
-  const exercises = Object.entries(logs[match.date] || {}).filter(([,sets]) =>
+  const dates = DAYS.map((_, index) => weekDate(monday, index - 7));
+  const targetNames = new Set(meta.rows.map(([name]) => name));
+  const matchDate = dates.find(d => dayPlanFor(d).some(([name]) => targetNames.has(name))) || dates[localDate(today).getDay() === 0 ? 6 : localDate(today).getDay() - 1];
+  if (!matchDate) return null;
+  const exercises = Object.entries(logs[matchDate] || {}).filter(([,sets]) =>
     Array.isArray(sets) && sets.some(complete));
-  return {date:match.date,title:WORKOUTS[day] ? TITLES[type] : "Training Day",exercises};
+  return {date:matchDate,title:meta.title,exercises};
 }
 
 function renderLastWeekWorkout() {
@@ -2027,7 +2211,7 @@ function stashPlanFields() {
 
 function openPlanEditor(day,from) {
     planTarget = {day,date:from};
-    planDraft = planFor(day,from).map(row => [...row]);
+    planDraft = dayPlanFor(from).map(row => [...row]);
     $("planDateLabel").textContent = DAY_NAMES[day] + " · áp dụng từ " + from.split("-").reverse().join("/") + " cho các tuần sau";
     renderPlanEditor();
     $("planDialog").showModal();
@@ -2046,8 +2230,6 @@ function renderPlanEditor() {
   $("planAdd").replaceChildren(new Option("Chọn bài để thêm",""),...EXERCISES.filter(name =>
     !planDraft.some(row => row[0] === name)).map(name => new Option(name,name)));
 }
-
-
 
 function initV4() {
   $("workout").addEventListener("toggle",event => {
@@ -2073,7 +2255,7 @@ function initV4() {
     if (date === selectedDate) $("recoveryDetails").open = false;
   });
 
-  $("editPlan").onclick = () => openPlanEditor(Number($("daySelect").value),selectedDate);
+  $("editPlan").onclick = () => openPlanEditor(localDate(selectedDate).getDay(),selectedDate);
   $("planAdd").onchange = () => {
     const name = $("planAdd").value;
     if (!name) return;
@@ -2115,7 +2297,12 @@ function initV4() {
     if (!planDraft.every(([, count,reps]) => Number.isInteger(count) && count >= 1 && count <= 6 && reps)) {
       throw Error("Nhập đủ số hiệp và reps cho mỗi bài.");
     }
-    await saveExtras({["tracker-plan-" + planTarget.day + "-" + planTarget.date]:{rows:planDraft.map(([name,sets,reps]) => ({name,sets,reps}))}});
+    const rows = planDraft.map(([name,sets,reps]) => ({name,sets,reps}));
+    const updates = { ["tracker-plan-" + planTarget.day + "-" + planTarget.date]: { rows } };
+    if (extras[dayPlanKey(planTarget.date)]) {
+      updates[dayPlanKey(planTarget.date)] = { ...extras[dayPlanKey(planTarget.date)], rows };
+    }
+    await saveExtras(updates);
     $("planDialog").close();
     refresh();
   });
@@ -2343,7 +2530,7 @@ const historyGroups = {
 function historyDates() {
   const dates = new Set(Object.keys(logs).filter(isDateKey));
   for (const key of Object.keys(extras)) {
-    const date = /^tracker-(?:meal|food|supplement|duration)-(\d{4}-\d{2}-\d{2})(?:-|$)/.exec(key)?.[1];
+    const date = /^tracker-(?:meal|food|supplement|duration|skip)-(\d{4}-\d{2}-\d{2})(?:-|$)/.exec(key)?.[1];
     if (date && isDateKey(date)) dates.add(date);
   }
   return [...dates].sort().reverse();
@@ -2353,6 +2540,8 @@ function historyRecord(date) {
   const exercises = Object.entries(logs[date] || {}).filter(([,sets]) => Array.isArray(sets) && sets.some(complete));
   const sets = exercises.reduce((sum,[,entries]) => sum + entries.filter(complete).length,0);
   const duration = extras["tracker-duration-" + date];
+  const skipped = isDaySkipped(date);
+  const skipReason = extras[skipDayKey(date)]?.reason || "";
   const products = supplementProducts(date);
   const taken = products.filter(([id]) => extras[supplementEntry(date,id)]?.taken);
   const meals = foodsForDay(date);
@@ -2363,22 +2552,26 @@ function historyRecord(date) {
   const calorieGoal = goals.calorieGoal > 0 ? goals.calorieGoal : 2200;
   const proteinGoal = goals.proteinGoal > 0 ? goals.proteinGoal : 120;
   const reached = hasFood && total.calories >= calorieGoal && total.protein >= proteinGoal;
-  return {date,exercises,sets,duration,taken,products,meals,hasFood,total,calorieGoal,proteinGoal,reached};
+  return {date,exercises,sets,duration,skipped,skipReason,taken,products,meals,hasFood,total,calorieGoal,proteinGoal,reached};
 }
 
 function historyDetails(record) {
-  const {date,exercises,sets,duration,taken,products,meals,hasFood,total,calorieGoal,proteinGoal,reached} = record;
+  const {date,exercises,sets,duration,skipped,skipReason,taken,products,meals,hasFood,total,calorieGoal,proteinGoal,reached} = record;
   const elapsed = duration?.ended && duration.ended >= duration.started
     ? durationLabel(Math.floor((duration.ended-duration.started)/1000)) : "";
   const shortDate = date.split("-").reverse().join("/");
   const workout = exercises.length || duration?.started;
+  const workoutLabel = skipped
+    ? "Bỏ qua buổi tập" + (skipReason ? " (" + escapeHtml(skipReason) + ")" : "")
+    : (workout ? (exercises.length ? exercises.length + " bài · " + sets + " hiệp" : "Có phiên tập") : "Chưa ghi buổi tập");
   const foodStatus = hasFood ? (reached ? "Đạt kcal & protein" : "Chưa đạt kcal hoặc protein") : "Chưa ghi dinh dưỡng";
   return `<details class="history-day"><summary><strong>${DAY_NAMES[localDate(date).getDay()]} · ${shortDate}</strong>
-    <div class="history-badges"><span>${workout ? (exercises.length ? exercises.length + " bài · " + sets + " hiệp" : "Có phiên tập") : "Chưa ghi buổi tập"}</span>
+    <div class="history-badges"><span class="${skipped ? "history-skip" : ""}">${workoutLabel}</span>
       <span>Supplement ${taken.length}/${products.length}</span><span class="${reached ? "history-ok" : ""}">${foodStatus}</span></div></summary>
     <div class="history-detail">
       <div><h4>Buổi tập${elapsed ? " · " + elapsed : ""}</h4>
-      ${exercises.length ? '<ul>' + exercises.map(([name,entries]) => `<li><strong>${escapeHtml(name)}</strong><small>${entries.filter(complete).map(set => format.format(set.w) + " kg × " + format.format(set.r)).join(" · ")}</small></li>`).join("") + '</ul>' : '<p class="muted">Chưa có hiệp được ghi.</p>'}</div>
+      ${skipped ? `<p class="muted">Đã đánh dấu bỏ qua${skipReason ? ": " + escapeHtml(skipReason) : "."}</p>` : ""}
+      ${exercises.length ? '<ul>' + exercises.map(([name,entries]) => `<li><strong>${escapeHtml(name)}</strong><small>${entries.filter(complete).map(set => format.format(set.w) + " kg × " + format.format(set.r)).join(" · ")}</small></li>`).join("") + '</ul>' : (skipped ? '' : '<p class="muted">Chưa có hiệp được ghi.</p>')}</div>
       <div><h4>Supplement</h4>
       <p>Đã tích: ${taken.length ? taken.map(([,name]) => escapeHtml(name)).join(", ") : "0 mục."}</p>
       <p class="muted">Chưa tích: ${products.filter(item => !taken.includes(item)).map(([,name]) => escapeHtml(name)).join(", ") || "Đã tích đủ."}</p></div>
@@ -2397,7 +2590,7 @@ function renderHistory(force = false) {
     .filter(record => {
       if (term && ![...record.exercises.map(([name]) => name),...record.taken.map(([,name]) => name),...record.meals.map(([,meal]) => meal.name)]
         .some(name => normalizeFood(name).includes(term))) return false;
-      if (type === "workout") return record.exercises.length || record.duration?.started;
+      if (type === "workout") return record.exercises.length || record.duration?.started || record.skipped;
       if (type === "supplement") return record.taken.length > 0;
       if (type === "nutrition") return record.hasFood;
       if (type === "reached") return record.reached;
