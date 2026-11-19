@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101010">
-<title>My Gym · Luân</title>
+<title>LUÂN VÀ GYM</title>
 <style>
 :root{color-scheme:dark;--bg:#101010;--panel:#191919;--line:#303030;--muted:#b5b1ad;--accent:#ff7136;--ink:#f7f4f1}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,sans-serif}a{color:inherit;text-decoration:none}button,input,select{font:inherit}button,.cta{min-height:44px;border:1px solid transparent;border-radius:9px;padding:10px 15px;background:var(--accent);color:#17100b;font-weight:750;cursor:pointer}button:hover,.cta:hover{filter:brightness(1.15)}button:disabled{opacity:.65;cursor:wait}:focus-visible{outline:2px solid #ffd4bd;outline-offset:3px}.gray{background:#242424;color:var(--ink);border-color:var(--line)}input,select{width:100%;min-height:44px;padding:9px 11px;border:1px solid #444;border-radius:8px;background:#131313;color:var(--ink);min-width:0}label{display:grid;gap:5px;color:var(--muted)}h1,h2,h3,p{margin:0}h2{font-size:clamp(23px,3vw,32px);letter-spacing:-.035em}h3{font-size:18px}.muted,.ex-info,.last{color:var(--muted)}.hidden{display:none!important}.wrap{max-width:1240px;margin:auto;padding-inline:clamp(16px,4vw,46px)}
@@ -597,10 +597,189 @@ dialog {
 ::-webkit-scrollbar-track { background: #090a0d; }
 ::-webkit-scrollbar-thumb { background: #ff5500; }
 
+
+/* === UPGRADED 4-TIER MUSCLE HEATMAP (XÁM -> XANH -> CAM -> ĐỎ) & CYBER ANATOMY === */
+.heat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 8px;
+}
+.heat-legend .leg-none { color: #8c93a0; }
+.heat-legend .leg-green { color: #19e68c; }
+.heat-legend .leg-orange { color: #ff8800; }
+.heat-legend .leg-red { color: #ff2a4b; }
+
+.anatomy-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 240px));
+  justify-content: center;
+  gap: clamp(14px, 4vw, 44px);
+  margin-top: 12px;
+  padding: 14px 12px;
+  border: 1px solid #2b3344;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(0, 229, 255, 0.08), transparent 62%),
+    linear-gradient(180deg, rgba(14, 18, 26, 0.92), rgba(9, 11, 16, 0.96));
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+.anatomy-figure {
+  margin: 0;
+  text-align: center;
+  position: relative;
+}
+
+.anatomy-figure svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.65));
+}
+
+.anatomy-figure figcaption {
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+}
+
+.body-silhouette {
+  fill: var(--body-tint);
+  stroke: #49566d;
+  stroke-width: 1.25;
+}
+
+.body-neutral {
+  fill: #242a36;
+  stroke: #465268;
+  stroke-width: 0.9;
+}
+
+.body-scanline {
+  stroke: rgba(0, 229, 255, 0.22);
+  stroke-width: 0.7;
+  stroke-dasharray: 3 4;
+}
+
+.body-muscle {
+  --surface: #4a515e;
+  --outline: #252932;
+  --glow: transparent;
+  cursor: pointer;
+  transition: filter 0.16s ease;
+}
+
+.body-muscle path {
+  fill: var(--surface);
+  stroke: var(--outline);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+
+.body-muscle[data-level="none"] {
+  --surface: #4c525e;
+  --outline: #292e38;
+  --glow: transparent;
+}
+
+.body-muscle[data-level="green"] {
+  --surface: #00c973;
+  --outline: #7dffca;
+  --glow: drop-shadow(0 0 5px rgba(0, 201, 115, 0.55));
+}
+
+.body-muscle[data-level="orange"] {
+  --surface: #ff7b00;
+  --outline: #ffd180;
+  --glow: drop-shadow(0 0 7px rgba(255, 123, 0, 0.65));
+}
+
+.body-muscle[data-level="red"] {
+  --surface: #ff1f42;
+  --outline: #ff9eb0;
+  --glow: drop-shadow(0 0 9px rgba(255, 31, 66, 0.82));
+}
+
+.body-muscle path {
+  filter: var(--glow);
+}
+
+.body-muscle:hover path,
+.body-muscle:focus-visible path {
+  stroke: #ffffff;
+  stroke-width: 2;
+  filter: brightness(1.22) drop-shadow(0 0 10px rgba(255, 255, 255, 0.55));
+}
+
+/* Tactical Muscle Cards matching 4 tiers */
+.tactical-card[data-level="none"],
+.tactical-card[data-level="low"] {
+  --tier: #8d96a5;
+  --frame: #2c323f;
+}
+
+.tactical-card[data-level="green"] {
+  --tier: #19e68c;
+  --frame: #166e49;
+}
+
+.tactical-card[data-level="orange"],
+.tactical-card[data-level="mid"] {
+  --tier: #ff8800;
+  --frame: #8a4b08;
+}
+
+.tactical-card[data-level="red"],
+.tactical-card[data-level="high"] {
+  --tier: #ff2a4b;
+  --frame: #8f162a;
+  animation: tactical-red-pulse 2.1s ease-in-out infinite;
+}
+
+@keyframes tactical-red-pulse {
+  50% { background: #ff2a4b; }
+}
+
+.tactical-card[data-level="none"] .power-bar > span {
+  width: 0% !important;
+  opacity: 0;
+}
+.tactical-card[data-level="green"] .power-bar > span {
+  background: linear-gradient(90deg, #0b8a53, #19e68c);
+}
+.tactical-card[data-level="orange"] .power-bar > span {
+  background: linear-gradient(90deg, #b85600, #ff8800);
+}
+.tactical-card[data-level="red"] .power-bar > span {
+  background: linear-gradient(90deg, #b30e29, #ff2a4b);
+}
+
 </style>
 </head>
 <body>
-<header><div class="wrap top"><a class="brand" href="#overview"><b><svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true"><path d="M4 18h6v12H4zm8-5h6v22h-6zm8 8h8v6h-8zm10-8h6v22h-6zm8 5h6v12h-6z" fill="currentColor"/><path d="M15 8l9 5 9-5" fill="none" stroke="currentColor" stroke-width="2.5"/></svg></b><span>MY GYM // LUÂN</span></a><button class="gray quick" id="workoutMode" aria-pressed="true" aria-describedby="wakeStatus">Giữ màn hình sáng</button></div>
+<header><div class="wrap top"><a class="brand" href="#overview" style="gap:12px">
+  <b style="width:42px;height:42px;background:linear-gradient(135deg,#ff5500 0%,#ff9100 100%);box-shadow:0 0 18px rgba(255,85,0,0.75)">
+    <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+      <polygon points="32 3 58 18 58 46 32 61 6 46 6 18" fill="none" stroke="#090a0d" stroke-width="4.5"/>
+      <rect x="11" y="25" width="6" height="14" rx="1" fill="#090a0d"/>
+      <rect x="18" y="21" width="5" height="22" rx="1" fill="#090a0d"/>
+      <rect x="41" y="21" width="5" height="22" rx="1" fill="#090a0d"/>
+      <rect x="47" y="25" width="6" height="14" rx="1" fill="#090a0d"/>
+      <polygon points="34 15 23 33 31 33 28 49 41 30 33 30" fill="#090a0d"/>
+    </svg>
+  </b>
+  <span style="display:inline-flex;align-items:baseline;gap:6px;font-size:25px;letter-spacing:0.06em">
+    <span style="color:#ffffff;font-weight:900">LUÂN</span>
+    <span style="color:#ff5500;font-size:17px;font-weight:800;font-family:'JetBrains Mono',monospace">VÀ</span>
+    <span style="background:linear-gradient(90deg,#ff5500,#ff9e00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:950">GYM</span>
+  </span>
+</a><button class="gray quick" id="workoutMode" aria-pressed="true" aria-describedby="wakeStatus">Giữ màn hình sáng</button></div>
 <div class="master-timer" id="workoutTimerPanel" data-screen="overview">
   <div class="wrap master-inner">
     <div><strong id="durationTime" role="timer" aria-label="Thời gian buổi tập">00:00:00</strong><p class="muted" id="durationStatus">Thời gian buổi tập</p></div>
@@ -626,7 +805,12 @@ dialog {
   <article class="card spaced muscle-panel">
     <h3>Bản đồ cơ trong tuần này</h3>
     <p class="muted">Hiệp quy đổi trong tuần · Cơ phụ tính nửa hiệp. Chạm thẻ để xem bài tập.</p>
-    <div class="heat-legend"><span>Dưới 12 hiệp</span><span>12–20 hiệp</span><span>Trên 20 hiệp</span></div>
+    <div class="heat-legend">
+  <span class="leg-none">■ 0 hiệp: Xám (Chưa tập)</span>
+  <span class="leg-green">■ 1–11.5 hiệp: Xanh</span>
+  <span class="leg-orange">■ 12–19.5 hiệp: Cam</span>
+  <span class="leg-red">■ ≥ 20 hiệp: Đỏ (Cao nhất)</span>
+</div>
     <div id="muscleAnatomy" class="anatomy-board"></div>
     <div id="muscleCounts" class="tactical-grid"></div>
   </article>
@@ -804,7 +988,7 @@ dialog {
   </div>
 </div>
 </main>
-<nav class="bottom-tabs" aria-label="Điều hướng My Gym"><div class="tab-items">
+<nav class="bottom-tabs" aria-label="Điều hướng Luân và Gym"><div class="tab-items">
   <a href="#overview" data-tab="overview"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><circle cx="12" cy="12" r="3"/></svg><span>HUD</span></a>
   <a href="#schedule" data-tab="schedule"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 4h18v17H3zM3 9h18M8 2v4M16 2v4M7 13h4v4H7z"/></svg><span>Lịch tập</span></a>
   <a href="#nutrition" data-tab="nutrition"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Nạp năng lượng</span></a>
@@ -1824,20 +2008,38 @@ const backAnatomy = [
   ["calves","M79 228l12-6 7 15-4 18-8 15-9-14-4-14z"]
 ];
 
+function muscleTier(count) {
+  if (!count || count <= 0) return "none";
+  if (count >= 20) return "red";
+  if (count >= 12) return "orange";
+  return "green";
+}
+
 function renderAnatomy(totals) {
   const silhouette = "M110 43q-7 1-16-2-10 7-23 4-13-1-21 7-7 6-9 19l-8 31-15 27-8 17 7 9 9-5 5-12 20-26 17-27 1 23 7 18-11 31q-5 18 0 37l8 29q-6 17 0 38l4 22-7 10q-3 8 5 9l17-3 6-12-1-12 4-34 3-20 4-21 2-42L110 43z";
   const neutral = "M34 103l13 10-17 23-7 12-8 4 1-7 9-17z M77 270l11 2-1 13-8 8-7 2 2-5z";
-  $("muscleAnatomy").innerHTML = [[frontAnatomy,"Mặt trước","front"],[backAnatomy,"Mặt sau","back"]].map(([areas,label,view]) => {
+  $("muscleAnatomy").innerHTML = [[frontAnatomy,"FRONT // MẶT TRƯỚC","front"],[backAnatomy,"BACK // MẶT SAU","back"]].map(([areas,label,view]) => {
     const body = `<path class="body-silhouette" d="${silhouette}"/><path class="body-neutral" d="${neutral}"/>`;
     const shapes = areas.map(([key,path]) => {
       const count = totals[key];
-      const level = count > 20 ? "high" : count >= 12 ? "mid" : "low";
-      return `<a class="body-muscle" data-level="${level}" href="#library?muscle=${key}" aria-label="${MUSCLES[key]}: ${format.format(count)} hiệp. Xem bài tập">
-        <title>${MUSCLES[key]} · ${format.format(count)} hiệp</title><path d="${path}"/><path d="${path}" transform="translate(220 0) scale(-1 1)"/>
+      const level = muscleTier(count);
+      const tierLabel = level === "none" ? "Chưa tập" : level === "red" ? "Cao nhất" : level === "orange" ? "Mức cao" : "Có tập";
+      return `<a class="body-muscle" data-level="${level}" href="#library?muscle=${key}" aria-label="${MUSCLES[key]}: ${format.format(count)} hiệp (${tierLabel}). Xem bài tập">
+        <title>${MUSCLES[key]} · ${format.format(count)} hiệp (${tierLabel})</title><path d="${path}"/><path d="${path}" transform="translate(220 0) scale(-1 1)"/>
       </a>`;
     }).join("");
     return `<figure class="anatomy-figure"><svg viewBox="0 0 220 306" aria-label="${label}">
-      <defs><linearGradient id="bodyTint-${view}" x2="1" y2="1"><stop stop-color="#515050"/><stop offset="1" stop-color="#262424"/></linearGradient></defs>
+      <defs>
+        <linearGradient id="bodyTint-${view}" x2="1" y2="1"><stop stop-color="#293244"/><stop offset="1" stop-color="#141923"/></linearGradient>
+        <radialGradient id="hudRing-${view}" cx="50%" cy="48%" r="50%">
+          <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.14"/>
+          <stop offset="75%" stop-color="#ff5500" stop-opacity="0.06"/>
+          <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="110" cy="153" r="102" fill="url(#hudRing-${view})" stroke="rgba(0,229,255,0.22)" stroke-width="0.9" stroke-dasharray="4 4"/>
+      <line x1="110" y1="8" x2="110" y2="298" class="body-scanline"/>
+      <line x1="18" y1="153" x2="202" y2="153" class="body-scanline"/>
       <g style="--body-tint:url(#bodyTint-${view})">${body}<g transform="translate(220 0) scale(-1 1)">${body}</g>
       <path class="body-silhouette" d="M101 35l-3 11 12 8 12-8-3-11z M97 24q-4-6-2-15 3-7 15-7t15 7q2 9-2 15l-4 10-9 5-9-5z"/></g>
       ${shapes}</svg><figcaption>${label}</figcaption></figure>`;
@@ -1859,11 +2061,13 @@ function renderHeatmap() {
 
   renderAnatomy(totals);
   $("muscleCounts").innerHTML = Object.entries(totals).map(([key,count]) => {
-    const level = count > 20 ? "high" : count >= 12 ? "mid" : "low";
-    const fill = Math.min(100,count / 20 * 100);
+    const level = muscleTier(count);
+    const fill = count <= 0 ? 0 : Math.min(100, Math.max(12, count / 20 * 100));
+    const statusText = level === "none" ? "Chưa tập" : level === "red" ? "Cao nhất" : level === "orange" ? "Mốc cao" : "Có tập";
     return `<a class="tactical-card" data-level="${level}" href="#library?muscle=${key}">
       <span class="tactical-name">${MUSCLES[key]} <span aria-hidden="true">↗</span></span>
       <strong>${format.format(count)} <small>hiệp</small></strong>
+      <small style="opacity:.82">${statusText}</small>
       <span class="power-bar" aria-hidden="true"><span style="width:${fill}%"></span></span>
     </a>`;
   }).join("");
@@ -3090,7 +3294,7 @@ if (location.protocol === "https:" || location.protocol === "http:") connectClou
   if (exportBtn && importBtn && importInput) {
     exportBtn.onclick = () => {
       const payload = {
-        app: "MyGym-Luan",
+        app: "Luan-Va-Gym",
         exportedAt: new Date().toISOString(),
         profile,
         logs,
