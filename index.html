@@ -703,7 +703,16 @@ dialog {
     </form>
     <div id="nutritionDonuts" class="macro-donuts spaced"></div><div id="nutritionBars" class="spaced"></div>
     <div class="meal-box">
-      <h3>Nhập nhanh thực phẩm</h3><label>Món cá nhân<select id="presetChoice"></select></label>
+      <h3>Cộng nhanh 1 chạm (Món hay dùng)</h3>
+      <div class="actions" id="quickFoodChips">
+        <button type="button" class="gray quick" data-qfood="Trứng luộc (1 quả)" data-qkcal="75" data-qpro="6">+1 Trứng (75 kcal · 6g)</button>
+        <button type="button" class="gray quick" data-qfood="Chuối vàng (1 trái)" data-qkcal="105" data-qpro="1.3">+1 Chuối (105 kcal · 1,3g)</button>
+        <button type="button" class="gray quick" data-qfood="Khoai lang (150g)" data-qkcal="130" data-qpro="2.5">+Khoai lang (130 kcal · 2,5g)</button>
+        <button type="button" class="gray quick" data-qfood="Whey thực vật (1 scoop)" data-qkcal="120" data-qpro="24">+1 Scoop Whey (120 kcal · 24g)</button>
+        <button type="button" class="gray quick" data-qfood="Sữa tươi không đường / đậu nành (220ml)" data-qkcal="130" data-qpro="7">+1 Hộp sữa (130 kcal · 7g)</button>
+        <button type="button" class="gray quick" data-qfood="Bánh mì 2 trứng" data-qkcal="350" data-qpro="14">+Bánh mì 2 trứng (350 kcal · 14g)</button>
+      </div>
+      <h3 class="spaced">Nhập chi tiết thực phẩm</h3><label>Món cá nhân<select id="presetChoice"></select></label>
       <form id="mealForm" class="tracker-form">
         <label>Tên món<input name="name" list="foodSuggestions" maxlength="100" placeholder="VD: Phở bò" required></label>
         <datalist id="foodSuggestions"></datalist>
@@ -733,7 +742,7 @@ dialog {
   </div>
 </section>
 <section data-screen="supplements" hidden id="supplements" aria-labelledby="supplementsTitle">
-  <div class="section-head"><h2 id="supplementsTitle">Supplement</h2><button id="addSupplement" type="button">+ Thêm sản phẩm</button></div>
+  <div class="section-head"><h2 id="supplementsTitle">Supplement</h2><div class="actions" style="margin-top:0"><button id="checkAllSupplements" class="gray" type="button">✓ Tích đủ hôm nay</button><button id="addSupplement" type="button">+ Thêm sản phẩm</button></div></div>
   <div class="card" id="checklistPanel">
     <div class="overview-macros-title"><h3>Checklist &amp; tồn kho</h3><small id="supplementCount" class="muted"></small></div>
     <label class="supp-date">Ngày sử dụng<input id="supplementDate" type="date"></label>
@@ -783,9 +792,15 @@ dialog {
   </div>
 </section>
 <div class="account" data-screen="photos" hidden>
-  <div class="card"><h3>Đồng bộ thiết bị</h3><p class="muted" id="userInfo" role="status">Đang dùng dữ liệu lưu trên thiết bị.</p>
+  <div class="card"><h3>Đồng bộ &amp; Sao lưu dữ liệu (Backup JSON)</h3><p class="muted" id="userInfo" role="status">Đang dùng dữ liệu lưu trên thiết bị.</p>
     <div class="actions" id="loginCard"><button class="gray" id="loginButton" onclick="login()">Đăng nhập bằng Google</button></div>
     <div class="actions hidden" id="logoutCard"><button class="gray" onclick="logout()">Đăng xuất</button></div>
+    <div class="actions spaced">
+      <button type="button" class="gray" id="exportBackupBtn">⬇ Xuất file Backup (.json)</button>
+      <button type="button" class="gray" id="importBackupBtn">⬆ Khôi phục từ Backup (.json)</button>
+      <input type="file" id="importBackupFile" accept="application/json,.json" hidden>
+    </div>
+    <p class="muted spaced" id="backupStatus" role="status"></p>
   </div>
 </div>
 </main>
@@ -802,8 +817,9 @@ dialog {
 <dialog id="restAlert" aria-labelledby="restTitle"><div class="rest-alert"><div class="fire-logo" aria-hidden="true"><span>💪&nbsp;💪</span></div><h2 id="restTitle">Đứng lên và Tiếp tục</h2><button id="closeRest">Sẵn sàng</button></div></dialog>
 <div id="mobileDock" class="mobile-dock" hidden>
   <div class="dock-top"><strong id="dockExercise">Đồng hồ nghỉ</strong><output id="timer" role="timer" aria-label="Thời gian nghỉ">--</output><button id="stopRest" class="gray" hidden>Dừng</button></div>
-  <div class="dock-buttons">
+  <div class="dock-buttons" style="grid-template-columns:1.4fr repeat(4,1fr)">
     <button class="gray" id="dockCopy" disabled>Chép hiệp 1</button>
+    <button class="gray" onclick="startRest(45)">45s</button>
     <button class="gray" onclick="startRest(60)">60s</button>
     <button onclick="startRest(90)">90s</button>
     <button class="gray" onclick="startRest(120)">120s</button>
@@ -2468,7 +2484,12 @@ function updateDuration() {
   $("durationStop").disabled = durationSaving || !active;
   syncDock();
   $("durationStatus").classList.toggle("overtime",seconds >= 3600);
-  $("durationStatus").textContent = active ? (seconds >= 3600 ? "Đã đến mốc 60 phút" : "Mục tiêu dưới 60 phút") + (date !== selectedDate ? " · " + date : "")
+  if (active && seconds >= 3600 && !item.alerted60) {
+    item.alerted60 = true;
+    navigator.vibrate?.([200, 100, 200]);
+    soundAlarm();
+  }
+  $("durationStatus").textContent = active ? (seconds >= 3600 ? "⚠ ĐÃ CHẠM MỐC 60 PHÚT — CHỐT BUỔI!" : "Mục tiêu dưới 60 phút (" + Math.max(0, 60 - Math.floor(seconds / 60)) + "p còn lại)") + (date !== selectedDate ? " · " + date : "")
     : item?.ended ? "Đã kết thúc" : "Bắt đầu để tính thời gian buổi tập";
 }
 
@@ -3008,6 +3029,118 @@ showGymScreen();
 selectDate(selectedDate);
 refresh();
 if (location.protocol === "https:" || location.protocol === "http:") connectCloud().catch(localStatus);
+
+
+// === QUICK ADD FOOD, CHECK ALL SUPPLEMENTS & JSON BACKUP ===
+(function initTacticalUpgrades() {
+  const chips = $("quickFoodChips");
+  if (chips) {
+    chips.addEventListener("click", async event => {
+      const btn = event.target.closest("button[data-qfood]");
+      if (!btn) return;
+      const date = $("nutritionDate").value;
+      if (!isDateKey(date)) return alert("Ngày dinh dưỡng không hợp lệ.");
+      const name = btn.dataset.qfood;
+      const calories = Number(btn.dataset.qkcal);
+      const protein = Number(btn.dataset.qpro);
+      btn.disabled = true;
+      try {
+        const id = "tracker-meal-" + date + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
+        await saveExtras({ [id]: { name, calories, protein } });
+        playMealFeedback();
+        $("mealStatus").textContent = "Đã cộng nhanh: " + name + " (+" + calories + " kcal, +" + protein + "g protein).";
+      } catch (err) {
+        alert("Chưa cộng được món: " + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+
+  const checkAllBtn = $("checkAllSupplements");
+  if (checkAllBtn) {
+    checkAllBtn.onclick = async () => {
+      const date = $("supplementDate").value || todayKey();
+      if (!isDateKey(date)) return;
+      const products = supplementProducts(date);
+      const unchecked = products.filter(([id]) => extras[supplementEntry(date, id)]?.taken !== true);
+      if (!unchecked.length) {
+        $("supplementStatus").textContent = "Tất cả supplement ngày này đã được tích đủ.";
+        return;
+      }
+      checkAllBtn.disabled = true;
+      try {
+        const now = Date.now();
+        const updates = Object.fromEntries(unchecked.map(([id, name]) => [
+          supplementEntry(date, id), { taken: true, name, checkedAt: now }
+        ]));
+        await saveExtras(updates);
+        $("supplementStatus").textContent = "Đã tích đủ " + unchecked.length + " mục supplement.";
+      } catch (err) {
+        $("supplementStatus").textContent = "Chưa tích được: " + err.message;
+      } finally {
+        checkAllBtn.disabled = false;
+      }
+    };
+  }
+
+  const exportBtn = $("exportBackupBtn");
+  const importBtn = $("importBackupBtn");
+  const importInput = $("importBackupFile");
+  if (exportBtn && importBtn && importInput) {
+    exportBtn.onclick = () => {
+      const payload = {
+        app: "MyGym-Luan",
+        exportedAt: new Date().toISOString(),
+        profile,
+        logs,
+        extras
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "my-gym-backup-" + todayKey() + ".json";
+      a.click();
+      URL.revokeObjectURL(url);
+      $("backupStatus").textContent = "Đã tải xuống file sao lưu dữ liệu.";
+    };
+
+    importBtn.onclick = () => importInput.click();
+    importInput.onchange = async () => {
+      const file = importInput.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if (!parsed || typeof parsed !== "object" || !parsed.logs || !parsed.extras) {
+          throw new Error("File JSON không đúng định dạng sao lưu My Gym.");
+        }
+        if (!confirm("Khôi phục dữ liệu từ file backup? Dữ liệu hiện tại trên thiết bị sẽ được gộp/cập nhật theo file này.")) return;
+        logs = { ...logs, ...parsed.logs };
+        localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+        if (parsed.profile) {
+          profile = parsed.profile;
+          localStorage.setItem(BODY_KEY, JSON.stringify(profile));
+        }
+        await saveExtras(parsed.extras);
+        if (uid) {
+          for (const [d, exMap] of Object.entries(parsed.logs)) {
+            if (isDateKey(d) && exMap && typeof exMap === "object") {
+              await saveDay(d, exMap);
+            }
+          }
+        }
+        refresh();
+        $("backupStatus").textContent = "Khôi phục dữ liệu thành công lúc " + new Date().toLocaleTimeString("vi-VN") + ".";
+      } catch (err) {
+        $("backupStatus").textContent = "Lỗi khôi phục: " + err.message;
+      } finally {
+        importInput.value = "";
+      }
+    };
+  }
+})();
 
 </script>
 </body>
