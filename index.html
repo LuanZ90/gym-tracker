@@ -258,10 +258,349 @@ main section{scroll-margin-top:132px}
 .skip-banner{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;padding:12px;border:1px solid #9e7d36;border-radius:10px;background:#262118;color:#ffe6b3}
 .skip-btn{border-color:#9e7d36;color:#ffd98e}
 .skip-btn[aria-pressed=true]{background:#3a2f18;color:#ffe6b3}
+
+/* === HARDCORE TACTICAL / CYBER-INDUSTRIAL THEME OVERHAUL === */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,700&family=JetBrains+Mono:wght@600;800&family=Oswald:wght@700&display=swap');
+
+:root {
+  --bg: #08090b;
+  --panel: #101216;
+  --panel-2: #161920;
+  --line: #272c36;
+  --line-hot: #ff5500;
+  --muted: #9aa3b2;
+  --accent: #ff5500;
+  --accent-2: #ff9100;
+  --cyan: #00e5ff;
+  --green: #00ff88;
+  --ink: #f4f6fa;
+}
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(255, 85, 0, 0.12), transparent 35%),
+    radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.06), transparent 40%),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+h1, h2, h3, .brand, .value, .exercise-en, #durationTime, #timer, #restTitle {
+  font-family: 'Oswald', 'Chakra Petch', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.value, #durationTime, #timer, .set-cell input, .tactical-card strong {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Header HUD */
+header {
+  background: rgba(10, 11, 14, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 2px solid var(--accent);
+  box-shadow: 0 4px 24px rgba(255, 85, 0, 0.22);
+}
+
+.brand {
+  font-size: 24px;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 12px rgba(255, 85, 0, 0.5);
+}
+
+.brand b {
+  background: linear-gradient(135deg, #ff5500, #ff9100);
+  color: #09090b;
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  box-shadow: 0 0 15px rgba(255, 85, 0, 0.65);
+}
+
+header .master-timer {
+  background: linear-gradient(90deg, rgba(255, 85, 0, 0.12), rgba(16, 18, 22, 0.95) 45%, rgba(0, 229, 255, 0.08));
+  border-top: 1px solid rgba(255, 85, 0, 0.4);
+}
+
+#durationTime {
+  color: #ff7b39;
+  text-shadow: 0 0 14px rgba(255, 85, 0, 0.55);
+  font-size: 25px;
+}
+
+/* Chamfered Tactical Buttons */
+button, .cta {
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  background: linear-gradient(135deg, #ff5500 0%, #ff8800 100%);
+  color: #090a0d;
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  box-shadow: 0 0 14px rgba(255, 85, 0, 0.35);
+  transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover, .cta:hover {
+  filter: brightness(1.18);
+  box-shadow: 0 0 22px rgba(255, 85, 0, 0.7);
+  transform: translateY(-1px);
+}
+
+button:active, .cta:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+button.gray, .gray {
+  background: linear-gradient(180deg, #1d212b 0%, #13161d 100%);
+  color: #e6ebf5;
+  border: 1px solid #353c4b;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+button.gray:hover, .gray:hover {
+  border-color: var(--accent);
+  color: #ff9d6c;
+  box-shadow: 0 0 14px rgba(255, 85, 0, 0.3);
+}
+
+/* Inputs & Selects */
+input, select, textarea {
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  background: #0b0d11;
+  border: 1px solid #2f3644;
+  color: #ffffff;
+  font-family: 'Chakra Petch', sans-serif;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(255, 85, 0, 0.35);
+  outline: none;
+}
+
+/* Cards & HUD Panels */
+.card, .metric {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  background: linear-gradient(165deg, #14171f 0%, #0d0f14 100%);
+  border: 1px solid #2b313e;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 38px;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.section-head h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(24px, 3.2vw, 34px);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 18px rgba(255, 85, 0, 0.3);
+}
+
+.section-head h2::before {
+  content: "///";
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78em;
+  letter-spacing: -0.08em;
+}
+
+/* Hero Banner */
+.hero {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+  border: 1px solid #ff5500;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(255, 85, 0, 0.28), transparent 55%),
+    linear-gradient(135deg, #0d0f14 0%, #171214 55%, #23120c 100%);
+  box-shadow: 0 0 32px rgba(255, 85, 0, 0.28), inset 0 0 24px rgba(255, 85, 0, 0.14);
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.22em;
+  color: #ff8547;
+}
+
+.hero h1 {
+  font-family: 'Oswald', sans-serif;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  text-shadow: 0 6px 24px rgba(0, 0, 0, 0.8);
+}
+
+@supports (-webkit-text-stroke: 1px white) {
+  .hero h1 {
+    color: transparent;
+    -webkit-text-stroke: 1.8px #f5f7fc;
+  }
+  .hero h1 span {
+    color: #ff5500;
+    -webkit-text-stroke: 0;
+    text-shadow: 0 0 22px rgba(255, 85, 0, 0.65);
+  }
+}
+
+.hero-today {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  border: 1px solid rgba(255, 136, 77, 0.65);
+  background: linear-gradient(145deg, rgba(255, 85, 0, 0.22), rgba(14, 16, 22, 0.88));
+  box-shadow: inset 0 0 20px rgba(255, 85, 0, 0.2);
+}
+
+.banner-stats .metric {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  background: rgba(10, 12, 16, 0.82);
+  border: 1px solid rgba(255, 113, 54, 0.38);
+}
+
+.banner-stats .value {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 85, 0, 0.35);
+}
+
+/* Week Day Cards */
+#week .day {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  background: linear-gradient(180deg, #151821 0%, #0f1117 100%);
+  border: 1px solid #2e3442;
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+#week .day:hover {
+  transform: translateY(-2px);
+  border-color: #ff7b39;
+}
+
+#week .day[aria-pressed=true] {
+  background: linear-gradient(155deg, #35190e 0%, #1a1210 100%);
+  border-color: #ff5500;
+  box-shadow: 0 0 18px rgba(255, 85, 0, 0.35);
+}
+
+#week .day-completed {
+  background: linear-gradient(165deg, #10261c 0%, #0d1512 100%);
+  border-color: #00d97e;
+}
+
+.day-completed .battle-badge {
+  background: rgba(0, 217, 126, 0.16);
+  color: #5cffb4;
+  border-color: #00d97e;
+  box-shadow: 0 0 10px rgba(0, 217, 126, 0.25);
+}
+
+/* Workout Exercise Accordions */
+#workout .ex {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  background: #111319;
+  border: 1px solid #2c3240;
+}
+
+#workout .ex.done {
+  border-color: #00d97e;
+  box-shadow: inset 3px 0 0 #00d97e;
+}
+
+#workout .ex summary strong {
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.02em;
+  font-size: 16px;
+}
+
+.set-cell {
+  border-radius: 0;
+  background: #0b0d11;
+  border: 1px solid #262c38;
+}
+
+.set-cell input {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+/* Bottom Navigation Cyber Dock */
+.bottom-tabs {
+  background: rgba(9, 10, 13, 0.95);
+  backdrop-filter: blur(16px);
+  border-top: 2px solid #ff5500;
+  box-shadow: 0 -6px 26px rgba(0, 0, 0, 0.8);
+}
+
+.bottom-tabs a {
+  font-family: 'Chakra Petch', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: #8f98a8;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.bottom-tabs a:hover {
+  color: #ffffff;
+}
+
+.bottom-tabs a[aria-current] {
+  color: #ff6a22;
+  text-shadow: 0 0 10px rgba(255, 85, 0, 0.55);
+}
+
+.bottom-tabs a[aria-current] svg {
+  background: linear-gradient(135deg, rgba(255, 85, 0, 0.35), rgba(255, 145, 0, 0.15));
+  border: 1px solid #ff5500;
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  box-shadow: 0 0 12px rgba(255, 85, 0, 0.45);
+}
+
+/* Mobile Rest Dock */
+#mobileDock {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  background: rgba(10, 12, 16, 0.94);
+  border: 1px solid #ff5500;
+  box-shadow: 0 -6px 25px rgba(255, 85, 0, 0.25);
+}
+
+/* Dialogs */
+dialog {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  background: linear-gradient(170deg, #151821 0%, #0c0e12 100%);
+  border: 1px solid #ff5500;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), 0 0 24px rgba(255, 85, 0, 0.25);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #090a0d; }
+::-webkit-scrollbar-thumb { background: #ff5500; }
+
 </style>
 </head>
 <body>
-<header><div class="wrap top"><a class="brand" href="#overview"><b><svg viewBox="0 0 48 48" width="35" height="35" aria-hidden="true"><circle cx="24" cy="11" r="4.6" fill="currentColor"/><path d="M16 23q3-4 8-3 5-1 8 3l4 1 2-8-3-2 1-4 5 1 3 5-2 12q-1 4-6 4l-4-2-2 11H18l-2-11-4 2q-5 0-6-4L4 16l3-5 5-1 1 4-3 2 2 8z" fill="currentColor"/><path d="M18 27q3 3 6 1 3 2 6-1m-6 2v9m-4-5h8" fill="none" stroke="#ff7136" stroke-width="1.5" stroke-linecap="round"/></svg></b><span>My Gym</span></a><button class="gray quick" id="workoutMode" aria-pressed="true" aria-describedby="wakeStatus">Giữ màn hình sáng</button></div>
+<header><div class="wrap top"><a class="brand" href="#overview"><b><svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true"><path d="M4 18h6v12H4zm8-5h6v22h-6zm8 8h8v6h-8zm10-8h6v22h-6zm8 5h6v12h-6z" fill="currentColor"/><path d="M15 8l9 5 9-5" fill="none" stroke="currentColor" stroke-width="2.5"/></svg></b><span>MY GYM // LUÂN</span></a><button class="gray quick" id="workoutMode" aria-pressed="true" aria-describedby="wakeStatus">Giữ màn hình sáng</button></div>
 <div class="master-timer" id="workoutTimerPanel" data-screen="overview">
   <div class="wrap master-inner">
     <div><strong id="durationTime" role="timer" aria-label="Thời gian buổi tập">00:00:00</strong><p class="muted" id="durationStatus">Thời gian buổi tập</p></div>
@@ -272,7 +611,7 @@ main section{scroll-margin-top:132px}
 </header>
 <main class="wrap">
 <div class="hero" id="homeHero" data-screen="overview">
-  <div class="intro"><div class="eyebrow">Chào Luân</div><span id="sessionBadge" class="session-badge" hidden>SESSION IN PROGRESS</span><h1>Never Give Up<span>One More...One More</span></h1>
+  <div class="intro"><div class="eyebrow">⚡ OPERATOR: LUÂN // IRON PROTOCOL</div><span id="sessionBadge" class="session-badge" hidden>SESSION IN PROGRESS</span><h1>Never Give Up<span>One More...One More</span></h1>
   <div class="motivation-ticker" aria-hidden="true"><span>NEVER GIVE UP &nbsp; ◆ &nbsp; ONE MORE...ONE MORE &nbsp; ◆ &nbsp; NEVER GIVE UP</span></div></div>
   <div class="hero-today"><div class="today-copy"><div class="eyebrow" id="todayLabel">Hôm nay</div><h2 id="todayWorkout">Lịch tập</h2><p id="todayDetail"></p></div>  <div class="stats banner-stats">
     <div class="metric"><p class="muted">Tuần này</p><div class="value" id="weekPercent">0%</div><progress id="weekProgress" max="5" value="0" aria-label="Buổi tập đã hoàn thành"></progress><p class="muted" id="weekCount">0 / 5 buổi đã hoàn thành</p></div>
@@ -450,7 +789,14 @@ main section{scroll-margin-top:132px}
   </div>
 </div>
 </main>
-<nav class="bottom-tabs" aria-label="Điều hướng My Gym"><div class="tab-items"><a href="#overview" data-tab="overview"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10h-6v-6H9v6H3z"/></svg><span>Tổng quan</span></a><a href="#schedule" data-tab="schedule"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3v4m14-4v4M3 9h18M3 5h18v16H3z M8 13h2m4 0h2m-8 4h2"/></svg><span>Lịch tập</span></a><a href="#nutrition" data-tab="nutrition"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v6c0 3 6 3 6 0V3M7 3v18m13 0V3c-4 2-5 6-5 9h5"/></svg><span>Dinh dưỡng</span></a><a href="#supplements" data-tab="supplements"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 19a5 5 0 0 1 0-7l7-7a5 5 0 0 1 7 7l-7 7a5 5 0 0 1-7 0zM8.5 8.5l7 7"/></svg><span>Supplement</span></a><a href="#library" data-tab="library"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9v6m3-9v12m12-12v12m3-9v6M6 12h12"/></svg><span>Bài tập</span></a><a href="#photos" data-tab="photos"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21v-2a8 5 0 0 1 16 0v2"/></svg><span>Cá nhân</span></a></div></nav>
+<nav class="bottom-tabs" aria-label="Điều hướng My Gym"><div class="tab-items">
+  <a href="#overview" data-tab="overview"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><circle cx="12" cy="12" r="3"/></svg><span>HUD</span></a>
+  <a href="#schedule" data-tab="schedule"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 4h18v17H3zM3 9h18M8 2v4M16 2v4M7 13h4v4H7z"/></svg><span>Lịch tập</span></a>
+  <a href="#nutrition" data-tab="nutrition"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Nạp năng lượng</span></a>
+  <a href="#supplements" data-tab="supplements"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.5 3.5l10 10-7 7-10-10zM7 7l10 10M14 4l6 6"/></svg><span>Supp</span></a>
+  <a href="#library" data-tab="library"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 9v6M6 6v12M18 6v12M22 9v6M6 12h12"/></svg><span>Kho bài</span></a>
+  <a href="#photos" data-tab="photos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 20 7 20 17 12 22 4 17 4 7 12 2"/><path d="M12 8v8M8 12h8"/></svg><span>Hồ sơ</span></a>
+</div></nav>
 <dialog id="bodyDialog" aria-labelledby="bodyTitle"><form id="bodyForm"><h2 id="bodyTitle">Chỉ số cơ thể</h2><label>Ngày đo<input name="date" type="date" required></label><label>Body fat (%)<input name="fat" type="number" min="0.1" max="100" step="0.1" placeholder="Nếu có số đo"></label><label>Cân nặng (kg)<input name="weight" type="number" min="1" step="0.1" required></label><label>Chiều cao (cm)<input name="height" type="number" min="1" step="0.1" required></label><label>Mục tiêu cân nặng (kg)<input name="goal" type="number" min="1" step="0.1" required></label><div class="actions"><button type="submit">Lưu chỉ số</button><button type="button" class="gray" id="closeBody">Hủy</button></div></form></dialog>
 
 <dialog id="restAlert" aria-labelledby="restTitle"><div class="rest-alert"><div class="fire-logo" aria-hidden="true"><span>💪&nbsp;💪</span></div><h2 id="restTitle">Đứng lên và Tiếp tục</h2><button id="closeRest">Sẵn sàng</button></div></dialog>
@@ -2212,7 +2558,7 @@ function stashPlanFields() {
 function openPlanEditor(day,from) {
     planTarget = {day,date:from};
     planDraft = dayPlanFor(from).map(row => [...row]);
-    $("planDateLabel").textContent = DAY_NAMES[day] + " · áp dụng từ " + from.split("-").reverse().join("/") + " cho các tuần sau";
+    $("planDateLabel").textContent = DAY_NAMES[day] + " (" + from.split("-").reverse().join("/") + ") · Chỉ áp dụng cho ngày này, tuần sau tự về lịch mặc định";
     renderPlanEditor();
     $("planDialog").showModal();
 }
@@ -2298,11 +2644,14 @@ function initV4() {
       throw Error("Nhập đủ số hiệp và reps cho mỗi bài.");
     }
     const rows = planDraft.map(([name,sets,reps]) => ({name,sets,reps}));
-    const updates = { ["tracker-plan-" + planTarget.day + "-" + planTarget.date]: { rows } };
-    if (extras[dayPlanKey(planTarget.date)]) {
-      updates[dayPlanKey(planTarget.date)] = { ...extras[dayPlanKey(planTarget.date)], rows };
-    }
-    await saveExtras(updates);
+    const existingMeta = dayPlanMeta(planTarget.date);
+    await saveExtras({
+      [dayPlanKey(planTarget.date)]: {
+        rows,
+        title: existingMeta.title,
+        group: existingMeta.group
+      }
+    });
     $("planDialog").close();
     refresh();
   });
