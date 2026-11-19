@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101010">
-<title>LUÂN VÀ GYM</title>
+<title>DÂU & NÀY</title>
 <style>
 :root{color-scheme:dark;--bg:#101010;--panel:#191919;--line:#303030;--muted:#b5b1ad;--accent:#ff7136;--ink:#f7f4f1}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,sans-serif}a{color:inherit;text-decoration:none}button,input,select{font:inherit}button,.cta{min-height:44px;border:1px solid transparent;border-radius:9px;padding:10px 15px;background:var(--accent);color:#17100b;font-weight:750;cursor:pointer}button:hover,.cta:hover{filter:brightness(1.15)}button:disabled{opacity:.65;cursor:wait}:focus-visible{outline:2px solid #ffd4bd;outline-offset:3px}.gray{background:#242424;color:var(--ink);border-color:var(--line)}input,select{width:100%;min-height:44px;padding:9px 11px;border:1px solid #444;border-radius:8px;background:#131313;color:var(--ink);min-width:0}label{display:grid;gap:5px;color:var(--muted)}h1,h2,h3,p{margin:0}h2{font-size:clamp(23px,3vw,32px);letter-spacing:-.035em}h3{font-size:18px}.muted,.ex-info,.last{color:var(--muted)}.hidden{display:none!important}.wrap{max-width:1240px;margin:auto;padding-inline:clamp(16px,4vw,46px)}
@@ -760,6 +760,284 @@ dialog {
   background: linear-gradient(90deg, #b30e29, #ff2a4b);
 }
 
+
+/* === NEON RUNNING BORDER FOR HERO BANNER === */
+@property --neon-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes neon-border-spin {
+  to { --neon-angle: 360deg; }
+}
+
+.hero {
+  position: relative;
+  border: 2px solid transparent !important;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(255, 85, 0, 0.28), transparent 55%),
+    linear-gradient(135deg, #0d0f14 0%, #171214 55%, #23120c 100%) padding-box,
+    conic-gradient(from var(--neon-angle), #ff5500 0%, #ffaa00 18%, transparent 32%, transparent 50%, #00e5ff 68%, #ff5500 85%, #ff5500 100%) border-box !important;
+  animation: neon-border-spin 4.2s linear infinite;
+  box-shadow: 0 0 36px rgba(255, 85, 0, 0.32), 0 0 18px rgba(0, 229, 255, 0.14);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  pointer-events: none;
+  background: conic-gradient(from var(--neon-angle), rgba(255, 85, 0, 0.45), transparent 30%, transparent 55%, rgba(0, 229, 255, 0.35), rgba(255, 85, 0, 0.45));
+  filter: blur(14px);
+  z-index: -1;
+  animation: neon-border-spin 4.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero, .hero::before { animation: none; }
+}
+
+/* === REDESIGNED TACTICAL HUD: SUPPLEMENT & LAST WEEK WORKOUT === */
+.overview-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+@media (max-width: 720px) {
+  .overview-pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hud-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    linear-gradient(160deg, rgba(22, 26, 36, 0.96) 0%, rgba(11, 13, 18, 0.98) 100%) !important;
+  border: 1px solid #30384a !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), inset 0 0 22px rgba(255, 85, 0, 0.05) !important;
+}
+
+.hud-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 85, 0, 0.32);
+}
+
+.hud-panel-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 19px;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+}
+
+.hud-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  background: rgba(255, 85, 0, 0.16);
+  border: 1px solid rgba(255, 85, 0, 0.55);
+  color: #ff945e;
+  letter-spacing: 0.08em;
+}
+
+.hud-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 800;
+  color: #00e5ff;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  background: rgba(0, 229, 255, 0.08);
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+
+.hud-link:hover {
+  background: rgba(0, 229, 255, 0.2);
+  color: #ffffff;
+}
+
+/* HUD Supplement Progress & Tactical Chips */
+.hud-supp-meter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  background: rgba(9, 11, 15, 0.85);
+  border-left: 3px solid #ff5500;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.hud-supp-meter.is-complete {
+  border-left-color: #00ff88;
+  color: #7dffbe;
+}
+
+.hud-supp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 7px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.hud-supp-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 7px 9px;
+  background: linear-gradient(135deg, #181c26, #11141c);
+  border: 1px solid #353e52;
+  border-left: 3px solid #ff5500;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f1f5f9;
+  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
+  cursor: pointer;
+  text-align: left;
+}
+
+.hud-supp-chip:hover {
+  border-color: #ff7b39;
+  background: #221916;
+}
+
+.hud-supp-chip.is-done {
+  border-left-color: #00e676;
+  opacity: 0.72;
+  color: #9ae6b4;
+}
+
+.hud-supp-chip small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #ff8c52;
+}
+
+.hud-supp-chip.is-done small {
+  color: #00e676;
+}
+
+/* HUD Last Week Workout Terminal Cards */
+.hud-session-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #ff9d6c;
+  margin-bottom: 10px;
+}
+
+#lastWeekExercises {
+  display: grid;
+  gap: 8px;
+}
+
+.past-exercise {
+  background: linear-gradient(145deg, #141822 0%, #0d1017 100%) !important;
+  border: 1px solid #2e3748 !important;
+  border-left: 3px solid #00e5ff !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+  padding: 9px 11px !important;
+}
+
+.past-exercise h4 {
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 14px !important;
+  color: #f8fafc;
+  margin-bottom: 7px !important;
+}
+
+.past-exercise ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px !important;
+}
+
+.past-exercise li {
+  background: rgba(255, 85, 0, 0.12) !important;
+  border: 1px solid rgba(255, 85, 0, 0.45) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+  padding: 4px 8px !important;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px !important;
+}
+
+.past-exercise li strong {
+  color: #ff8c52 !important;
+}
+
+/* Meal Log Edit/Delete Row Styling */
+.meal-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  margin-top: 6px;
+  background: #12151d;
+  border: 1px solid #2a3140;
+  border-left: 3px solid #ff5500;
+}
+
+.meal-row-info {
+  display: grid;
+  gap: 2px;
+}
+
+.meal-row-info span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #ff9d6c;
+}
+
+.meal-row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.meal-row-actions button {
+  min-height: 32px !important;
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+}
+
+.btn-danger {
+  background: linear-gradient(180deg, #3a161d 0%, #240d12 100%) !important;
+  border: 1px solid #9e2a3b !important;
+  color: #ff9aa8 !important;
+}
+
+.btn-danger:hover {
+  border-color: #ff2a4b !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(255, 42, 75, 0.45) !important;
+}
+
 </style>
 </head>
 <body>
@@ -774,10 +1052,10 @@ dialog {
       <polygon points="34 15 23 33 31 33 28 49 41 30 33 30" fill="#090a0d"/>
     </svg>
   </b>
-  <span style="display:inline-flex;align-items:baseline;gap:6px;font-size:25px;letter-spacing:0.06em">
-    <span style="color:#ffffff;font-weight:900">LUÂN</span>
-    <span style="color:#ff5500;font-size:17px;font-weight:800;font-family:'JetBrains Mono',monospace">VÀ</span>
-    <span style="background:linear-gradient(90deg,#ff5500,#ff9e00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:950">GYM</span>
+  <span style="display:inline-flex;align-items:baseline;gap:7px;font-size:26px;letter-spacing:0.06em">
+    <span style="color:#ffffff;font-weight:900">DÂU</span>
+    <span style="color:#ff5500;font-size:21px;font-weight:900;font-family:'JetBrains Mono',monospace;text-shadow:0 0 10px rgba(255,85,0,0.7)">&amp;</span>
+    <span style="background:linear-gradient(90deg,#ff5500,#ff9e00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:950">NÀY</span>
   </span>
 </a><button class="gray quick" id="workoutMode" aria-pressed="true" aria-describedby="wakeStatus">Giữ màn hình sáng</button></div>
 <div class="master-timer" id="workoutTimerPanel" data-screen="overview">
@@ -815,11 +1093,25 @@ dialog {
     <div id="muscleCounts" class="tactical-grid"></div>
   </article>
   <div class="overview-pair spaced">
-  <article class="card spaced">
-    <div class="overview-macros-title"><h3>Supplement hôm nay</h3><a href="#supplements">Mở checklist ›</a></div>
-    <div id="overviewSupplements"></div>
+  <article class="card spaced hud-panel">
+    <div>
+      <div class="hud-panel-head">
+        <h3><span class="hud-tag">FUEL // SUPP</span> Supplement hôm nay</h3>
+        <a class="hud-link" href="#supplements">Checklist ↗</a>
+      </div>
+      <div id="overviewSupplements"></div>
+    </div>
   </article>
-  <article class="card spaced"><h3 id="lastWeekTitle">Buổi tập tuần trước</h3><p id="lastWeekDate" class="muted"></p><div id="lastWeekExercises"></div></article>
+  <article class="card spaced hud-panel">
+    <div>
+      <div class="hud-panel-head">
+        <h3 id="lastWeekTitle"><span class="hud-tag">LOG // T-7D</span> Buổi tập tuần trước</h3>
+        <a class="hud-link" href="#training">Vào tập ↗</a>
+      </div>
+      <div id="lastWeekDate" class="hud-session-meta"></div>
+      <div id="lastWeekExercises"></div>
+    </div>
+  </article>
   </div>
 </section>
 <section data-screen="schedule" hidden id="schedule" aria-labelledby="scheduleTitle">
@@ -988,7 +1280,7 @@ dialog {
   </div>
 </div>
 </main>
-<nav class="bottom-tabs" aria-label="Điều hướng Luân và Gym"><div class="tab-items">
+<nav class="bottom-tabs" aria-label="Điều hướng Dâu & Này"><div class="tab-items">
   <a href="#overview" data-tab="overview"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><circle cx="12" cy="12" r="3"/></svg><span>HUD</span></a>
   <a href="#schedule" data-tab="schedule"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 4h18v17H3zM3 9h18M8 2v4M16 2v4M7 13h4v4H7z"/></svg><span>Lịch tập</span></a>
   <a href="#nutrition" data-tab="nutrition"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Nạp năng lượng</span></a>
@@ -1040,6 +1332,16 @@ dialog {
   <label>Ghi chú<textarea name="note" maxlength="400" rows="2"></textarea></label>
   <label class="supp-check"><input name="archived" type="checkbox"> Ngừng theo dõi sản phẩm</label>
   <div class="actions"><button type="submit">Lưu sản phẩm</button><button type="button" class="gray" id="closeSupplement">Đóng</button></div>
+</form></dialog>
+<dialog id="mealEditDialog" aria-labelledby="mealEditTitle"><form id="mealEditForm">
+  <h2 id="mealEditTitle">Chỉnh sửa món đã thêm</h2>
+  <label>Tên món<input name="name" required maxlength="100"></label>
+  <label>Calories (kcal)<input name="calories" type="number" min="0" step="any" inputmode="decimal" required></label>
+  <label>Protein (g)<input name="protein" type="number" min="0" step="any" inputmode="decimal" required></label>
+  <div class="actions">
+    <button type="submit">Lưu thay đổi</button>
+    <button type="button" class="gray" data-close="mealEditDialog">Hủy</button>
+  </div>
 </form></dialog>
 <script>
 "use strict";
@@ -2174,8 +2476,17 @@ function nutritionTotals(date) {
 
 function renderFoodLog() {
   const entries = foodsForDay($("nutritionDate").value);
-  $("foodLog").innerHTML = entries.map(([,item]) =>
-    `<div class="meal-row"><strong>${escapeHtml(item.name)}</strong><span>${format.format(item.calories)} kcal · ${format.format(item.protein)} g protein</span></div>`
+  $("foodLog").innerHTML = entries.map(([key,item]) =>
+    `<div class="meal-row">
+      <div class="meal-row-info">
+        <strong>${escapeHtml(item.name)}</strong>
+        <span>${format.format(item.calories)} kcal · ${format.format(item.protein)} g protein</span>
+      </div>
+      <div class="meal-row-actions">
+        <button type="button" class="gray" data-edit-meal="${escapeHtml(key)}">Sửa</button>
+        <button type="button" class="btn-danger" data-del-meal="${escapeHtml(key)}">Xóa</button>
+      </div>
+    </div>`
   ).join("") || '<p class="muted">Chưa thêm món nào cho ngày này.</p>';
 }
 
@@ -2325,11 +2636,25 @@ function renderNutrition(updateInputs = true) {
 
 function renderOverviewNutrition() {
   const targets = extras["tracker-goals"] || {};
-  const remaining = supplementProducts().filter(([id]) => !extras[supplementEntry(todayKey(),id)]?.taken);
-  $("overviewSupplements").innerHTML = remaining.length
-    ? '<p class="muted">' + remaining.length + ' mục chưa tích hôm nay</p><ul class="pending-supplements">' +
-      remaining.map(([,name]) => '<li>' + escapeHtml(name) + '</li>').join("") + '</ul>'
-    : '<p class="muted">Đã tích đủ supplement hôm nay.</p>';
+  const today = todayKey();
+  const allSupps = supplementProducts(today);
+  const doneCount = allSupps.filter(([id]) => extras[supplementEntry(today,id)]?.taken).length;
+  const remaining = allSupps.filter(([id]) => !extras[supplementEntry(today,id)]?.taken);
+  const allDone = allSupps.length > 0 && remaining.length === 0;
+  $("overviewSupplements").innerHTML = `
+    <div class="hud-supp-meter ${allDone ? "is-complete" : ""}">
+      <span>${allDone ? "✓ STATUS: HOÀN TẤT 100%" : "⚡ CÒN LẠI: " + remaining.length + " MỤC"}</span>
+      <strong>${doneCount} / ${allSupps.length}</strong>
+    </div>
+    <div class="hud-supp-grid">
+      ${allSupps.map(([id, name]) => {
+        const isDone = extras[supplementEntry(today, id)]?.taken === true;
+        return `<button type="button" class="hud-supp-chip ${isDone ? "is-done" : ""}" data-hud-supp="${id}" title="Chạm để đánh dấu nhanh">
+          <span>${escapeHtml(name)}</span>
+          <small>${isDone ? "✓ DONE" : "+ TÍCH"}</small>
+        </button>`;
+      }).join("")}
+    </div>`;
   const total = nutritionTotals(todayKey());
   $("overviewNutritionBars").innerHTML = [
     ["Calo",total.calories,targets.calorieGoal > 0 ? targets.calorieGoal : 2200,"kcal"],
@@ -2636,17 +2961,17 @@ function lastWeekSession(today) {
 
 function renderLastWeekWorkout() {
   const session = lastWeekSession(todayKey());
-  $("lastWeekTitle").textContent = session ? session.title + " · Tuần trước" : "Buổi tập tuần trước";
-  $("lastWeekDate").textContent = session ? session.date.split("-").reverse().join("/") : "";
+  $("lastWeekTitle").innerHTML = `<span class="hud-tag">LOG // T-7D</span> ${escapeHtml(session ? session.title + " · Tuần trước" : "Buổi tập tuần trước")}`;
+  $("lastWeekDate").textContent = session ? "📅 NGÀY TẬP: " + session.date.split("-").reverse().join("/") + " · " + session.exercises.length + " BÀI ĐÃ GHI" : "";
   if (!session) {
-    $("lastWeekExercises").innerHTML = '<p class="muted">Hôm nay là ngày nghỉ.</p>';
+    $("lastWeekExercises").innerHTML = '<div class="hud-supp-meter"><span>🛌 HÔM NAY LÀ NGÀY PHỤC HỒI (REST DAY)</span></div>';
     return;
   }
   $("lastWeekExercises").innerHTML = session.exercises.map(([name,sets]) => {
     const recorded = sets.map((set,index) => complete(set)
-      ? `<li><small>Hiệp ${index+1}</small><strong>${format.format(set.w)} kg</strong><span>× ${format.format(set.r)} reps</span></li>` : "").join("");
+      ? `<li><small>S${index+1}</small><strong>${format.format(set.w)}kg</strong><span>×${format.format(set.r)}</span></li>` : "").join("");
     return `<article class="past-exercise"><h4>${escapeHtml(name)}</h4><ul>${recorded}</ul></article>`;
-  }).join("") || '<p class="muted">Chưa có hiệp được ghi cho buổi này tuần trước.</p>';
+  }).join("") || '<div class="hud-supp-meter"><span>⚠ CHƯA CÓ DỮ LIỆU HIỆP TẬP TUẦN TRƯỚC</span></div>';
 }
 
 function syncDock(row) {
@@ -3294,7 +3619,7 @@ if (location.protocol === "https:" || location.protocol === "http:") connectClou
   if (exportBtn && importBtn && importInput) {
     exportBtn.onclick = () => {
       const payload = {
-        app: "Luan-Va-Gym",
+        app: "Dau-Va-Nay",
         exportedAt: new Date().toISOString(),
         profile,
         logs,
@@ -3343,6 +3668,104 @@ if (location.protocol === "https:" || location.protocol === "http:") connectClou
         importInput.value = "";
       }
     };
+  }
+})();
+
+
+async function deleteExtraKey(key, account = uid) {
+  if (account !== uid) throw new Error("Phiên đăng nhập đã thay đổi.");
+  if (account) {
+    if (!extraSnapshotReady) throw new Error("Đang tải dữ liệu đám mây. Hãy thử lại sau.");
+    const { db, store } = cloud;
+    await store.deleteDoc(store.doc(db, "users", account, "days", key));
+    return;
+  }
+  const next = { ...extras };
+  delete next[key];
+  localStorage.setItem(EXTRA_KEY, JSON.stringify(next));
+  extras = next;
+  applyExtras();
+}
+
+(function initMealEditAndHudSupp() {
+  let editingMealKey = null;
+  const foodLogBox = $("foodLog");
+  if (foodLogBox) {
+    foodLogBox.addEventListener("click", async event => {
+      const delBtn = event.target.closest("[data-del-meal]");
+      if (delBtn) {
+        const key = delBtn.dataset.delMeal;
+        const item = extras[key];
+        if (!item) return;
+        if (!confirm(`Xóa món "${item.name}" (${format.format(item.calories)} kcal · ${format.format(item.protein)}g protein)?`)) return;
+        delBtn.disabled = true;
+        try {
+          await deleteExtraKey(key);
+          $("mealStatus").textContent = "Đã xóa món " + item.name + ".";
+        } catch (err) {
+          alert("Chưa xóa được món: " + err.message);
+        } finally {
+          delBtn.disabled = false;
+        }
+        return;
+      }
+
+      const editBtn = event.target.closest("[data-edit-meal]");
+      if (editBtn) {
+        const key = editBtn.dataset.editMeal;
+        const item = extras[key];
+        if (!item) return;
+        editingMealKey = key;
+        const fields = $("mealEditForm").elements;
+        fields.name.value = item.name;
+        fields.calories.value = item.calories;
+        fields.protein.value = item.protein;
+        $("mealEditDialog").showModal();
+      }
+    });
+  }
+
+  bindForm("mealEditForm", async data => {
+    if (!editingMealKey) return;
+    const name = String(data.get("name") || "").trim();
+    const calories = Number(data.get("calories"));
+    const protein = Number(data.get("protein"));
+    if (!name || !validNumber(calories) || !validNumber(protein)) {
+      throw new Error("Vui lòng nhập hợp lệ tên món, kcal và protein.");
+    }
+    await saveExtras({ [editingMealKey]: { name, calories, protein } });
+    $("mealEditDialog").close();
+    $("mealStatus").textContent = "Đã cập nhật món " + name + ".";
+    editingMealKey = null;
+  });
+
+  const hudSuppBox = $("overviewSupplements");
+  if (hudSuppBox) {
+    hudSuppBox.addEventListener("click", async event => {
+      const btn = event.target.closest("[data-hud-supp]");
+      if (!btn) return;
+      const id = btn.dataset.hudSupp;
+      const date = todayKey();
+      const product = supplementProducts(date).find(([key]) => key === id);
+      if (!product || supplementWrites.has(id)) return;
+      const nextTaken = extras[supplementEntry(date, id)]?.taken !== true;
+      supplementWrites.add(id);
+      btn.disabled = true;
+      try {
+        await saveExtras({
+          [supplementEntry(date, id)]: {
+            taken: nextTaken,
+            name: product[1],
+            checkedAt: nextTaken ? Date.now() : 0
+          }
+        });
+      } catch (err) {
+        alert("Chưa cập nhật được supplement: " + err.message);
+      } finally {
+        supplementWrites.delete(id);
+        renderOverviewNutrition();
+      }
+    });
   }
 })();
 
