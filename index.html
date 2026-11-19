@@ -1500,6 +1500,362 @@ html[data-theme="light"] dialog {
   color: #0f172a;
 }
 
+
+/* === FEMININE ROSE-PINK THEME (html[data-theme="pink"]) === */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap');
+
+html[data-theme="pink"] {
+  color-scheme: light;
+  --bg: #fff0f5;
+  --panel: #ffffff;
+  --panel-2: #fff7fa;
+  --line: #f8bbd0;
+  --muted: #884d67;
+  --accent: #ec4899;
+  --accent-2: #f472b6;
+  --ink: #3b1226;
+}
+
+html[data-theme="pink"] body {
+  background-color: #fff0f5;
+  background-image:
+    radial-gradient(circle at 12% 12%, rgba(236, 72, 153, 0.14), transparent 42%),
+    radial-gradient(circle at 88% 25%, rgba(244, 114, 182, 0.16), transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(251, 207, 232, 0.35), transparent 50%);
+  background-size: 100% 100%;
+  font-family: 'Quicksand', system-ui, sans-serif;
+  color: #3b1226;
+}
+
+html[data-theme="pink"] h1,
+html[data-theme="pink"] h2,
+html[data-theme="pink"] h3,
+html[data-theme="pink"] .brand,
+html[data-theme="pink"] .exercise-en,
+html[data-theme="pink"] #restTitle {
+  font-family: 'Quicksand', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+html[data-theme="pink"] .section-head h2::before {
+  content: "✿";
+  color: #ec4899;
+  font-family: system-ui, sans-serif;
+}
+
+html[data-theme="pink"] header {
+  background: rgba(255, 245, 249, 0.94);
+  border-bottom: 2px solid #f472b6;
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.14);
+}
+
+html[data-theme="pink"] header .top::after {
+  background: linear-gradient(90deg, transparent, #ec4899, #f9a8d4, #e879f9, transparent);
+}
+
+html[data-theme="pink"] header .master-timer {
+  background: linear-gradient(90deg, rgba(236, 72, 153, 0.1), rgba(255, 255, 255, 0.96) 50%, rgba(232, 121, 249, 0.1));
+  border-top: 1px solid #fbcfe8;
+}
+
+html[data-theme="pink"] #durationTime,
+html[data-theme="pink"] #timer {
+  color: #db2777;
+  text-shadow: 0 0 12px rgba(236, 72, 153, 0.25);
+}
+
+html[data-theme="pink"] .brand b {
+  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%) !important;
+  border-radius: 14px !important;
+  clip-path: none !important;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4) !important;
+}
+
+html[data-theme="pink"] .brand b svg polygon,
+html[data-theme="pink"] .brand b svg rect {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+
+html[data-theme="pink"] .brand-title-glow {
+  background: linear-gradient(110deg, #831843 20%, #ec4899 45%, #ffffff 55%, #db2777 75%, #831843 90%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 6px rgba(236, 72, 153, 0.2));
+}
+
+/* Soft rounded feminine shapes overriding chamfered clip-paths */
+html[data-theme="pink"] button,
+html[data-theme="pink"] .cta {
+  border-radius: 16px !important;
+  clip-path: none !important;
+  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.3);
+}
+
+html[data-theme="pink"] button:hover,
+html[data-theme="pink"] .cta:hover {
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
+}
+
+html[data-theme="pink"] button.gray,
+html[data-theme="pink"] .gray {
+  background: linear-gradient(180deg, #ffffff 0%, #fce7f3 100%);
+  color: #831843;
+  border: 1px solid #f9a8d4;
+  box-shadow: 0 2px 6px rgba(236, 72, 153, 0.08);
+}
+
+html[data-theme="pink"] button.gray:hover,
+html[data-theme="pink"] .gray:hover {
+  border-color: #ec4899;
+  color: #db2777;
+  background: #fdf2f8;
+}
+
+html[data-theme="pink"] .btn-danger {
+  background: linear-gradient(180deg, #ffe4e6 0%, #fecdd3 100%) !important;
+  border-color: #fb7185 !important;
+  color: #be123c !important;
+}
+
+html[data-theme="pink"] input,
+html[data-theme="pink"] select,
+html[data-theme="pink"] textarea {
+  border-radius: 12px !important;
+  clip-path: none !important;
+  background: #fff9fb;
+  border: 1px solid #f472b6;
+  color: #3b1226;
+}
+
+html[data-theme="pink"] input:focus,
+html[data-theme="pink"] select:focus,
+html[data-theme="pink"] textarea:focus {
+  border-color: #db2777;
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+}
+
+html[data-theme="pink"] .card,
+html[data-theme="pink"] .metric,
+html[data-theme="pink"] .hud-panel {
+  border-radius: 20px !important;
+  clip-path: none !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid #fbcfe8 !important;
+  box-shadow: 0 10px 28px rgba(236, 72, 153, 0.1) !important;
+  color: #3b1226 !important;
+}
+
+html[data-theme="pink"] .card::after {
+  display: none;
+}
+
+html[data-theme="pink"] .hud-panel-head {
+  border-bottom-color: #fbcfe8;
+}
+
+html[data-theme="pink"] .hud-panel-head h3,
+html[data-theme="pink"] .past-exercise h4,
+html[data-theme="pink"] .preset-card-info strong,
+html[data-theme="pink"] .meal-row strong {
+  color: #831843 !important;
+}
+
+html[data-theme="pink"] .hud-tag {
+  border-radius: 999px;
+  background: #fce7f3;
+  border-color: #f472b6;
+  color: #db2777;
+}
+
+html[data-theme="pink"] .hud-link {
+  border-radius: 999px !important;
+  clip-path: none !important;
+  background: #fdf2f8;
+  border-color: #f472b6;
+  color: #db2777;
+}
+
+html[data-theme="pink"] .hero {
+  border-radius: 24px !important;
+  clip-path: none !important;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.2), transparent 55%),
+    linear-gradient(135deg, #ffffff 0%, #fff1f7 60%, #fce7f3 100%) padding-box,
+    conic-gradient(from var(--neon-angle), #ec4899 0%, #f9a8d4 22%, transparent 36%, transparent 50%, #e879f9 70%, #ec4899 100%) border-box !important;
+  box-shadow: 0 12px 32px rgba(236, 72, 153, 0.22) !important;
+}
+
+html[data-theme="pink"] .hero::before {
+  background: conic-gradient(from var(--neon-angle), rgba(236, 72, 153, 0.35), transparent 35%, transparent 55%, rgba(232, 121, 249, 0.3), rgba(236, 72, 153, 0.35));
+}
+
+html[data-theme="pink"] .eyebrow {
+  color: #db2777;
+}
+
+@supports (-webkit-text-stroke: 1px white) {
+  html[data-theme="pink"] .hero h1 {
+    -webkit-text-stroke: 1.8px #831843;
+  }
+  html[data-theme="pink"] .hero h1 span {
+    color: #ec4899;
+    text-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+  }
+}
+
+html[data-theme="pink"] .hero-today {
+  border-radius: 20px !important;
+  clip-path: none !important;
+  background: linear-gradient(145deg, rgba(236, 72, 153, 0.14), rgba(255, 255, 255, 0.94));
+  border-color: #f472b6;
+  color: #500724;
+}
+
+html[data-theme="pink"] .banner-stats .metric {
+  border-radius: 14px !important;
+  clip-path: none !important;
+  background: rgba(255, 255, 255, 0.92);
+  border-color: #f9a8d4;
+}
+
+html[data-theme="pink"] .banner-stats .value {
+  color: #831843;
+  text-shadow: none;
+}
+
+html[data-theme="pink"] #week .day {
+  border-radius: 16px !important;
+  clip-path: none !important;
+  background: #ffffff;
+  border-color: #fbcfe8;
+  color: #3b1226;
+}
+
+html[data-theme="pink"] #week .day[aria-pressed="true"] {
+  background: #fdf2f8;
+  border-color: #ec4899;
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.25);
+}
+
+html[data-theme="pink"] #week .day-completed {
+  background: #f0fdf4;
+  border-color: #34d399;
+}
+
+html[data-theme="pink"] #workout .ex,
+html[data-theme="pink"] .set-cell,
+html[data-theme="pink"] .meal-row,
+html[data-theme="pink"] .preset-card,
+html[data-theme="pink"] .past-exercise,
+html[data-theme="pink"] .hud-supp-chip,
+html[data-theme="pink"] .hud-supp-meter,
+html[data-theme="pink"] .supplement-row,
+html[data-theme="pink"] .macro-donut,
+html[data-theme="pink"] .energy-core,
+html[data-theme="pink"] .history-day {
+  border-radius: 14px !important;
+  clip-path: none !important;
+  background: #fff8fb !important;
+  border-color: #fbcfe8 !important;
+  color: #3b1226 !important;
+}
+
+html[data-theme="pink"] .hud-supp-chip {
+  border-left: 4px solid #ec4899 !important;
+}
+
+html[data-theme="pink"] .hud-supp-chip.is-done {
+  border-left-color: #10b981 !important;
+  background: #f0fdf4 !important;
+}
+
+html[data-theme="pink"] .past-exercise {
+  border-left: 4px solid #ec4899 !important;
+}
+
+html[data-theme="pink"] .past-exercise li {
+  border-radius: 10px !important;
+  clip-path: none !important;
+  background: #fce7f3 !important;
+  border-color: #f9a8d4 !important;
+}
+
+html[data-theme="pink"] .past-exercise li strong {
+  color: #db2777 !important;
+}
+
+html[data-theme="pink"] .ring::before { background: #fff8fb; }
+html[data-theme="pink"] .tactical-card {
+  border-radius: 16px !important;
+  clip-path: none !important;
+}
+html[data-theme="pink"] .tactical-card::before {
+  border-radius: 15px !important;
+  clip-path: none !important;
+  background: #ffffff;
+}
+
+html[data-theme="pink"] .anatomy-board {
+  border-radius: 18px !important;
+  clip-path: none !important;
+  background: radial-gradient(circle at 50% 35%, rgba(236, 72, 153, 0.14), transparent 65%), #fff5f9;
+  border-color: #f9a8d4 !important;
+}
+
+html[data-theme="pink"] .neon-anatomy-scan::before {
+  background: linear-gradient(
+    to top,
+    rgba(236, 72, 153, 0) 0%,
+    rgba(244, 114, 182, 0.16) 55%,
+    rgba(236, 72, 153, 0.34) 96%,
+    #ec4899 100%
+  );
+  box-shadow: 0 -4px 16px rgba(236, 72, 153, 0.5);
+}
+
+html[data-theme="pink"] .bottom-tabs,
+html[data-theme="pink"] #mobileDock {
+  border-radius: 18px 18px 0 0 !important;
+  clip-path: none !important;
+  background: rgba(255, 248, 251, 0.96);
+  border-top: 2px solid #f472b6;
+  color: #3b1226;
+}
+
+html[data-theme="pink"] .bottom-tabs a { color: #9d5c78; }
+html[data-theme="pink"] .bottom-tabs a[aria-current] {
+  color: #db2777;
+  text-shadow: none;
+}
+html[data-theme="pink"] .bottom-tabs a[aria-current] svg {
+  border-radius: 12px !important;
+  clip-path: none !important;
+  background: #fce7f3;
+  border-color: #f472b6;
+  box-shadow: 0 2px 8px rgba(236, 72, 153, 0.25);
+}
+
+html[data-theme="pink"] dialog {
+  border-radius: 22px !important;
+  clip-path: none !important;
+  background: #ffffff;
+  border-color: #f472b6;
+  color: #3b1226;
+}
+
+html[data-theme="pink"] [data-set-theme="pink"],
+html[data-theme="light"] [data-set-theme="light"],
+html:not([data-theme]) [data-set-theme="dark"] {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2, var(--accent))) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
 </style>
 </head>
 <body>
@@ -1732,10 +2088,14 @@ html[data-theme="light"] dialog {
 <div class="account" data-screen="photos" hidden>
   <div class="card spaced" style="margin-bottom:14px">
     <div class="hud-panel-head" style="margin-bottom:8px">
-      <h3><span class="hud-tag">UI // THEME</span> Giao diện Sáng / Tối</h3>
-      <button type="button" class="gray" id="themeToggleBtn" aria-pressed="false">☀️ Chuyển sang Chế độ Sáng</button>
+      <h3><span class="hud-tag">UI // THEME</span> Chọn Giao Diện</h3>
     </div>
-    <p class="muted" id="themeStatusText">Đang dùng: Chế độ Tối (Cyber Dark HUD)</p>
+    <div class="actions" id="themeSelectorGroup" style="margin-top:4px">
+      <button type="button" class="gray" data-set-theme="dark">🌑 Tối (Cyber HUD)</button>
+      <button type="button" class="gray" data-set-theme="light">☀️ Sáng (Daylight)</button>
+      <button type="button" class="gray" data-set-theme="pink">🌸 Hồng (Nữ Tính)</button>
+    </div>
+    <p class="muted spaced" id="themeStatusText">Đang dùng: Chế độ Tối (Cyber Dark HUD)</p>
   </div>
   <div class="card"><h3>Đồng bộ &amp; Sao lưu dữ liệu (Backup JSON)</h3><p class="muted" id="userInfo" role="status">Đang dùng dữ liệu lưu trên thiết bị.</p>
     <div class="actions" id="loginCard"><button class="gray" id="loginButton" onclick="login()">Đăng nhập bằng Google</button></div>
@@ -4374,34 +4734,38 @@ async function deleteExtraKey(key, account = uid) {
 
 (function initThemeSwitcher() {
   const THEME_KEY = "myGym.theme";
-  const btn = $("themeToggleBtn");
+  const group = $("themeSelectorGroup");
   const status = $("themeStatusText");
 
-  function applyTheme(mode) {
-    const isLight = mode === "light";
-    if (isLight) document.documentElement.setAttribute("data-theme", "light");
-    else document.documentElement.removeAttribute("data-theme");
+  const labels = {
+    dark: "Đang dùng: Chế độ Tối (Cyber Dark HUD)",
+    light: "Đang dùng: Chế độ Sáng (Daylight Tactical)",
+    pink: "Đang dùng: Chế độ Hồng Nữ Tính (Rose Glow Aesthetic)"
+  };
 
-    if (btn) {
-      btn.setAttribute("aria-pressed", String(isLight));
-      btn.textContent = isLight ? "🌙 Chuyển sang Chế độ Tối" : "☀️ Chuyển sang Chế độ Sáng";
+  function applyTheme(mode) {
+    const valid = ["dark", "light", "pink"].includes(mode) ? mode : "dark";
+    if (valid === "dark") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", valid);
+
+    if (group) {
+      group.querySelectorAll("[data-set-theme]").forEach(btn => {
+        btn.setAttribute("aria-pressed", String(btn.dataset.setTheme === valid));
+      });
     }
-    if (status) {
-      status.textContent = isLight
-        ? "Đang dùng: Chế độ Sáng (Daylight Tactical)"
-        : "Đang dùng: Chế độ Tối (Cyber Dark HUD)";
-    }
+    if (status) status.textContent = labels[valid];
   }
 
-  const saved = readLocal(THEME_KEY, "dark");
-  applyTheme(saved);
+  applyTheme(readLocal(THEME_KEY, "dark"));
 
-  if (btn) {
-    btn.onclick = () => {
-      const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+  if (group) {
+    group.addEventListener("click", event => {
+      const btn = event.target.closest("[data-set-theme]");
+      if (!btn) return;
+      const next = btn.dataset.setTheme;
       try { localStorage.setItem(THEME_KEY, JSON.stringify(next)); } catch {}
       applyTheme(next);
-    };
+    });
   }
 })();
 
