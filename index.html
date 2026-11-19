@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101010">
-<title>DÂU & NÀY</title>
+<title>IRONFORGE // LUÂN</title>
 <style>
 :root{color-scheme:dark;--bg:#101010;--panel:#191919;--line:#303030;--muted:#b5b1ad;--accent:#ff7136;--ink:#f7f4f1}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,sans-serif}a{color:inherit;text-decoration:none}button,input,select{font:inherit}button,.cta{min-height:44px;border:1px solid transparent;border-radius:9px;padding:10px 15px;background:var(--accent);color:#17100b;font-weight:750;cursor:pointer}button:hover,.cta:hover{filter:brightness(1.15)}button:disabled{opacity:.65;cursor:wait}:focus-visible{outline:2px solid #ffd4bd;outline-offset:3px}.gray{background:#242424;color:var(--ink);border-color:var(--line)}input,select{width:100%;min-height:44px;padding:9px 11px;border:1px solid #444;border-radius:8px;background:#131313;color:var(--ink);min-width:0}label{display:grid;gap:5px;color:var(--muted)}h1,h2,h3,p{margin:0}h2{font-size:clamp(23px,3vw,32px);letter-spacing:-.035em}h3{font-size:18px}.muted,.ex-info,.last{color:var(--muted)}.hidden{display:none!important}.wrap{max-width:1240px;margin:auto;padding-inline:clamp(16px,4vw,46px)}
@@ -1038,10 +1038,131 @@ dialog {
   box-shadow: 0 0 12px rgba(255, 42, 75, 0.45) !important;
 }
 
+
+/* === BACK-AND-FORTH LIGHT SWEEP ON BRAND & HEADER === */
+.brand-sweep {
+  position: relative;
+  overflow: hidden;
+  padding: 4px 10px 4px 4px;
+}
+
+.brand-title-glow {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  background: linear-gradient(
+    110deg,
+    #ffffff 20%,
+    #ff7b39 38%,
+    #ffffff 50%,
+    #00e5ff 62%,
+    #ffffff 80%
+  );
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: brand-light-sweep 3.4s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 10px rgba(255, 85, 0, 0.45));
+}
+
+.brand-main {
+  font-weight: 950;
+}
+
+.brand-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+@keyframes brand-light-sweep {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+header .top {
+  position: relative;
+  overflow: hidden;
+}
+
+header .top::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 36%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ff5500, #ffd000, #00e5ff, transparent);
+  animation: header-beam-pingpong 3.2s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes header-beam-pingpong {
+  0% { transform: translateX(-10%); }
+  100% { transform: translateX(210%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-title-glow, header .top::after { animation: none; }
+}
+
+/* Saved Presets Catalog Grid */
+.preset-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.preset-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(145deg, #151923, #0e1118);
+  border: 1px solid #2e3646;
+  border-left: 3px solid #00e5ff;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+}
+
+.preset-card-info {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.preset-card-info strong {
+  color: #f8fafc;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.preset-card-info small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #ff9d6c;
+}
+
+.preset-card-actions {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.preset-card-actions button {
+  min-height: 32px !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+}
+
 </style>
 </head>
 <body>
-<header><div class="wrap top"><a class="brand" href="#overview" style="gap:12px">
+<header><div class="wrap top"><a class="brand brand-sweep" href="#overview" style="gap:12px">
   <b style="width:42px;height:42px;background:linear-gradient(135deg,#ff5500 0%,#ff9100 100%);box-shadow:0 0 18px rgba(255,85,0,0.75)">
     <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
       <polygon points="32 3 58 18 58 46 32 61 6 46 6 18" fill="none" stroke="#090a0d" stroke-width="4.5"/>
@@ -1052,10 +1173,9 @@ dialog {
       <polygon points="34 15 23 33 31 33 28 49 41 30 33 30" fill="#090a0d"/>
     </svg>
   </b>
-  <span style="display:inline-flex;align-items:baseline;gap:7px;font-size:26px;letter-spacing:0.06em">
-    <span style="color:#ffffff;font-weight:900">DÂU</span>
-    <span style="color:#ff5500;font-size:21px;font-weight:900;font-family:'JetBrains Mono',monospace;text-shadow:0 0 10px rgba(255,85,0,0.7)">&amp;</span>
-    <span style="background:linear-gradient(90deg,#ff5500,#ff9e00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:950">NÀY</span>
+  <span class="brand-title-glow">
+    <span class="brand-main">IRONFORGE</span>
+    <span class="brand-sub">// LUÂN</span>
   </span>
 </a><button class="gray quick" id="workoutMode" aria-pressed="true" aria-describedby="wakeStatus">Giữ màn hình sáng</button></div>
 <div class="master-timer" id="workoutTimerPanel" data-screen="overview">
@@ -1166,7 +1286,7 @@ dialog {
   </div>
 </section>
 <section data-screen="nutrition" hidden id="nutrition" aria-labelledby="nutritionTitle">
-  <div class="section-head"><h2 id="nutritionTitle">Dinh dưỡng &amp; Supplement</h2></div>
+  <div class="section-head"><h2 id="nutritionTitle">Dinh dưỡng</h2></div>
   <article class="card">
     <h3>Calories &amp; Protein trong ngày</h3>
     <form id="nutritionForm" class="tracker-form">
@@ -1206,15 +1326,15 @@ dialog {
       <div id="foodLog" class="meal-log"></div>
     </div>
   </article>
-  <div class="split spaced">
-    <div class="card"><h3>Thực đơn tham khảo</h3>
-      <div class="entry"><time>06:30</time><span>Phở bò</span></div>
-      <div class="entry"><time>10:00</time><span>Sữa và whey thực vật</span></div>
-      <div class="entry"><time>12:00</time><span>Cơm trưa công ty</span></div>
-      <div class="entry"><time>17:00</time><span>Bánh mì 2 trứng</span></div>
-      <div class="entry"><span class="muted">Sau tập</span><span>Sữa và whey thực vật</span></div>
-      <div class="entry"><time>20:00</time><span>Cơm tối</span></div>
-    </div>
+  <div class="spaced">
+    <article class="card">
+      <div class="hud-panel-head">
+        <h3><span class="hud-tag">SAVED // MENU</span> Danh mục món đã thêm</h3>
+        <button type="button" class="gray quick" id="openNewPresetBtn">+ Thêm món mới</button>
+      </div>
+      <p class="muted">Các món cá nhân đã lưu theo 1 khẩu phần. Bấm <strong>+ Cộng</strong> để nạp nhanh vào ngày đang chọn, hoặc <strong>Sửa / Xóa</strong>.</p>
+      <div id="savedPresetsList" class="spaced"></div>
+    </article>
   </div>
 </section>
 <section data-screen="supplements" hidden id="supplements" aria-labelledby="supplementsTitle">
@@ -1280,7 +1400,7 @@ dialog {
   </div>
 </div>
 </main>
-<nav class="bottom-tabs" aria-label="Điều hướng Dâu & Này"><div class="tab-items">
+<nav class="bottom-tabs" aria-label="Điều hướng IronForge"><div class="tab-items">
   <a href="#overview" data-tab="overview"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><circle cx="12" cy="12" r="3"/></svg><span>HUD</span></a>
   <a href="#schedule" data-tab="schedule"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 4h18v17H3zM3 9h18M8 2v4M16 2v4M7 13h4v4H7z"/></svg><span>Lịch tập</span></a>
   <a href="#nutrition" data-tab="nutrition"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Nạp năng lượng</span></a>
@@ -1341,6 +1461,17 @@ dialog {
   <div class="actions">
     <button type="submit">Lưu thay đổi</button>
     <button type="button" class="gray" data-close="mealEditDialog">Hủy</button>
+  </div>
+</form></dialog>
+<dialog id="presetEditDialog" aria-labelledby="presetEditTitle"><form id="presetEditForm">
+  <h2 id="presetEditTitle">Thêm / Sửa món trong danh mục</h2>
+  <label>Tên món<input name="name" required maxlength="100" placeholder="VD: Ức gà áp chảo"></label>
+  <label>Đơn vị khẩu phần<input name="unit" maxlength="30" value="khẩu phần" placeholder="VD: tô, đĩa, 100g, ổ"></label>
+  <label>Calories / 1 khẩu phần (kcal)<input name="kcal" type="number" min="0" step="any" inputmode="decimal" required></label>
+  <label>Protein / 1 khẩu phần (g)<input name="protein" type="number" min="0" step="any" inputmode="decimal" required></label>
+  <div class="actions">
+    <button type="submit">Lưu vào danh mục</button>
+    <button type="button" class="gray" data-close="presetEditDialog">Hủy</button>
   </div>
 </form></dialog>
 <script>
@@ -3408,6 +3539,24 @@ function renderFoodPresets() {
       option.value = name;
       return option;
     }));
+
+  const catalogBox = $("savedPresetsList");
+  if (catalogBox) {
+    catalogBox.innerHTML = presets.length
+      ? '<div class="preset-catalog-grid">' + presets.map(([key, item]) => `
+          <div class="preset-card">
+            <div class="preset-card-info">
+              <strong>${escapeHtml(item.name)}</strong>
+              <small>${format.format(item.kcal)} kcal · ${format.format(item.protein)}g protein / ${escapeHtml(item.unit || "khẩu phần")}</small>
+            </div>
+            <div class="preset-card-actions">
+              <button type="button" data-use-preset="${escapeHtml(key)}" title="Cộng 1 khẩu phần vào ngày đang chọn">+ Cộng</button>
+              <button type="button" class="gray" data-edit-preset="${escapeHtml(key)}">Sửa</button>
+              <button type="button" class="btn-danger" data-del-preset="${escapeHtml(key)}">Xóa</button>
+            </div>
+          </div>`).join("") + '</div>'
+      : '<p class="muted">Chưa có món nào trong danh mục cá nhân. Bấm <strong>+ Thêm món mới</strong> hoặc dùng nút <strong>Lưu vào bộ nhớ</strong> ở trên.</p>';
+  }
 }
 
 function macroDonuts(combined,calorieGoal,proteinGoal) {
@@ -3619,7 +3768,7 @@ if (location.protocol === "https:" || location.protocol === "http:") connectClou
   if (exportBtn && importBtn && importInput) {
     exportBtn.onclick = () => {
       const payload = {
-        app: "Dau-Va-Nay",
+        app: "IronForge-Luan",
         exportedAt: new Date().toISOString(),
         profile,
         logs,
@@ -3767,6 +3916,89 @@ async function deleteExtraKey(key, account = uid) {
       }
     });
   }
+})();
+
+
+(function initSavedPresetCatalog() {
+  let editingPresetKey = null;
+  const openNewBtn = $("openNewPresetBtn");
+  const catalogBox = $("savedPresetsList");
+
+  function openPresetModal(key = null) {
+    editingPresetKey = key;
+    const item = key ? extras[key] : null;
+    const fields = $("presetEditForm").elements;
+    $("presetEditTitle").textContent = item ? "Chỉnh sửa món trong danh mục" : "Thêm món mới vào danh mục";
+    fields.name.value = item?.name ?? "";
+    fields.unit.value = item?.unit ?? "khẩu phần";
+    fields.kcal.value = item?.kcal ?? "";
+    fields.protein.value = item?.protein ?? "";
+    $("presetEditDialog").showModal();
+  }
+
+  if (openNewBtn) openNewBtn.onclick = () => openPresetModal(null);
+
+  if (catalogBox) {
+    catalogBox.addEventListener("click", async event => {
+      const useBtn = event.target.closest("[data-use-preset]");
+      if (useBtn) {
+        const item = extras[useBtn.dataset.usePreset];
+        const date = $("nutritionDate").value;
+        if (!item || !isDateKey(date)) return;
+        useBtn.disabled = true;
+        try {
+          const id = "tracker-meal-" + date + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
+          await saveExtras({ [id]: { name: item.name, calories: item.kcal, protein: item.protein } });
+          playMealFeedback();
+          $("mealStatus").textContent = "Đã cộng 1 " + (item.unit || "khẩu phần") + " " + item.name + " vào ngày " + date.split("-").reverse().join("/") + ".";
+        } catch (err) {
+          alert("Chưa cộng được món: " + err.message);
+        } finally {
+          useBtn.disabled = false;
+        }
+        return;
+      }
+
+      const editBtn = event.target.closest("[data-edit-preset]");
+      if (editBtn) return openPresetModal(editBtn.dataset.editPreset);
+
+      const delBtn = event.target.closest("[data-del-preset]");
+      if (delBtn) {
+        const key = delBtn.dataset.delPreset;
+        const item = extras[key];
+        if (!item) return;
+        if (!confirm(`Xóa "${item.name}" khỏi danh mục món đã thêm?`)) return;
+        delBtn.disabled = true;
+        try {
+          await deleteExtraKey(key);
+          $("mealStatus").textContent = "Đã xóa " + item.name + " khỏi danh mục.";
+        } catch (err) {
+          alert("Chưa xóa được: " + err.message);
+        } finally {
+          delBtn.disabled = false;
+        }
+      }
+    });
+  }
+
+  bindForm("presetEditForm", async data => {
+    const name = String(data.get("name") || "").trim();
+    const unit = String(data.get("unit") || "").trim() || "khẩu phần";
+    const kcal = Number(data.get("kcal"));
+    const protein = Number(data.get("protein"));
+    const normalized = normalizeFood(name);
+    if (!normalized || !validNumber(kcal) || !validNumber(protein)) {
+      throw new Error("Vui lòng nhập đầy đủ tên món, kcal và protein.");
+    }
+    const newKey = "tracker-preset-" + encodeURIComponent(normalized);
+    if (editingPresetKey && editingPresetKey !== newKey) {
+      await deleteExtraKey(editingPresetKey);
+    }
+    await saveExtras({ [newKey]: { name, unit, kcal, protein } });
+    $("presetEditDialog").close();
+    $("mealStatus").textContent = "Đã lưu món " + name + " vào danh mục.";
+    editingPresetKey = null;
+  });
 })();
 
 </script>
