@@ -2266,7 +2266,134 @@ const DAY_NAMES = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "
 const DAYS = [1, 2, 3, 4, 5, 6, 0];
 const TITLES = ["Nghỉ", "Push Day", "Pull Day", "Legs Day", "Nghỉ", "Upper Day", "Lower Day"];
 const PULL_FIRST_FROM = "2026-11-18";
+const FIVE_DAY_PLAN_FROM = "2026-11-23";
+const FIVE_DAY_TYPES = [0,5,6,0,1,2,3];
+const FIVE_DAY_WORKOUTS = {
+  "1": [
+    [
+      "Chest Press Machine (Đẩy ngực máy ngang)",
+      3,
+      "8–12"
+    ],
+    [
+      "Chest-Supported Row (Kéo lưng có tựa ngực)",
+      3,
+      "8–12"
+    ],
+    [
+      "Lat Pulldown Wide Grip (Kéo xô tay cầm rộng)",
+      2,
+      "8–12"
+    ],
+    [
+      "Cable Lateral Raise (Nâng vai ngang cáp)",
+      2,
+      "12–15"
+    ]
+  ],
+  "2": [
+    [
+      "Reverse Hack Squat (Hack Squat úp ngược)",
+      3,
+      "8–12"
+    ],
+    [
+      "Hip Thrust (Đẩy hông)",
+      3,
+      "10–12"
+    ],
+    [
+      "Seated Leg Curl (Móc đùi sau ngồi)",
+      3,
+      "10–15"
+    ],
+    [
+      "Standing Calf Raise (Nhún bắp chân đứng)",
+      2,
+      "12–20"
+    ]
+  ],
+  "4": [
+    [
+      "Incline Dumbbell Press (Đẩy tạ đơn ghế dốc)",
+      3,
+      "8–12"
+    ],
+    [
+      "Pec Deck Machine (Máy ép ngực)",
+      2,
+      "10–15"
+    ],
+    [
+      "Machine Lateral Raise (Nâng vai ngang bằng máy)",
+      2,
+      "12–15"
+    ],
+    [
+      "Triceps Cable Rope Pushdown (Kéo cáp tay sau)",
+      2,
+      "10–15"
+    ]
+  ],
+  "5": [
+    [
+      "Lat Pulldown Close Grip (Kéo xô hẹp tay)",
+      3,
+      "8–12"
+    ],
+    [
+      "Seated Cable Row Narrow Grip (Kéo cáp ngồi hẹp tay)",
+      3,
+      "8–12"
+    ],
+    [
+      "Reverse Pec Deck (Máy ép ngực ngược)",
+      2,
+      "12–15"
+    ],
+    [
+      "Cable Biceps Curl (Cuốn tay trước với cáp)",
+      2,
+      "10–15"
+    ]
+  ],
+  "6": [
+    [
+      "Leg Press mid foot (Đạp đùi máy, đặt chân giữa)",
+      3,
+      "10–15"
+    ],
+    [
+      "Lying Leg Curl (Móc đùi sau nằm)",
+      3,
+      "10–15"
+    ],
+    [
+      "Hip Thrust (Đẩy hông)",
+      2,
+      "10–12"
+    ],
+    [
+      "Seated Calf Raise (Nhún bắp chân ngồi)",
+      2,
+      "12–20"
+    ],
+    [
+      "Cable Crunch (Gập bụng cáp)",
+      2,
+      "10–15"
+    ]
+  ]
+};
+const FIVE_DAY_NOTES = {
+  1:"Tăng tải có kiểm soát. Với vai trái, chỉ dùng mức tạ và biên độ không gây đau; bỏ bài đẩy nếu đau.",
+  2:"Hạ Reverse Hack Squat chậm, giữ gối theo hướng mũi chân. Với Hip Thrust, dừng ở đỉnh trước khi lưng dưới ưỡn.",
+  4:"Ưu tiên nhịp chậm và biên độ không gây đau vai. Nếu đẩy tạ đơn gây đau, bỏ bài đó.",
+  5:"Kéo xô: hạ vai nhẹ và dẫn khuỷu tay xuống. Khi kéo ngang, giữ thân ổn định, tránh nhún vai hoặc giật tạ.",
+  6:"Kiểm soát nhịp hạ, chọn tạ còn dư khoảng 2–3 reps. Giữ lưng và hông tựa ổn định khi đạp đùi."
+};
 function templateDay(day,date) {
+  if (date >= FIVE_DAY_PLAN_FROM) return FIVE_DAY_TYPES[day];
   return date >= PULL_FIRST_FROM && (day === 1 || day === 2) ? 3 - day : day;
 }
 const GROUPS = ["Phục hồi", "Ngực · Vai · Tay sau", "Lưng · Vai sau · Tay trước", "Đùi · Mông", "Phục hồi", "Thân trên", "Thân dưới"];
@@ -2344,8 +2471,8 @@ function dayPlanMeta(date) {
   const tDay = templateDay(day, date);
   return {
     rows,
-    title: rows.length ? (WORKOUTS[day] ? TITLES[tDay] : "Training Day") : "Nghỉ",
-    group: rows.length ? (WORKOUTS[day] ? GROUPS[tDay] : "Giáo án riêng") : "Phục hồi",
+    title: rows.length ? (WORKOUTS[tDay] ? TITLES[tDay] : "Training Day") : "Nghỉ",
+    group: rows.length ? (WORKOUTS[tDay] ? GROUPS[tDay] : "Giáo án riêng") : "Phục hồi",
     isCustom: false
   };
 }
@@ -2478,7 +2605,10 @@ function renderWorkout() {
     return;
   }
 
-  box.innerHTML = list.map(([name, slots, reps], index) => {
+  const day = rawDay === "custom" ? localDate(date).getDay() : Number(rawDay);
+  const defaultPlan = date >= FIVE_DAY_PLAN_FROM && workout === FIVE_DAY_WORKOUTS[day];
+  const planNote = defaultPlan ? `<p class="ex-info spaced"><strong>${TITLES[FIVE_DAY_TYPES[day]]} · ${workout.reduce((sum,[,sets]) => sum + sets,0)} hiệp chính.</strong> Khởi động 8–10 phút. Nghỉ 90–120 giây ở bài chính, 60–90 giây ở bài phụ. ${FIVE_DAY_NOTES[day]}</p>` : "";
+  box.innerHTML = planNote + list.map(([name, slots, reps], index) => {
     const current = logged[name] || [];
     const key = EXERCISES.indexOf(name);
     const filled = current.slice(0, slots).filter(complete).length;
@@ -3734,7 +3864,7 @@ function planFor(day, date) {
   return extras[revision]?.rows?.map(row => Array.isArray(row) ? row : [row.name,row.sets,row.reps]).filter(row =>
     Array.isArray(row) && typeof row[0] === "string" && Number.isInteger(row[1]) && row[1] >= 1 && row[1] <= 6 &&
     typeof row[2] === "string"
-  ) ?? WORKOUTS[templateDay(day,date)]?.exercises ?? [];
+  ) ?? (date >= FIVE_DAY_PLAN_FROM ? FIVE_DAY_WORKOUTS[day] : WORKOUTS[templateDay(day,date)]?.exercises) ?? [];
 }
 
 function updateTodayPlan() {
@@ -3812,9 +3942,11 @@ function lastWeekSession(today) {
   if (!meta.rows.length) return null;
   const monday = startOfWeek(localDate(today));
   const dates = DAYS.map((_, index) => weekDate(monday, index - 7));
-  const targetNames = new Set(meta.rows.map(([name]) => name));
-  const matchDate = dates.find(d => dayPlanFor(d).some(([name]) => targetNames.has(name))) || dates[localDate(today).getDay() === 0 ? 6 : localDate(today).getDay() - 1];
-  if (!matchDate) return null;
+  const weekday = localDate(today).getDay();
+  const sameWeekday = dates[(weekday + 6) % 7];
+  const sameType = dates.filter(date => dayPlanMeta(date).title === meta.title);
+  const matchDate = sameType.includes(sameWeekday) ? sameWeekday : sameType.at(-1);
+  if (!matchDate) return {date:null,title:meta.title,exercises:[]};
   const exercises = Object.entries(logs[matchDate] || {}).filter(([,sets]) =>
     Array.isArray(sets) && sets.some(complete));
   return {date:matchDate,title:meta.title,exercises};
@@ -3823,7 +3955,7 @@ function lastWeekSession(today) {
 function renderLastWeekWorkout() {
   const session = lastWeekSession(todayKey());
   $("lastWeekTitle").innerHTML = `<span class="hud-tag">LOG // T-7D</span> ${escapeHtml(session ? session.title + " · Tuần trước" : "Buổi tập tuần trước")}`;
-  $("lastWeekDate").textContent = session ? "📅 NGÀY TẬP: " + session.date.split("-").reverse().join("/") + " · " + session.exercises.length + " BÀI ĐÃ GHI" : "";
+  $("lastWeekDate").textContent = session?.date ? "📅 NGÀY TẬP: " + session.date.split("-").reverse().join("/") + " · " + session.exercises.length + " BÀI ĐÃ GHI" : "";
   if (!session) {
     $("lastWeekExercises").innerHTML = '<div class="hud-supp-meter"><span>🛌 HÔM NAY LÀ NGÀY PHỤC HỒI (REST DAY)</span></div>';
     return;
